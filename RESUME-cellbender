@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -euo pipefail
+
+samplefile=/nfs/cellgeni/tickets/tic-2055/actions/matrix-example.txt
+config=/nfs/cellgeni/tickets/tic-2055/actions/nextflow.config
+
+[[ -e "$samplefile" ]] || (echo "File "$samplefile" not found" && false)
+
+nextflow run /nfs/cellgeni/tickets/tic-2055/actions/main.nf \
+  --SAMPLEFILE $samplefile \
+  --sangerID "user99" \
+  -c $config \
+  --input_matrix "yes" \
+  -w cellbender-work \
+  --ansi-log false \
+  -with-trace reports/trace.txt \
+  -with-report reports/reports.html \
+  -resume

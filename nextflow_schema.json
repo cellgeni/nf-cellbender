@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",
+  "title": ". pipeline parameters",
+  "description": "",
+  "type": "object",
+  "definitions": {
+    "user_parameters": {
+      "title": "User Parameters",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "SAMPLEFILE": {
+          "type": "string",
+          "default": null
+        },
+        "sangerID": {
+          "type": "string",
+          "default": null
+        },
+        "h5_on_irods": {
+          "type": "string",
+          "default": "yes"
+        },
+        "input_matrix": {
+          "type": "string",
+          "default": "no"
+        },
+        "gene_tag": {
+          "type": "string",
+          "default": "Gene"
+        },
+        "qc_mode": {
+          "type": "integer",
+          "default": 1
+        },
+        "cells": {
+          "type": "integer",
+          "default": 5000
+        },
+        "droplets": {
+          "type": "integer",
+          "default": 15000
+        },
+        "epochs": {
+          "type": "integer",
+          "default": 150
+        },
+        "fpr": {
+          "type": "number",
+          "default": 0.01
+        },
+        "learn": {
+          "type": "number",
+          "default": 0.0001
+        }
+      },
+      "required": ["SAMPLEFILE", "sangerID"]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/user_parameters"
+    }
+  ]
+}
