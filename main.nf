@@ -84,6 +84,7 @@ process run_cellbender {
   '''
   mkdir -p !{NAME} 
   if [[ "!{params.input_matrix}" == "no" ]]; then
+    echo "cellbender remove-background --input !{data} --output !{NAME}/cellbender_out.h5 --cuda --expected-cells !{params.cells} --epochs !{params.epochs} --total-droplets-included !{params.droplets} --fpr !{params.fpr} --learning-rate !{params.learn}" > "!{NAME}/cmd.txt"
     cellbender remove-background \
       --input !{data} \
       --output "!{NAME}/cellbender_out.h5" \
@@ -103,6 +104,7 @@ process run_cellbender {
     else
       echo "Standard presets: expected number of cells is ${NEXP}.."
     fi
+    echo "cellbender remove-background --input !{data}/!{params.gene_tag}/raw --output !{NAME}/cellbender_out.h5 --cuda --expected-cells ${NEXP} --epochs !{params.epochs} ${TOTAL} --fpr !{params.fpr} --learning-rate !{params.learn}" > "!{NAME}/cmd.txt"
     cellbender remove-background \
       --input "!{data}/!{params.gene_tag}/raw" \
       --output "!{NAME}/cellbender_out.h5" \
@@ -136,6 +138,27 @@ process cellbender_qc {
   '''
 }
 
+process email_finish {
+
+  input:
+  val(output-list)
+
+  shell:
+  '''
+  sendmail "!{params.sangerID}@sanger.ac.uk" <<EOF
+  Subject: Finished pipeline
+  From: noreply-cellgeni-pipeline@sanger.ac.uk
+  Hi there, your run of Cellular Genetics Informatics' STARsolo pipeline is complete.
+  Results are available here: "/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results"
+  The results will be deleted in a week so please copy your data to a sensible location, i.e.:
+  cp -r "/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" /path/to/sensible/location
+  The cellbender command run for each sample can be found inside "cellbender-results/sampleID/cmd.txt"
+  Thanks,
+  Cellular Genetics Informatics
+  EOF
+  '''
+}
+
 workflow {
   if (params.HELP) {
     helpMessage()
@@ -148,11 +171,9 @@ workflow {
       errorMessage()
     }
     else {
-      //email_startup()
+      email_startup()
       ch_sample_list | flatMap{ it.readLines() } | get_data
-      run_cellbender(get_data.out.name, get_data.out.data) | collect | cellbender_qc
-      //| collect \
-      //| email_finish
+      run_cellbender(get_data.out.name, get_data.out.data) | collect | cellbender_qc | email_finish
     }
   }
 }
