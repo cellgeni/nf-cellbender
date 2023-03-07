@@ -141,7 +141,7 @@ process cellbender_qc {
 process email_finish {
 
   input:
-  val(output-list)
+  val(qc_output)
 
   shell:
   '''
