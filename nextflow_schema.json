@@ -44,12 +44,12 @@
         "cells": {
           "type": "integer",
           "default": 5000,
-          "description": "The number of cells expected a priori from the experimental design."
+          "description": "The number of cells expected a priori from the experimental design (only needed in h5 mode)."
         },
         "droplets": {
           "type": "integer",
           "default": 15000,
-          "description": "Number of total droplets (select a number that goes a few thousand barcodes into the “empty droplet plateau”). Include some droplets that you think are surely empty. But be aware that the larger this number, the longer the algorithm takes to run (linear)."
+          "description": "Number of total droplets (select a number that goes a few thousand barcodes into the “empty droplet plateau”). Include some droplets that you think are surely empty. But be aware that the larger this number, the longer the algorithm takes to run (linear). Only needed in h5 mode"
         },
         "epochs": {
           "type": "integer",
