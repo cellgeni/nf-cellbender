@@ -71,7 +71,7 @@ process get_data {
 
 process run_cellbender {
   
-  publishDir "/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/${params.sangerID}/${params.timestamp}/cellbender-results", mode: 'copy'
+  publishDir "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/${params.sangerID}/${params.timestamp}/cellbender-results", mode: 'copy'
 
   input:
   val(NAME)
@@ -120,7 +120,7 @@ process run_cellbender {
 
 process cellbender_qc {
   
-  publishDir "/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/${params.sangerID}/${params.timestamp}/cellbender-results", mode: 'copy'
+  publishDir "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/${params.sangerID}/${params.timestamp}/cellbender-results", mode: 'copy'
 
   input:
   val(output_list) //this isn't used, just ensures QC is run after cellbender is finished for all samples
@@ -132,7 +132,7 @@ process cellbender_qc {
   '''
   mkdir "qc_output"
   Rscript !{baseDir}/bin/cellbender_qc.R \
-    "/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" \
+    "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" \
     -m !{params.qc_mode} \
     -o "qc_output"
   '''
@@ -149,9 +149,9 @@ process email_finish {
   Subject: Finished pipeline
   From: noreply-cellgeni-pipeline@sanger.ac.uk
   Hi there, your run of Cellular Genetics Informatics' STARsolo pipeline is complete.
-  Results are available here: "/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results"
+  Results are available here: "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results"
   The results will be deleted in a week so please copy your data to a sensible location, i.e.:
-  cp -r "/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" /path/to/sensible/location
+  cp -r "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" /path/to/sensible/location
   The cellbender command run for each sample can be found inside "cellbender-results/sampleID/cmd.txt"
   Thanks,
   Cellular Genetics Informatics
