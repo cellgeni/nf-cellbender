@@ -20,26 +20,6 @@ def errorMessage() {
     exit 1
 }
 
-process email_startup {
-  
-  shell:
-  '''
-  contents=`cat !{params.SAMPLEFILE}`
-  sendmail "!{params.sangerID}@sanger.ac.uk" <<EOF
-  Subject: Launched pipeline
-  From: noreply-cellgeni-pipeline@sanger.ac.uk
-  Hi there, you've launched Cellular Genetics Informatics' Cellbender pipeline.
-  Your parameters are:
-  Samplefile: !{params.SAMPLEFILE}
-  
-  Your sample file looks like:
-  $contents
-  Thanks,
-  Cellular Genetics Informatics
-  EOF
-  '''
-}
-
 process get_data {
 
   input:
@@ -138,27 +118,6 @@ process cellbender_qc {
   '''
 }
 
-process email_finish {
-
-  input:
-  val(qc_output)
-
-  shell:
-  '''
-  sendmail "!{params.sangerID}@sanger.ac.uk" <<EOF
-  Subject: Finished pipeline
-  From: noreply-cellgeni-pipeline@sanger.ac.uk
-  Hi there, your run of Cellular Genetics Informatics' STARsolo pipeline is complete.
-  Results are available here: "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results"
-  The results will be deleted in a week so please copy your data to a sensible location, i.e.:
-  cp -r "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" /path/to/sensible/location
-  The cellbender command run for each sample can be found inside "cellbender-results/sampleID/cmd.txt"
-  Thanks,
-  Cellular Genetics Informatics
-  EOF
-  '''
-}
-
 workflow {
   if (params.HELP) {
     helpMessage()
@@ -167,13 +126,7 @@ workflow {
   else {
     //Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
     ch_sample_list = params.SAMPLEFILE != null ? Channel.fromPath(params.SAMPLEFILE) : errorMessage()
-    if (params.sangerID == null) {
-      errorMessage()
-    }
-    else {
-      email_startup()
-      ch_sample_list | flatMap{ it.readLines() } | get_data
-      run_cellbender(get_data.out.name, get_data.out.data) | collect | cellbender_qc | email_finish
-    }
+    ch_sample_list | flatMap{ it.readLines() } | get_data
+    run_cellbender(get_data.out.name, get_data.out.data) | collect | cellbender_qc 
   }
 }
