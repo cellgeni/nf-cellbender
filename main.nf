@@ -4,18 +4,26 @@ nextflow.enable.dsl=2
 
 def helpMessage() {
     log.info"""
-    =================
+    ===================
     cellbender pipeline
-    =================
-    This pipeline runs Cellbender. 
+    ===================
+    This pipeline runs Cellbender.
+    The only parameter you need to input is:
+      --SAMPLEFILE /full/path/to/sample/file
+    This file should contain a single sampleID per line. 
+    An example can be seen here: https://github.com/cellgeni/nf-cellbender/blob/main/examples/example.txt  
     """.stripIndent()
 }
 
 def errorMessage() {
     log.info"""
-    ==============
+    ================
     cellbender error
-    ==============
+    ================
+    You failed to provide the SAMPLEFILE input parameter
+    Please provide these parameters as follows:
+      --SAMPLEFILE /full/path/to/sample/file
+    The pipeline has exited with error status 1.
     """.stripIndent()
     exit 1
 }
@@ -51,7 +59,7 @@ process get_data {
 
 process run_cellbender {
   
-  publishDir "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/${params.sangerID}/${params.timestamp}/cellbender-results", mode: 'copy'
+  publishDir "${params.outdir}", mode: 'copy'
 
   input:
   val(NAME)
@@ -100,7 +108,7 @@ process run_cellbender {
 
 process cellbender_qc {
   
-  publishDir "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/${params.sangerID}/${params.timestamp}/cellbender-results", mode: 'copy'
+  publishDir "${params.outdir}", mode: 'copy'
 
   input:
   val(output_list) //this isn't used, just ensures QC is run after cellbender is finished for all samples
@@ -112,7 +120,7 @@ process cellbender_qc {
   '''
   mkdir "qc_output"
   Rscript !{baseDir}/bin/cellbender_qc.R \
-    "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" \
+    "!{params.outdir}" \
     -m !{params.qc_mode} \
     -o "qc_output"
   '''
