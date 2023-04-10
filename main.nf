@@ -119,7 +119,7 @@ process cellbender_qc {
   shell:
   '''
   mkdir "qc_output"
-  Rscript !{baseDir}/bin/cellbender_qc.R \
+  Rscript !{projectDir}/bin/cellbender_qc.R \
     "!{params.outdir}" \
     -m !{params.qc_mode} \
     -o "qc_output"
