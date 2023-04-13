@@ -1,0 +1,1 @@
+HCA_GLNDrna13255572	/lustre/scratch126/cellgen/cellgeni/tickets/nextflow-tower-results/sm42/1676390529405/starsolo-results/HCA_GLNDrna13255572/output
