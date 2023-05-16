@@ -1,6 +1,6 @@
 # nf-cellbender
 
-Our cellbender repo but implemented in Nextflow.
+Our [cellbender repo](https://github.com/cellgeni/cellbender) but implemented in Nextflow.
 
 There are two branches:
 
