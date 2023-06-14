@@ -3,13 +3,10 @@
 set -euo pipefail
 
 samplefile=actions/samples.txt
-config=actions/nextflow.config
 
 [[ -e "$samplefile" ]] || (echo "File "$samplefile" not found" && false)
 
 nextflow run cellgeni/nf-cellbender \
   --SAMPLEFILE $samplefile \
-  -c $config \
-  -w cellbender-work \
   --ansi-log false \
   -resume
