@@ -13,7 +13,7 @@ There are two branches:
 * `nextflow.config` - the configuration script that allows the processes to be submitted to IBM LSF on Sanger's HPC and ensures correct environment is set via singularity container (this is an absolute path). Global default parameters are also set in this file.
 * `examples/samples_h5.txt` - samplefile tsv containing 2 fields: sampleID, path to h5 file (The order of these files is important!). These paths can be IRODs paths or local paths.
 * `examples/samples_matrix.txt` - samplefile tsv containing 2 fields: sampleID, path to aligner output directory (The order of these files is important!). These paths can be IRODs paths or local paths.
-* `examples/RESUME-cellbender` - an example run script that executes the pipeline it has 2 hardcoded arguments: `/path/to/sample/file` and `/path/to/config/file` that need to be changed based on your local set up.
+* `examples/RESUME-cellbender` - an example run script that executes the pipeline it has  hardcoded argument: `/path/to/sample/file` that needs to be changed based on your local set up.
 * `bin/cellbender_qc.R` - a qc script that enables sanity checks that cellbender worked correctly.
 * `Dockerfile` - a dockerfile to reproduce the environment used to run the pipeline.
 
