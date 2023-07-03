@@ -14,7 +14,7 @@
         "SAMPLEFILE": {
           "type": "string",
           "default": null,
-	  "description": "The path to the sample file provided to the pipeline. This is a tab-separated file with one sample per line. Each line should contain a sample id and a path to h5ad or STARsolo output."
+	  "description": "The path to the sample file provided to the pipeline. This is a tab-separated file with one sample per line. Each line should contain a sample id and a path to h5ad or aligner output. Example available here: https://github.com/cellgeni/nf-cellbender/tree/nextflow-tower/examples"
         },
         "sangerID": {
           "type": "string",
