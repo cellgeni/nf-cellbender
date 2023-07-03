@@ -148,7 +148,7 @@ process email_finish {
   sendmail "!{params.sangerID}@sanger.ac.uk" <<EOF
   Subject: Finished pipeline
   From: noreply-cellgeni-pipeline@sanger.ac.uk
-  Hi there, your run of Cellular Genetics Informatics' STARsolo pipeline is complete.
+  Hi there, your run of Cellular Genetics Informatics' Cellbender pipeline is complete.
   Results are available here: "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results"
   The results will be deleted in a week so please copy your data to a sensible location, i.e.:
   cp -r "/lustre/scratch127/cellgen/cellgeni/tickets/nextflow-tower-results/!{params.sangerID}/!{params.timestamp}/cellbender-results" /path/to/sensible/location
