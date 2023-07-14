@@ -31,28 +31,26 @@ def errorMessage() {
 process get_data {
 
   input:
-  val(sample) 
+  tuple val(id), val(data_path)
+
 
   output:
-  env(NAME), emit: name 
+  val(id), emit: id 
   path('*'), emit: data
 
   shell:
   '''
-  NAME=`echo !{sample} | cut -f 1 -d " "`
-  data_path=`echo !{sample} | cut -f 2 -d " "`
- 
   if [[ "!{params.input_matrix}" == "no" ]]; then
     if [[ "!{params.h5_on_irods}" == "no" ]]; then
-      cp "${data_path}" "${NAME}.h5"
+      cp "!{data_path}" "!{id}.h5"
     elif [[ "!{params.h5_on_irods}" == "yes" ]]; then
-      iget -f -v -K "${data_path}" "${NAME}.h5"
+      iget -f -v -K "!{data_path}" "!{id}.h5"
     else
       echo "incorrect h5 option"
       exit 1
     fi
   elif [[ "!{params.input_matrix}" == "yes" ]]; then
-    cp -r "${data_path}" "${NAME}_matrix_input"
+    cp -r "!{data_path}" "!{id}_matrix_input"
   fi
   '''
 }
@@ -134,7 +132,7 @@ workflow {
   else {
     //Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
     ch_sample_list = params.SAMPLEFILE != null ? Channel.fromPath(params.SAMPLEFILE) : errorMessage()
-    ch_sample_list | flatMap{ it.readLines() } | get_data
-    run_cellbender(get_data.out.name, get_data.out.data) | collect | cellbender_qc 
+    ch_sample_list | flatMap{ it.readLines() } | map { it -> [ it.split()[0], it.split()[1] ] } | get_data
+    run_cellbender(get_data.out.id, get_data.out.data) | collect | cellbender_qc 
   }
 }
