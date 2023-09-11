@@ -18,7 +18,7 @@ There are two branches:
 * `Dockerfile` - a dockerfile to reproduce the environment used to run the pipeline.
 
 ## Pipeline Arguments:
-* `--SAMPLEFILE` - The path to the sample file provided to the pipeline. This is a tab-separated file with one sample per line. Each line should contain a sample id, path to bam file, path to barcodes file (in that order!).
+* `--SAMPLEFILE` - The path to the sample file provided to the pipeline. This is a tab-separated file with one sample per line. Each line should contain a sample id, path to h5 file or matrix folder, path to barcodes file (in that order!).
 * `--outdir` - The path to where the results will be saved.
 * `--h5_on_irods` - Tells pipeline whether to look for the h5 file on IRODS or the FARM (default yes means look on IRODS).
 * `--input_matrix` - Tells pipeline whether input is a h5 file or 10x matrix format (default no means h5 file expected).
