@@ -42,7 +42,7 @@ process get_data {
   '''
   if [[ "!{params.input_matrix}" == "no" ]]; then
     if [[ "!{params.h5_on_irods}" == "no" ]]; then
-      cp "!{data_path}" "!{id}.h5"
+      cp -r "!{data_path}" "!{id}.h5"
     elif [[ "!{params.h5_on_irods}" == "yes" ]]; then
       iget -f -v -K "!{data_path}" "!{id}.h5"
     else
