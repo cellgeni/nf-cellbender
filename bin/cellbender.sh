@@ -18,11 +18,11 @@ learning_rate=${7:-""}
 ARGS_STRING=""
 
 if [ ! -z "${cells}" ]; then
-	ARGS_STRING+="--expected-cells ${cells}"
+  ARGS_STRING+="--expected-cells ${cells}"
 fi
 
 if [ ! -z "${droplets}" ]; then
-	ARGS_STRING+=" --total-droplets-included ${droplets}"
+  ARGS_STRING+=" --total-droplets-included ${droplets}"
 fi
 
 if [ ! -z "${epochs}" ]; then
