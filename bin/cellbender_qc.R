@@ -35,8 +35,8 @@ parseCBlog = function(f){
   training$test[match(epoch[istest],training$epoch)] = -ls[istest]
   training$train[match(epoch[!istest],training$epoch)] = -ls[!istest]
 
-    # parse other things
-  patterns = c(prior.empty.count = "Prior on counts in empty droplets is ",
+  # parse other things
+  patterns = c(prior.empty.count = "Prior on counts in empty droplets is |Prior on counts for empty droplets is ", # for v2 and v3 compatibility
                prior.cell.count = "Prior on counts for cells is ",
                barcode.low.thr = "Excluding barcodes with counts below ",
                posterior.reg.factor = "Optimal posterior regularization factor = ",
@@ -47,6 +47,7 @@ parseCBlog = function(f){
     t = nloss[grep(p,nloss)]
     r = stringr::str_match(t,paste0(p,"\\d+.?\\d*"))
     r = as.numeric(sub(p,'',r))
+    r = r[!is.na(r)]
     if(length(r)==0)
       r = NA
     r
@@ -223,7 +224,7 @@ if(!dir.exists(opt$dir))
 
 sids = list.dirs(opt$dir,recursive = FALSE,full.names = FALSE)
 
-if(!dir.exists(opt$rds)) dir.create(opt$rds)
+if(!dir.exists(opt$rds)) dir.create(opt$rds,recursive = T)
 # parse logs 
 logs = list()
 n = 0
@@ -323,7 +324,6 @@ logs = logs[o]
 write.table(info,quote = FALSE,sep = '\t',row.names = FALSE)
 
 # plot training history
-
 pdf(opt$train.pdf,w=6*3,h=4*3)
 par(mfrow=c(4,6),tcl=-0.2,mgp=c(1.1,0.2,0),mar=c(2.5,2.5,1.5,0),oma=c(0,0,1,1),bty='n')
 for(i in names(logs)){
@@ -351,3 +351,4 @@ if(opt$mode>2){
   }
   t=dev.off()
 }
+
