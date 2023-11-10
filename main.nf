@@ -40,17 +40,13 @@ process get_data {
 
   shell:
   '''
-  if [[ "!{params.input_matrix}" == "no" ]]; then
-    if [[ "!{params.h5_on_irods}" == "no" ]]; then
-      cp -r "!{data_path}" "!{id}.h5"
-    elif [[ "!{params.h5_on_irods}" == "yes" ]]; then
-      iget -f -v -K "!{data_path}" "!{id}.h5"
-    else
-      echo "incorrect h5 option"
-      exit 1
-    fi
-  elif [[ "!{params.input_matrix}" == "yes" ]]; then
-    cp -r "!{data_path}" "!{id}_matrix_input"
+  if "!{params.on_irods}"; then
+    iget -f -v -K -r "!{data_path}" "input_data"
+  else
+    cp -r "!{data_path}" "input_data"
+  fi
+  if "!{params.is_h5}"; then
+    mv input_data input_data.h5
   fi
   '''
 }
@@ -60,47 +56,16 @@ process run_cellbender {
   publishDir "${params.outdir}", mode: 'copy'
 
   input:
-  val(NAME)
+  val(id)
   path(data)
 
   output:
-  path(NAME), emit: outdir
+  path(id)
   
   shell:
   '''
-  mkdir -p !{NAME} 
-  if [[ "!{params.input_matrix}" == "no" ]]; then
-    echo "cellbender remove-background --input !{data} --output !{NAME}/cellbender_out.h5 --cuda --expected-cells !{params.cells} --epochs !{params.epochs} --total-droplets-included !{params.droplets} --fpr !{params.fpr} --learning-rate !{params.learn}" > "!{NAME}/cmd.txt"
-    cellbender remove-background \
-      --input !{data} \
-      --output "!{NAME}/cellbender_out.h5" \
-      --cuda \
-      --expected-cells !{params.cells} \
-      --epochs !{params.epochs} \
-      --total-droplets-included !{params.droplets} \
-      --fpr !{params.fpr} \
-      --learning-rate !{params.learn}
-  elif [[ "!{params.input_matrix}" == "yes" ]]; then
-    NEXP=`zcat "!{data}/!{params.gene_tag}/filtered/barcodes.tsv.gz" | wc -l`
-    TOTAL=""
-    if (($NEXP > 20000)); then
-      NTOT=$((NEXP+10000))
-      echo "Modifying presets: expecting more than 20k cells (${NEXP}), total number of droplets is ${NTOT}.."
-      TOTAL="--total-droplets-included ${NTOT}"
-    else
-      echo "Standard presets: expected number of cells is ${NEXP}.."
-    fi
-    echo "cellbender remove-background --input !{data}/!{params.gene_tag}/raw --output !{NAME}/cellbender_out.h5 --cuda --expected-cells ${NEXP} --epochs !{params.epochs} ${TOTAL} --fpr !{params.fpr} --learning-rate !{params.learn}" > "!{NAME}/cmd.txt"
-    cellbender remove-background \
-      --input "!{data}/!{params.gene_tag}/raw" \
-      --output "!{NAME}/cellbender_out.h5" \
-      --cuda \
-      --expected-cells ${NEXP} \
-      --epochs !{params.epochs} \
-      ${TOTAL} \
-      --fpr !{params.fpr} \
-      --learning-rate !{params.learn}
-  fi
+  mkdir -p !{id} 
+  !{projectDir}/bin/cellbender.sh !{id} !{data} !{params.cells} !{params.droplets} !{params.epochs} !{params.fpr} !{params.learn}
   '''
 }
 
