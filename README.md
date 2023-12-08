@@ -20,7 +20,7 @@ There are two branches:
 ## Pipeline Arguments:
 * `--SAMPLEFILE` - The path to the sample file provided to the pipeline. This is a tab-separated file with one sample per line. Each line should contain a sample id, path to h5 file or matrix folder, path to barcodes file (in that order!).
 * `--outdir` - The path to where the results will be saved.
-* `--on_irods` - Tells pipeline whether to look for the input data on IRODS or the FARM (default true means look on IRODS).
+* `--on_irods` - Tells pipeline whether to look for the input data on IRODS or the FARM (default false means look locally).
 * `--qc_mode` - Tells pipeline which level of QC to complete, 1 is the quickets but least depth, 3 is the slowest but most depth. 
 * `--cells` - The number of cells expected a priori from the experimental design (for v0.3.0 cellbender calculates this).
 * `--droplets` - Number of total droplets (for v0.3.0 cellbender calculates this). Select a number that goes a few thousand barcodes into the “empty droplet plateau”. Include some droplets that you think are surely empty. But be aware that the larger this number, the longer the algorithm takes to run (linear).
