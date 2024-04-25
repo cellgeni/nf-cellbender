@@ -34,7 +34,7 @@ parseCBlog = function(f){
   
   training$test[match(epoch[istest],training$epoch)] = -ls[istest]
   training$train[match(epoch[!istest],training$epoch)] = -ls[!istest]
-
+  
   # parse other things
   patterns = c(prior.empty.count = "Prior on counts in empty droplets is |Prior on counts for empty droplets is ", # for v2 and v3 compatibility
                prior.cell.count = "Prior on counts for cells is ",
@@ -58,12 +58,14 @@ parseCBlog = function(f){
   z=' barcodes, and '
   info$probable.empty.cells = as.numeric(sub(z,'',stringr::str_match(t,paste0(z,"\\d+.?\\d*"))))
   # find input and output
-  io = strsplit(l[grep("cellbender remove-background --input",l)],' ')[[1]]
+  io = strsplit(l[grep("cellbender remove-background",l)],' ')[[1]]
   input = io[which(io=='--input')+1]
   output = io[which(io=='--output')+1]
   
   
-  info$input = sub(output,input,gsub('log$','h5',normalizePath(f)))
+  info$input = input
+  if(!startsWith(info$input,'/')) # if path is relative
+    info$input = sub(output,info$input,gsub('log$','h5',normalizePath(f)))
   return(list(training=training,info=info))
 }
 
@@ -85,20 +87,39 @@ plotCellProbability = function(l,...){
 parseCB.h5 = function(f){
   infile = hdf5r::H5File$new(filename = f, mode = "r")
   n=names(infile)
-  #str(sapply(names(infile[[n]]),function(m){infile[[n]][[m]]$maxdims}))
   r = list()
-  r$cell.probability = infile[[n]][['latent_cell_probability']]$read()
-  names(r$cell.probability) = infile[[n]][['barcodes']]$read()[infile[[n]][['barcode_indices_for_latents']]$read()+1]
-  
-  training = infile[[n]][['training_elbo_per_epoch']]$read()
-  training = data.frame(epoch=1:length(training),test=NA,train=training)
-  
-  training$test[match(infile[[n]][['test_epoch']]$read(),training$epoch)] = infile[[n]][['test_elbo']]$read()
-  
-  z = sparseMatrix(i=infile[[n]][['indices']]$read()+1, p=infile[[n]][['indptr']]$read(),x = as.numeric(infile[[n]][['data']]$read()),dims=infile[[n]][['shape']]$read())
-  r$filtered.tUMI = setNames(colSums(z),infile[[n]][['barcodes']]$read())
+  if(length(n)==1){ # v0.2.0
+    r$cell.probability = infile[[n]][['latent_cell_probability']]$read()
+    names(r$cell.probability) = infile[[n]][['barcodes']]$read()[infile[[n]][['barcode_indices_for_latents']]$read()+1]
+    
+    training = infile[[n]][['training_elbo_per_epoch']]$read()
+    training = data.frame(epoch=1:length(training),test=NA,train=training)
+    
+    training$test[match(infile[[n]][['test_epoch']]$read(),training$epoch)] = infile[[n]][['test_elbo']]$read()
+    
+    z = sparseMatrix(i=infile[[n]][['indices']]$read()+1, p=infile[[n]][['indptr']]$read(),x = as.numeric(infile[[n]][['data']]$read()),dims=infile[[n]][['shape']]$read())
+    r$filtered.tUMI = setNames(colSums(z),infile[[n]][['barcodes']]$read())
+    r$training = training
+  }else{  # 0.3.0
+    r$cell.probability = infile[['droplet_latents']][['cell_probability']]$read()
+    names(r$cell.probability) = infile[['matrix']][['barcodes']]$read()[infile[['droplet_latents']][['barcode_indices_for_latents']]$read()+1]
+    
+    training = data.frame(epoch=infile[['metadata']][['learning_curve_train_epoch']]$read(),
+                          test=NA,
+                          train=infile[['metadata']][['learning_curve_train_elbo']]$read())
+    
+    training$test[match(infile[['metadata']][['learning_curve_test_epoch']]$read(),training$epoch)] = infile[['metadata']][['learning_curve_test_elbo']]$read()
+    
+    z = sparseMatrix(i=infile[['matrix']][['indices']]$read()+1, p=infile[['matrix']][['indptr']]$read(),x = as.numeric(infile[['matrix']][['data']]$read()),dims=infile[['matrix']][['shape']]$read())
+    r$filtered.tUMI = setNames(colSums(z),infile[['matrix']][['barcodes']]$read())
+    r$training = training
+    # v0.3 has soup fraction here
+    r$soup.fraq = infile[['droplet_latents']][['background_fraction']]$read()
+    names(r$soup.fraq) = names(r$cell.probability)
+    # it is not fully correct due to rounding issues and specifically for the cells were soup fraction is 100%, but in this way we can gather all data from cellbender output and not depend on input matrix
+    r$raw.tUMI = round(r$filtered.tUMI[names(r$soup.fraq)]/(1-r$soup.fraq))
+  }
   infile$close_all()
-  r$training = training
   r
 }
 
@@ -219,6 +240,9 @@ myRead10X = function(f){
   m
 }
 
+#########################################
+# start processing ######################
+
 if(!dir.exists(opt$dir))
   stop('Folder "',opt$dir,'" does not exist.')
 
@@ -233,7 +257,7 @@ for(i in 1:length(sids)){
   if(opt$N != -1 & n == opt$N)
     break
   s = sids[i]
-  sample.rds = paste0(opt$rds,'/',s,opt$mode,'.rds')
+  sample.rds = paste0(opt$rds,'/',s,'.',opt$mode,'.rds')
   if(file.exists(sample.rds)){
     logs[[s]] = readRDS(sample.rds)
     if(opt$verbose)
@@ -287,11 +311,16 @@ for(i in 1:length(sids)){
     l$info$top10umi.min.cell.prob = min(l$cell.probability[1:10])
   }
   if(opt$mode>2){
-    r = myRead10X(l$info$input)
-    l$raw.tUMI = colSums(r)[names(l$filtered.tUMI)]
-    cbc = names(l$cell.probability)[l$cell.probability>0.5]
-    soup.fraq = (l$raw.tUMI-l$filtered.tUMI)/l$raw.tUMI
-    soup.fraq = soup.fraq[cbc]
+    if('soup.fraq' %in% names(h5)){ # for v0.3; soup fraction is in cellbender output so we do not need to read input file
+      l$raw.tUMI = h5$raw.tUMI
+      soup.fraq = h5$soup.fraq
+    }else{ # for v0.2
+      r = myRead10X(l$info$input)
+      l$raw.tUMI = colSums(r)[names(l$filtered.tUMI)]
+      cbc = names(l$cell.probability)[l$cell.probability>0.5]
+      soup.fraq = (l$raw.tUMI-l$filtered.tUMI)/l$raw.tUMI
+      soup.fraq = soup.fraq[cbc]
+    }
     l$info$mean.soup.fraq = mean(soup.fraq)
     l$info$median.soup.fraq = median(soup.fraq)
   }
@@ -351,4 +380,3 @@ if(opt$mode>2){
   }
   t=dev.off()
 }
-
