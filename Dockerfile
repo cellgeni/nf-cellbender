@@ -20,4 +20,9 @@ RUN wget https://github.com/broadinstitute/CellBender/archive/refs/tags/v${CELLB
     . ${VENV_PATH}/bin/activate && \
     pip install --editable .
 
+# Fix html report generation
+# https://github.com/broadinstitute/CellBender/issues/337
+RUN . ${VENV_PATH}/bin/activate && \
+    pip install -U lxml_html_clean
+
 COPY Dockerfile /docker/
