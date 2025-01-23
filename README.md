@@ -6,7 +6,7 @@ There are two branches:
 
 `main` - this branch contains the script for running cellbender on the FARM using Nextflow command line
 
-`nextflow-tower` - this branch conrains the script for running cellbender on the FARM using Nextflow Tower
+`nextflow-tower` - this branch contains the script for running cellbender on the FARM using Nextflow Tower
 
 
 ## Contents of Repo:
