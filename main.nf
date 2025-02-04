@@ -35,8 +35,7 @@ process get_data {
 
 
   output:
-  val(id), emit: id 
-  path('*'), emit: data
+  tuple val(id), path('*')
 
   shell:
   '''
@@ -56,8 +55,7 @@ process run_cellbender {
   publishDir "${params.outdir}", mode: 'copy'
 
   input:
-  val(id)
-  path(data)
+  tuple val(id), path(data)
 
   output:
   path(id)
@@ -95,9 +93,14 @@ workflow {
     exit 0
   }
   else {
-    //Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
-    ch_sample_list = params.SAMPLEFILE != null ? Channel.fromPath(params.SAMPLEFILE) : errorMessage()
-    ch_sample_list | flatMap{ it.readLines() } | map { it -> [ it.split()[0], it.split()[1] ] } | get_data
-    run_cellbender(get_data.out.id, get_data.out.data) | collect | cellbender_qc 
+    // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
+    sample_table = params.SAMPLEFILE != null ? Channel.fromPath(params.SAMPLEFILE) : errorMessage()
+    sample_list = sample_table.splitCsv(sep: '\t', strip: true)
+
+    // Get the data from the sample list
+    data = get_data(sample_list)
+
+    // Run cellbender
+    run_cellbender(data) | collect | cellbender_qc 
   }
 }
