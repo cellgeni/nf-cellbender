@@ -5,102 +5,123 @@ nextflow.enable.dsl=2
 def helpMessage() {
     log.info"""
     ===================
-    cellbender pipeline
+    Cellbender pipeline
     ===================
-    This pipeline runs Cellbender.
-    The only parameter you need to input is:
-      --SAMPLEFILE /full/path/to/sample/file
-    This file should contain a single sampleID per line. 
-    An example can be seen here: https://github.com/cellgeni/nf-cellbender/blob/main/examples/example.txt  
+    This pipeline runs Cellbender to eliminate technical artifacts from high-throughput single-cell omics data 
+    Usage: nextflow run main.nf [parameters]
+        Required parameters:
+            --sample_table <string>  Path to a .tsv file containing a list of sample IDs and paths to mappers result directory (see in example directory)
+            --mapper       <string> (either "cellranger" or "starsolo")
+            --solo_quant   <string> (only required if --mapper is "starsolo")
+        
+        Optional parameters:
+            --help         Display this help message
+            --on_irods     Set this flag if the data is on IRODS
+            --outdir       Output directory (default: cellbender-results)
+            --cells        Number of cells (default: "cellbender-default")
+            --droplets     Number of droplets (default: "cellbender-default")
+            --epochs       Number of epochs (default: "")
+            --fpr          False positive rate (default: "cellbender-default")
+            --lr           Learning rate (default: "cellbender-default")
+            --version      Cellbender version (default: 0.3)
+            --qc_mode      Quality control mode (default: 3)
     """.stripIndent()
 }
 
-def errorMessage() {
-    log.info"""
-    ================
-    cellbender error
-    ================
-    You failed to provide the SAMPLEFILE input parameter
-    Please provide these parameters as follows:
-      --SAMPLEFILE /full/path/to/sample/file
-    The pipeline has exited with error status 1.
-    """.stripIndent()
-    exit 1
+def missingParametersError() {
+    log.error "Missing input parameters"
+    helpMessage()
+    error "Please provide all required parameters"
 }
 
-process get_data {
-
+process LoadFromIrods {
+  tag "Getting the data for sample ${sample} from IRODS"
   input:
-  tuple val(id), val(data_path)
+  tuple val(sample), val(catalog_path)
 
 
   output:
-  tuple val(id), path('*')
+  tuple val(sample), path('*')
 
-  shell:
-  '''
-  if "!{params.on_irods}"; then
-    iget -f -v -K -r "!{data_path}" "input_data"
-  else
-    cp -r "!{data_path}" "input_data"
-  fi
-  if "!{params.is_h5}"; then
-    mv input_data input_data.h5
-  fi
-  '''
+  script:
+  """
+  iget -f -v -K -r "${catalog_path}" "input_data"
+  """
 }
 
-process run_cellbender {
-  
-  publishDir "${params.outdir}", mode: 'copy'
+process RemoveBackground {
+  tag "Running cellbender for sample ${sample}"
 
   input:
-  tuple val(id), path(data)
+  tuple val(sample), path(mapper_output)
+  val cells
+  val droplets
+  val epochs
+  val fpr
+  val lr
+  val versions
 
   output:
-  path(id)
+  path("${sample}")
   
-  shell:
-  '''
-  mkdir -p !{id} 
-  !{projectDir}/bin/cellbender.sh !{id} !{data} !{params.cells} !{params.droplets} !{params.epochs} !{params.fpr} !{params.learn}
-  '''
+  script:
+  """
+  cellbender.sh ${sample} ${mapper_output} ${cells} ${droplets} ${epochs} ${fpr} ${lr}
+  """
 }
 
-process cellbender_qc {
-  
-  publishDir "${params.outdir}", mode: 'copy'
-
+process QualityControl {
+  tag "Running quality control"
   input:
-  val(output_list) //this isn't used, just ensures QC is run after cellbender is finished for all samples
+  path(cellbender_output, stageAs: 'cellbender_output/*')
+  val(qc_mode)
 
   output:
-  path("qc_output")
+  path('qc_report')
 
-  shell:
-  '''
-  mkdir "qc_output"
-  Rscript !{projectDir}/bin/cellbender_qc.R \
-    "!{launchDir}/!{params.outdir}" \
-    -m !{params.qc_mode} \
-    -o "qc_output"
-  '''
+  script:
+  """
+  mkdir "qc_report"
+  cellbender_qc.R \
+    "cellbender_output" \
+    -m ${qc_mode} \
+    -o "qc_report"
+  """
 }
 
 workflow {
-  if (params.HELP) {
+  if (params.help) {
     helpMessage()
-    exit 0
   }
   else {
+    // Check that all required parameters are provided
+    if (params.sample_table == null || params.mapper == null || (params.mapper == "starsolo" && params.solo_quant == null)) {
+      missingParametersError()
+    }
     // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
-    sample_table = params.SAMPLEFILE != null ? Channel.fromPath(params.SAMPLEFILE) : errorMessage()
+    sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
     sample_list = sample_table.splitCsv(sep: '\t', strip: true)
+    sample_list.view()
 
-    // Get the data from the sample list
-    data = get_data(sample_list)
+    // Get the data from IRODS
+    if (params.on_irods) {
+      sample_list = LoadFromIrods(sample_list)
+    }
+    sample_list.view()
 
     // Run cellbender
-    run_cellbender(data) | collect | cellbender_qc 
+    // RemoveBackground(
+    //   sample_list,
+    //   cells: params.cells,
+    //   droplets: params.droplets,
+    //   epochs: params.epochs,
+    //   fpr: params.fpr,
+    //   lr: params.lr,
+    //   version: params.version
+    // )
+    // RemoveBackground.out.view()
+    
+    // Run QC
+    //cellbender_qc(cellbender_output)
   }
 }
