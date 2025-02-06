@@ -11,8 +11,8 @@ def helpMessage() {
     Usage: nextflow run main.nf [parameters]
         Required parameters:
             --sample_table <string>  Path to a .tsv file containing a list of sample IDs and paths to mappers result directory (see in example directory)
-            --mapper       <string> (either "cellranger" or "starsolo")
-            --solo_quant   <string> (only required if --mapper is "starsolo")
+            --mapper       <string>  Either "cellranger" or "starsolo"
+            --solo_quant   <string>  Either "Gene" or "GeneFull"(only required if --mapper is "starsolo")
         
         Optional parameters:
             --help         Display this help message
@@ -20,10 +20,11 @@ def helpMessage() {
             --outdir       Output directory (default: cellbender-results)
             --cells        Number of cells (default: "cellbender-default")
             --droplets     Number of droplets (default: "cellbender-default")
-            --epochs       Number of epochs (default: "")
+            --epochs       Number of epochs (default: "cellbender-default")
             --fpr          False positive rate (default: "cellbender-default")
             --lr           Learning rate (default: "cellbender-default")
-            --version      Cellbender version (default: 0.3)
+            --min_umi      Minimal UMI threshold (default: "cellbender-default") 
+            --version      Cellbender version (available: 0.2, 0.3; default: 0.3)
             --qc_mode      Quality control mode (default: 3)
     """.stripIndent()
 }
@@ -31,7 +32,7 @@ def helpMessage() {
 def missingParametersError() {
     log.error "Missing input parameters"
     helpMessage()
-    error "Please provide all required parameters"
+    error "Please provide all required parameters: --sample_table, --mapper and --solo_quant (only required if --mapper is \"starsolo\")"
 }
 
 process LoadFromIrods {
@@ -54,20 +55,34 @@ process RemoveBackground {
 
   input:
   tuple val(sample), path(mapper_output)
+  val mapper
+  val solo_quant
   val cells
   val droplets
   val epochs
   val fpr
   val lr
-  val versions
+  val min_umi
+  val version
 
   output:
   path("${sample}")
   
   script:
-  """
-  cellbender.sh ${sample} ${mapper_output} ${cells} ${droplets} ${epochs} ${fpr} ${lr}
-  """
+    """
+    cellbender.sh \
+      --sample ${sample} \
+      --mapper_output ${mapper_output} \
+      --mapper ${mapper} \
+      --solo_quant ${solo_quant} \
+      --cells ${cells} \
+      --droplets ${droplets} \
+      --min_umi ${min_umi} \
+      --epochs ${epochs} \
+      --fpr ${fpr} \
+      --learning_rate ${lr} \
+      --version ${version}
+    """
 }
 
 process QualityControl {
@@ -110,16 +125,20 @@ workflow {
     sample_list.view()
 
     // Run cellbender
-    // RemoveBackground(
-    //   sample_list,
-    //   cells: params.cells,
-    //   droplets: params.droplets,
-    //   epochs: params.epochs,
-    //   fpr: params.fpr,
-    //   lr: params.lr,
-    //   version: params.version
-    // )
-    // RemoveBackground.out.view()
+    RemoveBackground(
+      sample_list,
+      params.mapper,
+      params.solo_quant,
+      params.cells,
+      params.droplets,
+      params.epochs,
+      params.fpr,
+      params.lr,
+      params.min_umi,
+      params.version,
+    )
+    
+    RemoveBackground.out.view()
     
     // Run QC
     //cellbender_qc(cellbender_output)
