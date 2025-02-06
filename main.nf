@@ -110,7 +110,7 @@ workflow {
   }
   else {
     // Check that all required parameters are provided
-    if (params.sample_table == null || params.mapper == null || (params.mapper == "starsolo" && params.solo_quant == null)) {
+    if (params.sample_table == null || params.mapper == null || (params.mapper == "starsolo" && params.solo_quant == "")) {
       missingParametersError()
     }
     // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
