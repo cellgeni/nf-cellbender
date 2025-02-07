@@ -1,1 +1,0 @@
-HCA_GLNDrna13255572	/lustre/scratch127/cellgen/cellgeni/tickets/tic-sm42-cellbender-test/HCA_A_LNG12935772_matrix_input
