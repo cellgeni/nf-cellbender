@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -23,51 +23,98 @@ parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
     --sample)
-      sample=$2
+      sample="$2"
       shift 2
       ;;
     --mapper_output)
-      mapper_output=$2
+      mapper_output="$2"
       shift 2
       ;;
     --mapper)
-      mapper=${2:-""}
+      mapper="$2"
       shift 2
       ;;
     --solo_quant)
-      solo_quant=${2:-""}
-      shift 2
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        solo_quant="$2"
+        shift 2
+      else
+        solo_quant=""
+        shift 1
+      fi
       ;;
     --cells)
-      cells=${2:-""}
-      shift 2
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        cells="$2"
+        shift 2
+      else
+        cells=""
+        shift 1
+      fi
       ;;
     --droplets)
-      droplets=${2:-""}
-      shift 2
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        droplets="$2"
+        shift 2
+      else
+        droplets=""
+        shift 1
+      fi
       ;;
     --min_umi)
-      min_umi=${2:-""}
-      shift 2
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        min_umi="$2"
+        shift 2
+      else
+        min_umi=""
+        shift 1
+      fi
       ;;
     --epochs)
-      epochs=${2:-""}
-      shift 2
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        epochs="$2"
+        shift 2
+      else
+        epochs=""
+        shift 1
+      fi
       ;;
     --fpr)
-      fpr=${2:-""}
-      shift 2
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        fpr="$2"
+        shift 2
+      else
+        fpr=""
+        shift 1
+      fi
       ;;
     --learning_rate)
-      learning_rate=${2:-""}
-      shift 2
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        learning_rate="$2"
+        shift 2
+      else
+        learning_rate=""
+        shift 1
+      fi
       ;;
     --version)
-      version=$2
+      version="$2"
       shift 2
       ;;
-    -h | --help) usage ;;
-    *) usage ;;
+    -h | --help)
+      usage
+      ;;
+    *)
+      echo "Error: Invalid option $1" >&2
+      usage
+      ;;
     esac
   done
 
@@ -97,7 +144,7 @@ function preset_cells() {
 
   ## Calculate expected number of cells
   mapper_prediction=$(zcat "$filtered_matrix_dir/barcodes.tsv.gz" | wc -l)
-  cells_umi200=$(zcat "$raw_matrix_dir/matrix.mtx.gz" | awk -v threshold=200 -f count_cells.awk)
+  cells_umi200=$(zcat "$raw_matrix_dir/matrix.mtx.gz" | count_cells.awk -v threshold=200)
 
   ## Return the minimum of the two values
   echo $((mapper_prediction < cells_umi200 ? mapper_prediction : cells_umi200))
@@ -133,8 +180,8 @@ function preset_umi_threshold() {
   fi
 
   ## Calculate UMI number for the 20000th cell and count cells with UMI > 10
-  umi_rank20000=$(zcat "$raw_matrix_dir/matrix.mtx.gz" | awk -v target_cell=20000 -v preset_value=10 -f sort_cells.awk)
-  cells_umi10=$(zcat "$raw_matrix_dir/matrix.mtx.gz" | awk -v threshold=10 -f count_cells.awk)
+  umi_rank20000=$(zcat "$raw_matrix_dir/matrix.mtx.gz" | sort_cells.awk -v target_cell=20000 -v preset_value=10)
+  cells_umi10=$(zcat "$raw_matrix_dir/matrix.mtx.gz" | count_cells.awk -v threshold=10)
 
   ## Use the maximum of `umi_rank20000` or `10`
   if ((cells_umi10 < expected_total_barcodes + 20000)); then
@@ -149,8 +196,8 @@ function main() {
   parse_args "$@"
 
   ## Get a path to the directory containing raw and filltered .mtx file
-  raw_matrix_dir=$(find "$mapper_output" -type d -wholename "*${solo_quant}/raw*" -print -quit)
-  filtered_matrix_dir=$(find "$mapper_output" -type d -wholename "*${solo_quant}/filtered*" -print -quit)
+  raw_matrix_dir=$(find "$mapper_output/" -type d -wholename "*${solo_quant}/raw*" -print -quit)
+  filtered_matrix_dir=$(find "$mapper_output/" -type d -wholename "*${solo_quant}/filtered*" -print -quit)
 
   ## Ensure directories exist
   if [[ -z "$raw_matrix_dir" || -z "$filtered_matrix_dir" ]]; then
@@ -185,8 +232,13 @@ function main() {
   [ -n "$fpr" ] && args+=(--fpr "$fpr")
   [ -n "$learning_rate" ] && args+=(--learning-rate "$learning_rate")
 
-  echo "cellbender remove-background --input ${raw_matrix_dir} --output ${sample}/cellbender_out.h5 --cuda" "${args[@]}" >"${sample}/cmd.txt"
+  ## Create a directory for each sample
   mkdir -p "${sample}"
+
+  ## Write the command to a file
+  echo "cellbender remove-background --input ${raw_matrix_dir} --output ${sample}/cellbender_out.h5 --cuda" "${args[@]}" >"${sample}/cmd.txt"
+
+  ## Run the command
   cellbender remove-background \
     --input "${raw_matrix_dir}" \
     --output "${sample}/cellbender_out.h5" \
