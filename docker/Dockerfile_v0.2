@@ -20,7 +20,7 @@ RUN git clone --depth 1 --branch v0.2.2 https://github.com/broadinstitute/CellBe
 
 # Install OS packages for QC script
 RUN apt-get update && apt-get install -y liblzma-dev libbz2-dev zlib1g libpng-dev libxml2-dev \
-    gfortran libglpk-dev libhdf5-dev libcurl4-openssl-dev img2pdf wget libreadline8
+    gfortran libglpk-dev libhdf5-dev libcurl4-openssl-dev img2pdf wget libreadline8 gawk
 
 # Install R for QC script
 ARG R_VERSION=4.3.1
