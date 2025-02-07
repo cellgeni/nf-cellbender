@@ -54,7 +54,7 @@ process RemoveBackground {
   tag "Running cellbender for sample ${sample}"
 
   input:
-  tuple val(sample), path(mapper_output)
+  tuple val(sample), path(mapper_output, stageAs: 'mapper_output')
   val mapper
   val solo_quant
   val cells
@@ -137,10 +137,10 @@ workflow {
       params.min_umi,
       params.version,
     )
-    
-    RemoveBackground.out.view()
+    cellbender_output = RemoveBackground.out.collect()
+    cellbender_output.view()
     
     // Run QC
-    //cellbender_qc(cellbender_output)
+    QualityControl(cellbender_output, params.qc_mode)
   }
 }
