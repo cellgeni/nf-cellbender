@@ -8,7 +8,8 @@ sample_table=examples/sample_table.tsv
 
 nextflow run main.nf \
   --sample_table $sample_table \
-  --mapper starsolo \
-  --solo_quant GeneFull \
-  --version 0.3 \
+  --mapper cellranger \
+  --exclude_features All \
+  --version 0.2 \
+  --fpr 0.01 \
   -resume

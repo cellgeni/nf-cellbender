@@ -12,6 +12,7 @@ usage() {
 parse_args() {
   ## Initialize optional inputs with default values
   solo_quant=""
+  exclude_features=""
   cells=""
   droplets=""
   min_umi=""
@@ -41,6 +42,16 @@ parse_args() {
         shift 2
       else
         solo_quant=""
+        shift 1
+      fi
+      ;;
+    --exclude_features)
+      # optional
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        exclude_features="$2"
+        shift 2
+      else
+        exclude_features=""
         shift 1
       fi
       ;;
@@ -194,7 +205,6 @@ function preset_umi_threshold() {
 function main() {
 
   parse_args "$@"
-
   ## Get a path to the directory containing raw and filltered .mtx file
   raw_matrix_dir=$(find "$mapper_output/" -type d -wholename "*${solo_quant}/raw*" -print -quit)
   filtered_matrix_dir=$(find "$mapper_output/" -type d -wholename "*${solo_quant}/filtered*" -print -quit)
@@ -204,6 +214,9 @@ function main() {
     echo "Error: Could not locate required matrix directories" >&2
     exit 1
   fi
+
+  ## Create argument inpul string for the script
+  args=() # using array ensures proper handling of arguments
 
   ## Check if the version is supported
   if [[ $version == "0.2" ]]; then
@@ -216,15 +229,23 @@ function main() {
     [ -z "$cells" ] && cells="$expected_cells"
     [ -z "$droplets" ] && droplets="$expected_total_barcodes"
     [ -z "$min_umi" ] && min_umi=$(preset_umi_threshold "$raw_matrix_dir" "$expected_total_barcodes")
+
+    ## Set exclude_features_option
+    [ -n "$exclude_features" ] && args+=(--exclude-antibody-capture)
+    if [[ -n $exclude_features && ! $exclude_features == "All" ]]; then
+      echo "Error: Only All is supported for exclude_features in version 0.3" >&2
+      exit 1
+    fi
   elif [[ $version == "0.3" ]]; then
     echo "Running cellbender version 0.3"
+    ## Set exclude_features_option
+    [ -n "$exclude_features" ] && args+=(--exclude-feature-types "$exclude_features")
   else
     echo "Version not supported"
     exit 1
   fi
 
-  ## Create argument inpul string for the script
-  args=() # using array ensures proper handling of arguments
+  ## Add arguments to the array
   [ -n "$cells" ] && args+=(--expected-cells "$cells")
   [ -n "$droplets" ] && args+=(--total-droplets-included "$droplets")
   [ -n "$min_umi" ] && args+=(--low-count-threshold "$min_umi")

@@ -57,6 +57,7 @@ process RemoveBackground {
   tuple val(sample), path(mapper_output, stageAs: 'mapper_output')
   val mapper
   val solo_quant
+  val exclude_features
   val cells
   val droplets
   val epochs
@@ -75,6 +76,7 @@ process RemoveBackground {
       --mapper_output ${mapper_output} \
       --mapper ${mapper} \
       --solo_quant ${solo_quant} \
+      --exclude_features ${exclude_features} \
       --cells ${cells} \
       --droplets ${droplets} \
       --min_umi ${min_umi} \
@@ -116,19 +118,18 @@ workflow {
     // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
     sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
     sample_list = sample_table.splitCsv(sep: '\t', strip: true)
-    sample_list.view()
 
     // Get the data from IRODS
     if (params.on_irods) {
       sample_list = LoadFromIrods(sample_list)
     }
-    sample_list.view()
 
     // Run cellbender
     RemoveBackground(
       sample_list,
       params.mapper,
       params.solo_quant,
+      params.exclude_features,
       params.cells,
       params.droplets,
       params.epochs,
@@ -138,7 +139,6 @@ workflow {
       params.version,
     )
     cellbender_output = RemoveBackground.out.collect()
-    cellbender_output.view()
     
     // Run QC
     QualityControl(cellbender_output, params.qc_mode)
