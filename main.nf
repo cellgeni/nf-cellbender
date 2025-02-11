@@ -15,17 +15,33 @@ def helpMessage() {
             --solo_quant   <string>  Either "Gene" or "GeneFull"(only required if --mapper is "starsolo")
         
         Optional parameters:
-            --help         Display this help message
-            --on_irods     Set this flag if the data is on IRODS
-            --outdir       Output directory (default: cellbender-results)
-            --cells        Number of cells (default: "cellbender-default")
-            --droplets     Number of droplets (default: "cellbender-default")
-            --epochs       Number of epochs (default: "cellbender-default")
-            --fpr          False positive rate (default: "cellbender-default")
-            --lr           Learning rate (default: "cellbender-default")
-            --min_umi      Minimal UMI threshold (default: "cellbender-default") 
-            --version      Cellbender version (available: 0.2, 0.3; default: 0.3)
-            --qc_mode      Quality control mode (default: 3)
+            --help              Display this help message
+            --on_irods          Set this flag if the data is on IRODS
+            --exclude_features  Specify a list of features to exclude. The most popular one include: Antibody Capture, VDJ, Peaks, etc. 
+                                For cellbender 0.2 only "All" (not available for version 0.3) is available. See README.md for more info. (default: "")
+            --outdir            Output directory (default: cellbender-results)
+            --cells             Number of cells (default: "cellbender-default")
+            --droplets          Number of droplets (default: "cellbender-default")
+            --epochs            Number of epochs (default: "cellbender-default")
+            --fpr               False positive rate (default: "cellbender-default")
+            --lr                Learning rate (default: "cellbender-default")
+            --min_umi           Minimal UMI threshold (default: "cellbender-default") 
+            --version           Cellbender version (available: 0.2, 0.3; default: 0.3)
+            --qc_mode           Quality control mode (default: 3)
+        
+
+        Examples:
+        1. Run version 0.2 for cellranger output without any parameters specified:
+            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper cellranger --version 0.2
+
+        2. Run version 0.3 for starsolo output without any parameters specified, when data is on IRODS:
+            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper starsolo --solo_quant GeneFull --version 0.3 --on_irods
+        
+        3. Specify some parameters as well as exclude features for version 0.2 (only "All" is available for version 0.2):
+            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper cellranger --version 0.2 --cells 5000 --exclude_features All
+        
+        4. Specify some parameters as well as exclude some features for version 0.3 ("All" is not available for version 0.3):
+            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper cellranger --version 0.3 --cells 5000 --exclude_features "Antibody Capture"
     """.stripIndent()
 }
 
@@ -76,7 +92,7 @@ process RemoveBackground {
       --mapper_output ${mapper_output} \
       --mapper ${mapper} \
       --solo_quant ${solo_quant} \
-      --exclude_features ${exclude_features} \
+      --exclude_features "${exclude_features}" \
       --cells ${cells} \
       --droplets ${droplets} \
       --min_umi ${min_umi} \
