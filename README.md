@@ -4,26 +4,56 @@ Our [cellbender repo](https://github.com/cellgeni/cellbender) but implemented in
 
 There are two branches:
 
-`main` - this branch contains the script for running cellbender on the FARM using Nextflow command line
+`main` — this branch contains the script for running cellbender on the FARM using Nextflow command line
 
-`nextflow-tower` - this branch contains the script for running cellbender on the FARM using Nextflow Tower
+`nextflow-tower` — this branch contains the script for running cellbender on the FARM using Nextflow Tower
 
 
 ## Contents of Repo:
-* `main.nf` - the Nextflow pipeline that executes cellbender.
-* `nextflow.config` - the configuration script that allows the processes to be submitted to IBM LSF on Sanger's HPC and ensures correct environment is set via singularity container (this is an absolute path). Global default parameters are also set in this file.
-* `examples/samples_h5.txt` - samplefile tsv containing 2 fields: sampleID, path to h5 file (The order of these files is important!). These paths can be IRODs paths or local paths.
-* `examples/samples_matrix.txt` - samplefile tsv containing 2 fields: sampleID, path to aligner output directory (The order of these files is important!). These paths can be IRODs paths or local paths.
-* `examples/RESUME-cellbender` - an example run script that executes the pipeline it has  hardcoded argument: `/path/to/sample/file` that needs to be changed based on your local set up.
-* `bin/cellbender_qc.R` - a qc script that enables sanity checks that cellbender worked correctly.
+* `main.nf`  the Nextflow pipeline that executes cellbender.
+* `nextflow.config` — the configuration script that allows the processes to be submitted to IBM LSF on Sanger's HPC and ensures correct environment is set via singularity container (this is an absolute path). Global default parameters are also set in this file.
+* `examples/sample_table.tsv` — an example of `.tsv` file containing path to `cellranger` output directory for each specified sample
+* `examples/sample_table_irods.tsv` — an example of `.tsv` file containing `IRODS` path to `starsolo` output directory for each specified sample
+* `examples/run_cellranger_local_v2.sh` — an example run script that executes the pipeline with `--mapper cellranger` and `--version 0.2` options.
+* `examples/run_starsolo_irods_v3.sh` — an example run script that executes the pipeline with `--mapper starsolo` and `--version 0.3` options.
+* `docker/Dockerfile_v2` — a `Dockerfile` with image for `cellbender` of version `0.2.2`
+* `docker/Dockerfile_v3` — a `Dockerfile` with image for `cellbender` of version `0.3.2` 
 
-## Pipeline Arguments:
-* `--SAMPLEFILE` - The path to the sample file provided to the pipeline. This is a tab-separated file with one sample per line. Each line should contain a sample id, path to h5 file or matrix folder, path to barcodes file (in that order!).
-* `--outdir` - The path to where the results will be saved.
-* `--on_irods` - Tells pipeline whether to look for the input data on IRODS or the FARM (default false means look locally).
-* `--qc_mode` - Tells pipeline which level of QC to complete, 1 is the quickets but least depth, 3 is the slowest but most depth. 
-* `--cells` - The number of cells expected a priori from the experimental design (for v0.3.0 cellbender calculates this).
-* `--droplets` - Number of total droplets (for v0.3.0 cellbender calculates this). Select a number that goes a few thousand barcodes into the “empty droplet plateau”. Include some droplets that you think are surely empty. But be aware that the larger this number, the longer the algorithm takes to run (linear).
-* `--epochs` - Number of epochs to train, going above 300 will lead to overfitting.
-* `--fpr` - Target false positive rate in (0, 1). A false positive is a true signal count that is erroneously removed. More background removal is accompanied by more signal removal at high values of FPR.
-* `--learn` - Training detail: lower learning rate for inference. A OneCycle learning rate schedule is used, where the upper learning rate is ten times this value. (For this value, probably do not exceed 1e-3).
+## Pipeline Parameters:
+### Required parameters:
+* `--sample_table` — Path to a .tsv file containing a list of sample IDs and paths to mappers result directory (see in example directory)
+* `--mapper` — A mapper that was used to generate files (either `cellranger` or `starsolo`)
+* `--solo_quant` — Quantification option for `starsolo` mapper (either `Gene` or `GeneFull`). only required if --mapper is `starsolo`
+
+### Optional parameters:
+* `--help` — Display this help message
+* `--on_irods` — Set this flag if the data is on IRODS
+* `--exclude_features` — Specify a list of features to exclude. Available options include:
+  *  `"Antibody Capture"` — only available for `--version 0.3` of `cellbender`
+  *  `"CRISPR Guide Capture"` — only available for `--version 0.3` of `cellbender`
+  *  `"Custom"` — only available for `--version 0.3` of `cellbender`
+  *  `"Peaks"` — only available for `--version 0.3` of `cellbender`
+  *  `"Multiplexing Capture"` — only available for `--version 0.3` of `cellbender`
+  *  `"VDJ"` — only available for `--version 0.3` of `cellbender`
+  *  `"VDJ-T"` — only available for `--version 0.3` of `cellbender`
+  *  `"VDJ-T-GD"` — only available for `--version 0.3` of `cellbender`
+  *  `"VDJ-B"` — only available for `--version 0.3` of `cellbender`
+  *  `"Antigen Capture"` — only available for `--version 0.3` of `cellbender`
+  *  **`"All"` — only available for `--version 0.2` of `cellbender`**
+* `--outdir` — Output directory (`default: cellbender-results`)
+* `--cells` — Number of cells (`default: "cellbender-default"`)
+* `--droplets` — Number of droplets (`default: "cellbender-default"`)
+* `--epochs` — Number of epochs (default: "cellbender-default")
+* `--fpr` — False positive rate (`default: "cellbender-default"`)
+* `--lr` — Learning rate (default: "cellbender-default")
+* `--min_umi` — Minimal UMI threshold (default: "cellbender-default") 
+* `--version` — Cellbender version (available: `0.2`, `0.3`; `default: 0.3`)
+* `--qc_mode` — Quality control mode (`default: 3`)
+
+## Docker Image
+The image is based on
+```Dockerfile
+FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+```
+
+and includes installations of `cellbender` and `R-4.4.2`. The up to date image can be loaded from `quay` [repository](https://quay.io/repository/cellgeni/cellbender?tab=logs)

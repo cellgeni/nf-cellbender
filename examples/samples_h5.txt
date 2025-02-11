@@ -1,2 +1,0 @@
-HCA_A_LNG11599017_and_HCA_A_LNG11986504	/seq/illumina/cellranger-arc/cellranger-arc201_count_308b45a587ebfa6f443e3bb754bb625f/raw_feature_bc_matrix.h5
-HCA_A_LNG12177503_and_HCA_A_LNG11986505	/seq/illumina/cellranger-arc/cellranger-arc201_count_aa07d3102ccae90a449dca434e47b104/raw_feature_bc_matrix.h5
