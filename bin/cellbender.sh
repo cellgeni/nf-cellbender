@@ -123,8 +123,13 @@ parse_args() {
       usage
       ;;
     *)
-      echo "Error: Invalid option $1" >&2
-      usage
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        echo "Error: Empty space is recognised as an option to the script" >&2
+        shift 1
+      else
+        echo "Error: Invalid option $1" >&2
+        usage
+      fi
       ;;
     esac
   done
