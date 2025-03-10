@@ -123,7 +123,7 @@ parse_args() {
       usage
       ;;
     *)
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
+      if [[ -z "${2:-}" && "$2" != --* ]]; then
         echo "Error: Empty space is recognised as an option to the script" >&2
         shift 1
       else
