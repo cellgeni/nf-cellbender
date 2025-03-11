@@ -24,95 +24,147 @@ parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
     --sample)
+      if [[ "${2:-}" =~ ^- ]] || [[ -z "${2:-}" ]]; then
+        echo "Error: --sample requires a non-empty argument" >&2
+        usage
+      fi
       sample="$2"
       shift 2
       ;;
     --mapper_output)
+      if [[ "${2:-}" =~ ^- ]] || [[ -z "${2:-}" ]]; then
+        echo "Error: --mapper_output requires a non-empty argument" >&2
+        usage
+      fi
       mapper_output="$2"
       shift 2
       ;;
     --mapper)
+      if [[ "${2:-}" =~ ^- ]] || [[ -z "${2:-}" ]]; then
+        echo "Error: --mapper requires a non-empty argument" >&2
+        usage
+      fi
       mapper="$2"
       shift 2
       ;;
     --solo_quant)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        solo_quant="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: solo_quant is empty" >&2
+        solo_quant=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: solo_quant is empty, next one is a new option $2" >&2
         solo_quant=""
         shift 1
+      else
+        echo "Debug: solo_quant is not empty: $2" >&2
+        solo_quant="$2"
+        shift 2
       fi
       ;;
     --exclude_features)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        exclude_features="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: exclude_features is empty" >&2
+        exclude_features=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: exclude_features is empty, next one is a new option $2" >&2
         exclude_features=""
         shift 1
+      else
+        echo "Debug: exclude_features is not empty: $2" >&2
+        exclude_features="$2"
+        shift 2
       fi
       ;;
     --cells)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        cells="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: cells is empty" >&2
+        cells=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: cells is empty, next one is a new option $2" >&2
         cells=""
         shift 1
+      else
+        echo "Debug: cells is not empty: $2" >&2
+        cells="$2"
+        shift 2
       fi
       ;;
     --droplets)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        droplets="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: droplets is empty" >&2
+        droplets=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: droplets is empty, next one is a new option $2" >&2
         droplets=""
         shift 1
+      else
+        echo "Debug: droplets is not empty: $2" >&2
+        droplets="$2"
+        shift 2
       fi
       ;;
     --min_umi)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        min_umi="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: min_umi is empty" >&2
+        min_umi=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: min_umi is empty, next one is a new option $2" >&2
         min_umi=""
         shift 1
+      else
+        echo "Debug: min_umi is not empty: $2" >&2
+        min_umi="$2"
+        shift 2
       fi
       ;;
     --epochs)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        epochs="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: epochs is empty" >&2
+        epochs=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: epochs is empty, next one is a new option $2" >&2
         epochs=""
         shift 1
+      else
+        echo "Debug: epochs is not empty: $2" >&2
+        epochs="$2"
+        shift 2
       fi
       ;;
     --fpr)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        fpr="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: fpr is empty" >&2
+        fpr=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: fpr is empty, next one is a new option $2" >&2
         fpr=""
         shift 1
+      else
+        echo "Debug: fpr is not empty: $2" >&2
+        fpr="$2"
+        shift 2
       fi
       ;;
     --learning_rate)
-      # optional
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        learning_rate="$2"
+      if [[ -z "${2:-}" ]]; then
+        echo "Debug: learning_rate is empty" >&2
+        learning_rate=""
         shift 2
-      else
+      elif [[ "${2:-}" =~ ^- ]]; then
+        echo "Debug: learning_rate is empty, next one is a new option $2" >&2
         learning_rate=""
         shift 1
+      else
+        echo "Debug: learning_rate is not empty: $2" >&2
+        learning_rate="$2"
+        shift 2
       fi
       ;;
     --version)
@@ -123,13 +175,8 @@ parse_args() {
       usage
       ;;
     *)
-      if [[ -z "${2:-}" && "$2" != --* ]]; then
-        echo "Error: Empty space is recognised as an option to the script" >&2
-        shift 1
-      else
-        echo "Error: Invalid option $1" >&2
-        usage
-      fi
+      echo "Error: Invalid option $1" >&2
+      usage
       ;;
     esac
   done
