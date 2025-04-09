@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -euo pipefail
+
+samplefile=actions/samples.txt
+
+[[ -e "$samplefile" ]] || (echo "File "$samplefile" not found" && false)
+
+nextflow run -r 23-314 cellgeni/nf-cellbender \
+  --SAMPLEFILE $samplefile \
+  --ansi-log false \
+  -resume
