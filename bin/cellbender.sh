@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 ## Function to display usage
 usage() {
   echo "Usage: $0 --sample sample_id --mapper mapper --mapper_output mapper_output --version version [--cells cells] [--droplets droplets] [--epochs epochs] [--fpr fpr] [--learning_rate learning_rate]"
@@ -193,6 +191,28 @@ parse_args() {
   fi
 }
 
+function find_mtx_directory() {
+  local mapper_output=$1
+  local solo_quant=${2:-}
+  local prefix=$3
+
+  ## Enable extended globbing
+  echo "mapper=$mapper_output"
+  echo "solo_quant=$solo_quant"
+  echo "prefix=$prefix"
+
+  ## Find the matrix directory
+  matrix_dir=$(find "$mapper_output/" -type d -regextype posix-extended -regex ".*${solo_quant}/(sample_)?${prefix}.*" -print -quit)
+
+  ## Ensure directory exists
+  if [[ -z "$matrix_dir" ]]; then
+    echo "Error: Could not locate \"${prefix}\" matrix directory" >&2
+    exit 1
+  fi
+
+  echo "$matrix_dir"
+}
+
 function preset_cells() {
   local raw_matrix_dir=$1
   local filtered_matrix_dir=$2
@@ -258,8 +278,8 @@ function main() {
 
   parse_args "$@"
   ## Get a path to the directory containing raw and filltered .mtx file
-  raw_matrix_dir=$(find "$mapper_output/" -type d -wholename "*${solo_quant}/raw*" -print -quit)
-  filtered_matrix_dir=$(find "$mapper_output/" -type d -wholename "*${solo_quant}/filtered*" -print -quit)
+  raw_matrix_dir=$(find_mtx_directory "$mapper_output" "$solo_quant" "raw")
+  filtered_matrix_dir=$(find_mtx_directory "$mapper_output" "$solo_quant" "filtered")
 
   ## Ensure directories exist
   if [[ -z "$raw_matrix_dir" || -z "$filtered_matrix_dir" ]]; then
@@ -319,4 +339,10 @@ function main() {
     "${args[@]}"
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  # Enable strict error handling
+  set -euo pipefail
+
+  # Run the script
+  main "$@"
+fi
