@@ -196,11 +196,6 @@ function find_mtx_directory() {
   local solo_quant=${2:-}
   local prefix=$3
 
-  ## Enable extended globbing
-  echo "mapper=$mapper_output"
-  echo "solo_quant=$solo_quant"
-  echo "prefix=$prefix"
-
   ## Find the matrix directory
   matrix_dir=$(find "$mapper_output/" -type d -regextype posix-extended -regex ".*${solo_quant}/(sample_)?${prefix}.*" -print -quit)
 
@@ -220,8 +215,13 @@ function preset_cells() {
   local cells_umi200
 
   ## Ensure input files exist
-  if [[ ! -f "$filtered_matrix_dir/barcodes.tsv.gz" || ! -f "$raw_matrix_dir/matrix.mtx.gz" ]]; then
-    echo "Error: Required matrix files are missing" >&2
+  if [[ ! -f "$filtered_matrix_dir/barcodes.tsv.gz" ]]; then
+    echo "Error: barcodes.tsv.gz file is missing in $filtered_matrix_dir" >&2
+    exit 1
+  fi
+
+  if [[ ! -f "$raw_matrix_dir/matrix.mtx.gz" ]]; then
+    echo "Error: matrix.mtx.gz is missing in $raw_matrix_dir" >&2
     exit 1
   fi
 
