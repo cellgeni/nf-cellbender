@@ -40,7 +40,7 @@ There are two branches:
   *  `"VDJ-B"` — only available for `--version 0.3` of `cellbender`
   *  `"Antigen Capture"` — only available for `--version 0.3` of `cellbender`
   *  **`"All"` — only available for `--version 0.2` of `cellbender`**
-* `--outdir` — Output directory (`default: cellbender-results`)
+* `--output_dir` — Output directory (`default: cellbender-results`)
 * `--cells` — Number of cells (`default: "cellbender-default"`)
 * `--droplets` — Number of droplets (`default: "cellbender-default"`)
 * `--epochs` — Number of epochs (default: "cellbender-default")
