@@ -6,7 +6,6 @@ shopt -s extglob
 # Variables
 cellbender_input=""
 starsolo_default_mapper="GeneFull"
-args="${task.ext.args ? $args : ''}"
 
 ### Figure out the input structure. See a diagram explaining the steps here: FUTURE LINK
 # Check if input is a directory
@@ -22,17 +21,17 @@ if [[ -d "$input" ]]; then
         elif [[ -f "$input/outs/filtered_peak_bc_matrix.h5" ]]; then
             echo "INFO: $input directory contains cellranger-atac output structure"
             mapper="cellranger-atac"
-            cellbender_input="$input/outs/filtered_peak_bc_matrix.h5"
+            cellbender_input="$input/outs/raw_peak_bc_matrix.h5"
         # Check if it's output from cellranger-arc
         elif [[ -f "$input/outs/atac_fragments.tsv.gz" && -f "$input/outs/filtered_feature_bc_matrix.h5" ]]; then
             echo "INFO: $input directory contains cellranger-arc output structure"
             mapper="cellranger-arc"
-            cellbender_input="$input/outs/filtered_feature_bc_matrix.h5"
+            cellbender_input="$input/outs/raw_feature_bc_matrix.h5"
         # Check if it's output from cellranger count
         elif [[ -f "$input/outs/filtered_feature_bc_matrix.h5" && -f "$input/outs/raw_feature_bc_matrix.h5" ]]; then
             echo "INFO: $input directory contains cellranger count output structure"
             mapper="cellranger_count"
-            cellbender_input="$input/outs/filtered_feature_bc_matrix.h5"
+            cellbender_input="$input/outs/raw_feature_bc_matrix.h5"
         else
             echo "Error: Input directory does not contain expected cellranger output structure. Check manual for more information" >&2
             exit 1
@@ -62,7 +61,7 @@ else
 fi
 
 ### Create output directory
-mkdir -p "$meta.id"
+mkdir -p "${meta.id}"
 
 ### Save file version information
 cat <<-END_VERSIONS > versions.yml
@@ -73,9 +72,10 @@ END_VERSIONS
 ### Run CellBender
 
 echo "INFO: Running CellBender remove-background with input: \$cellbender_input"
-echo "INFO: Using the following arguments: \${args:-None}"
+echo "INFO: Using the following arguments: ${task.ext.args ?: ''}"
 
 cellbender remove-background \
-    \$args \
+    ${task.ext.args ?: ''} \
     --input \$cellbender_input \
-    --output "$meta.id"
+    --output "${meta.id}/cellbender" \
+    --cuda
