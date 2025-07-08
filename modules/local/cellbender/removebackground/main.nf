@@ -7,12 +7,11 @@ process CELLBENDER_REMOVEBACKGROUND {
         'quay.io/cellgeni/cellbender:0.3' }"
 
     input:
-    tuple val(meta), path(input)
+    tuple val(meta), path(input, stageAs: 'input/*')
 
     output:
-    tuple val(meta), path("${meta.id}"),      emit: outputdir
-    tuple val(meta), path("${meta.id}/*.h5"), emit: h5
-    path "versions.yml",                      emit: versions
+    tuple val(meta), path("${meta.id}"),            emit: outputdir
+    path "versions.yml",                            emit: versions
 
     script:
     template 'remove_background.sh'
