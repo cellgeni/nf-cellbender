@@ -1,6 +1,5 @@
-#!/usr/bin/env nextflow
-
-nextflow.enable.dsl=2
+// Imports
+include { CELLBENDER_REMOVEBACKGROUND } from './modules/local/cellbender/removebackground'
 
 def helpMessage() {
     log.info"""
@@ -106,19 +105,25 @@ process RemoveBackground {
 process QualityControl {
   tag "Running quality control"
   input:
-  path(cellbender_output, stageAs: 'cellbender_output/*')
-  val(qc_mode)
+  tuple val(meta), path(cellbender_output, stageAs: 'cellbender_output/*')
 
   output:
-  path('qc_report')
+  path 'qc_report',    emit: report
+  path "versions.yml", emit: versions
 
   script:
   """
   mkdir "qc_report"
   cellbender_qc.R \
-    "cellbender_output" \
-    -m ${qc_mode} \
+    cellbender_output \
+    -m ${task.ext.qc_mode} \
     -o "qc_report"
+  
+  cat <<-END_VERSIONS > versions.yml
+  "${task.process}":
+      R: \$(Rscript --version | head -n 1)
+      Matrix: \$(Rscript -e "packageVersion('Matrix')")
+  END_VERSIONS
   """
 }
 
@@ -126,37 +131,46 @@ workflow {
   if (params.help) {
     helpMessage()
   }
-  else {
-    // Check that all required parameters are provided
-    if (params.sample_table == null || params.mapper == null || (params.mapper == "starsolo" && params.solo_quant == "")) {
-      missingParametersError()
-    }
-    // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
-    sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
-    sample_list = sample_table.splitCsv(sep: '\t', strip: true)
+  sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
+  files = sample_table.splitCsv(sep: ',', header: true).map { row -> [row, row["path"]]}
+  CELLBENDER_REMOVEBACKGROUND(files)
 
-    // Get the data from IRODS
-    if (params.on_irods) {
-      sample_list = LoadFromIrods(sample_list)
-    }
+  cellbender_output = CELLBENDER_REMOVEBACKGROUND.out.outputdir.collect(flat: false).transpose().toList()
+  cellbender_output.view()
 
-    // Run cellbender
-    RemoveBackground(
-      sample_list,
-      params.mapper,
-      params.solo_quant,
-      params.exclude_features,
-      params.cells,
-      params.droplets,
-      params.epochs,
-      params.fpr,
-      params.lr,
-      params.min_umi,
-      params.version,
-    )
-    cellbender_output = RemoveBackground.out.collect()
+  QualityControl(cellbender_output)
+
+  // else {
+  //   // Check that all required parameters are provided
+  //   if (params.sample_table == null || params.mapper == null || (params.mapper == "starsolo" && params.solo_quant == "")) {
+  //     missingParametersError()
+  //   }
+  //   // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
+  //   sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
+  //   sample_list = sample_table.splitCsv(sep: '\t', strip: true)
+
+  //   // Get the data from IRODS
+  //   if (params.on_irods) {
+  //     sample_list = LoadFromIrods(sample_list)
+  //   }
+
+  //   // Run cellbender
+  //   RemoveBackground(
+  //     sample_list,
+  //     params.mapper,
+  //     params.solo_quant,
+  //     params.exclude_features,
+  //     params.cells,
+  //     params.droplets,
+  //     params.epochs,
+  //     params.fpr,
+  //     params.lr,
+  //     params.min_umi,
+  //     params.version,
+  //   )
+  //   cellbender_output = RemoveBackground.out.collect()
     
-    // Run QC
-    QualityControl(cellbender_output, params.qc_mode)
-  }
+  //   // Run QC
+  //   QualityControl(cellbender_output, params.qc_mode)
+  //}
 }
