@@ -11,12 +11,12 @@ starsolo_default_mapper="GeneFull"
 # Check if input is a directory
 if [[ -d "$input" ]]; then
     # Check if it's cellranger output directory
-    if [[ -d "$input/outs" || -d "$input/multi" ]]; then
+    if [[ -d "$input/outs" ]]; then
         # Check if it's output from cellranger multi
-        if [[ -d "$input/multi" ]]; then
+        if [[ -d "$input/outs/multi" ]]; then
             echo "INFO: $input directory contains cellranger multi output structure"
             mapper="cellranger_multi"
-            cellbender_input="$input/multi/count/raw_feature_bc_matrix.h5"
+            cellbender_input="$input/outs/multi/count/raw_feature_bc_matrix.h5"
         # Check if it's output from cellranger-atac
         elif [[ -f "$input/outs/filtered_peak_bc_matrix.h5" ]]; then
             echo "INFO: $input directory contains cellranger-atac output structure"
