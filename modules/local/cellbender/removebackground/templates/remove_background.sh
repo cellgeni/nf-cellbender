@@ -8,34 +8,34 @@ cellbender_input=""
 starsolo_default_mapper="GeneFull"
 
 ### Figure out the input structure. See a diagram explaining the steps here: FUTURE LINK
+# Check if exists cellranger's input/outs directory
+input="$input"
+if [[ -d "\$input/outs" ]]; then
+    input="\$input/outs"
+fi
+
 # Check if input is a directory
-if [[ -d "$input" ]]; then
-    # Check if it's cellranger output directory
-    if [[ -d "$input/outs" ]]; then
-        # Check if it's output from cellranger multi
-        if [[ -d "$input/outs/multi" ]]; then
-            echo "INFO: $input directory contains cellranger multi output structure"
-            mapper="cellranger_multi"
-            cellbender_input="$input/outs/multi/count/raw_feature_bc_matrix.h5"
-        # Check if it's output from cellranger-atac
-        elif [[ -f "$input/outs/filtered_peak_bc_matrix.h5" ]]; then
-            echo "INFO: $input directory contains cellranger-atac output structure"
-            mapper="cellranger-atac"
-            cellbender_input="$input/outs/raw_peak_bc_matrix.h5"
-        # Check if it's output from cellranger-arc
-        elif [[ -f "$input/outs/atac_fragments.tsv.gz" && -f "$input/outs/filtered_feature_bc_matrix.h5" ]]; then
-            echo "INFO: $input directory contains cellranger-arc output structure"
-            mapper="cellranger-arc"
-            cellbender_input="$input/outs/raw_feature_bc_matrix.h5"
-        # Check if it's output from cellranger count
-        elif [[ -f "$input/outs/filtered_feature_bc_matrix.h5" && -f "$input/outs/raw_feature_bc_matrix.h5" ]]; then
-            echo "INFO: $input directory contains cellranger count output structure"
-            mapper="cellranger_count"
-            cellbender_input="$input/outs/raw_feature_bc_matrix.h5"
-        else
-            echo "Error: Input directory does not contain expected cellranger output structure. Check manual for more information" >&2
-            exit 1
-        fi
+if [[ -d "\$input" ]]; then
+    # Check if it's output from cellranger multi
+    if [[ -d "\$input/multi" ]]; then
+        echo "INFO: $input directory contains cellranger multi output structure"
+        mapper="cellranger_multi"
+        cellbender_input="\$input/multi/count/raw_feature_bc_matrix.h5"
+    # Check if it's output from cellranger-atac
+    elif [[ -f "\$input/filtered_peak_bc_matrix.h5" ]]; then
+        echo "INFO: $input directory contains cellranger-atac output structure"
+        mapper="cellranger-atac"
+        cellbender_input="\$input/raw_peak_bc_matrix.h5"
+    # Check if it's output from cellranger-arc
+    elif [[ -f "\$input/atac_fragments.tsv.gz" && -f "\$input/filtered_feature_bc_matrix.h5" ]]; then
+        echo "INFO: $input directory contains cellranger-arc output structure"
+        mapper="cellranger-arc"
+        cellbender_input="\$input/raw_feature_bc_matrix.h5"
+    # Check if it's output from cellranger count
+    elif [[ -f "\$input/filtered_feature_bc_matrix.h5" && -f "\$input/raw_feature_bc_matrix.h5" ]]; then
+        echo "INFO: $input directory contains cellranger count output structure"
+        mapper="cellranger_count"
+        cellbender_input="\$input/raw_feature_bc_matrix.h5"
     # Check if it's output from STARsolo
     elif [[ -d "$input/output" ]]; then
         echo "INFO: $input directory contains STARsolo output structure"
