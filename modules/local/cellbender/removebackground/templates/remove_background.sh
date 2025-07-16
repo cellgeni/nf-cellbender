@@ -94,13 +94,13 @@ fi
 
 # Use user-specified parameters if provided
 if [[ ${task.ext.expected_cells} != "null" ]]; then
-    expected_cells="--expected-cells $task.ext.expected_cells"
+    expected_cells="--expected-cells ${task.ext.expected_cells}"
 fi
 if [[ ${task.ext.total_droplets} != "null" ]]; then
-    total_droplets="--total-droplets-included $task.ext.total_droplets"
+    total_droplets="--total-droplets-included ${task.ext.total_droplets}"
 fi
 if [[ ${task.ext.umi_threshold} != "null" ]]; then
-    umi_threshold="--low-count-threshold $task.ext.umi_threshold"
+    umi_threshold="--low-count-threshold ${task.ext.umi_threshold}"
 fi
 
 
