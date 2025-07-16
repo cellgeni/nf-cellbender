@@ -2,7 +2,8 @@
 include { CELLBENDER_REMOVEBACKGROUND } from './modules/local/cellbender/removebackground'
 
 def helpMessage() {
-    log.info"""
+  log.info(
+    """
     ===================
     Cellbender pipeline
     ===================
@@ -42,19 +43,20 @@ def helpMessage() {
         4. Specify some parameters as well as exclude some features for version 0.3 ("All" is not available for version 0.3):
             nextflow run main.nf --sample_table examples/sample_table.tsv --mapper cellranger --version 0.3 --cells 5000 --exclude_features "Antibody Capture"
     """.stripIndent()
+  )
 }
 
 def missingParametersError() {
-    log.error "Missing input parameters"
-    helpMessage()
-    error "Please provide all required parameters: --sample_table, --mapper and --solo_quant (only required if --mapper is \"starsolo\")"
+  log.error("Missing input parameters")
+  helpMessage()
+  error("Please provide all required parameters: --sample_table, --mapper and --solo_quant (only required if --mapper is \"starsolo\")")
 }
 
 process LoadFromIrods {
   tag "Getting the data for sample ${sample} from IRODS"
+
   input:
   tuple val(sample), val(catalog_path)
-
 
   output:
   tuple val(sample), path('*')
@@ -82,10 +84,10 @@ process RemoveBackground {
   val version
 
   output:
-  path("${sample}")
-  
+  path "${sample}"
+
   script:
-    """
+  """
     cellbender.sh \
       --sample ${sample} \
       --mapper_output ${mapper_output} \
@@ -104,11 +106,12 @@ process RemoveBackground {
 
 process QualityControl {
   tag "Running quality control"
+
   input:
   tuple val(meta), path(cellbender_output, stageAs: 'cellbender_output/*')
 
   output:
-  path 'qc_report',    emit: report
+  path 'qc_report', emit: report
   path "versions.yml", emit: versions
 
   script:
@@ -131,46 +134,25 @@ workflow {
   if (params.help) {
     helpMessage()
   }
-  sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
-  files = sample_table.splitCsv(sep: ',', header: true).map { row -> [row, row["path"]]}
-  CELLBENDER_REMOVEBACKGROUND(files)
+  else {
+    // Check that all required parameters are provided
+    if (params.sample_table == null) {
+      missingParametersError()
+    }
+    // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
+    sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
+    files = sample_table.splitCsv(sep: ',', header: true).map { row -> [row, row["path"]] }
 
-  cellbender_output = CELLBENDER_REMOVEBACKGROUND.out.outputdir.collect(flat: false).transpose().toList()
-  cellbender_output.view()
+    // Get the data from IRODS
+    if (params.on_irods) {
+      files = LoadFromIrods(files)
+    }
 
-  QualityControl(cellbender_output)
+    // Run cellbender
+    CELLBENDER_REMOVEBACKGROUND(files)
+    cellbender_output = CELLBENDER_REMOVEBACKGROUND.out.outputdir.collect(flat: false).transpose().toList()
 
-  // else {
-  //   // Check that all required parameters are provided
-  //   if (params.sample_table == null || params.mapper == null || (params.mapper == "starsolo" && params.solo_quant == "")) {
-  //     missingParametersError()
-  //   }
-  //   // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
-  //   sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
-  //   sample_list = sample_table.splitCsv(sep: '\t', strip: true)
-
-  //   // Get the data from IRODS
-  //   if (params.on_irods) {
-  //     sample_list = LoadFromIrods(sample_list)
-  //   }
-
-  //   // Run cellbender
-  //   RemoveBackground(
-  //     sample_list,
-  //     params.mapper,
-  //     params.solo_quant,
-  //     params.exclude_features,
-  //     params.cells,
-  //     params.droplets,
-  //     params.epochs,
-  //     params.fpr,
-  //     params.lr,
-  //     params.min_umi,
-  //     params.version,
-  //   )
-  //   cellbender_output = RemoveBackground.out.collect()
-    
-  //   // Run QC
-  //   QualityControl(cellbender_output, params.qc_mode)
-  //}
+    // Run QC
+    QualityControl(cellbender_output)
+  }
 }
