@@ -63,7 +63,7 @@ process LoadFromIrods {
 
   script:
   """
-  iget -f -v -K -r "${catalog_path}" "input_data"
+  iget -f -v -K -r -X restartfile.txt --retries 5 "${catalog_path}" "input_data"
   """
 }
 
