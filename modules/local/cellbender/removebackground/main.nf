@@ -3,8 +3,8 @@ process CELLBENDER_REMOVEBACKGROUND {
     tag "Running cellbender for sample ${meta.id}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://quay.io/cellgeni/cellbender:0.3':
-        'quay.io/cellgeni/cellbender:0.3' }"
+        'docker://quay.io/cellgeni/cellbender:' + task.ext.version:
+        'quay.io/cellgeni/cellbender:' + task.ext.version }"
 
     input:
     tuple val(meta), path(input, stageAs: 'input/*')
