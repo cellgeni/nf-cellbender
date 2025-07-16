@@ -45,8 +45,8 @@ if [[ -d "\$input" ]]; then
     elif [[ -d "$input/output" ]]; then
         echo "INFO: ${input} directory contains STARsolo output structure"
         mapper="starsolo"
-        cellbender_input="$input/output/\$starsolo_default_mapper/raw"
-        filt_bc_count=\$(zcat "${input}/output/${task.starsolo_mapper}/filtered/barcodes.tsv.gz" | wc -l)
+        cellbender_input="$input/output/${task.ext.starsolo_mapper}/raw"
+        filt_bc_count=\$(zcat "${input}/output/${task.ext.starsolo_mapper}/filtered/barcodes.tsv.gz" | wc -l)
     # Check if it's output from 10x Genomics
     elif [ -f "$input"/matrix.mtx?(.gz) ] && [ -f "$input"/barcodes.tsv?(.gz) ] && [ -f "$input"/features.tsv?(.gz) ]; then
         echo "INFO: ${input} directory contains 10x Genomics output structure"
@@ -108,9 +108,16 @@ fi
 mkdir -p "${meta.id}"
 
 ### Save file version information
+if [[ $task.ext.version == "0.2" ]]; then
+    version=\$(grep "version" /opt/cellbender/setup.py | cut -d"'" -f 2)
+elif [[ $task.ext.version == "0.3" ]]; then
+    version=\$(cellbender --version)
+else
+    echo "Error: Unsupported CellBender version specified: ${task.ext.version}" >&2
+fi
 cat <<-END_VERSIONS > versions.yml
 "${task.process}":
-    cellbender: \$(grep "version" /opt/cellbender/setup.py | cut -d"'" -f 2)
+    cellbender: \$version
 END_VERSIONS
 
 ### Run CellBender
