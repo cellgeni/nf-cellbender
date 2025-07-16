@@ -125,5 +125,5 @@ cellbender remove-background \
     \$total_droplets_arg \
     \$umi_threshold_arg \
     --input \$cellbender_input \
-    --output "${meta.id}/cellbender" \
+    --output "${meta.id}/cellbender.h5" \
     --cuda
