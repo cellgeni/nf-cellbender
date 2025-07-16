@@ -5,7 +5,6 @@ shopt -s extglob
 
 # Variables
 cellbender_input=""
-starsolo_default_mapper="GeneFull"
 
 ### Figure out the input structure. See a diagram explaining the steps here: FUTURE LINK
 # Check if exists cellranger's input/outs directory
@@ -18,7 +17,7 @@ fi
 if [[ -d "\$input" ]]; then
     # Check if it's output from cellranger multi
     if [[ -d "\$input/multi" ]]; then
-        echo "INFO: $input directory contains cellranger multi output structure"
+        echo "INFO: \$input directory contains cellranger multi output structure"
         mapper="cellranger_multi"
         cellbender_input="\$input/multi/count/raw_feature_bc_matrix"
         filt_bc_old=\$input/multi/per_sample_outs/*/count/sample_feature_bc_matrix/barcodes.tsv.gz
@@ -26,31 +25,31 @@ if [[ -d "\$input" ]]; then
         filt_bc_count=\$(zcat \$filt_bc \$filt_bc_old | wc -l)
     # Check if it's output from cellranger-atac
     elif [[ -f "\$input/filtered_peak_bc_matrix.h5" ]]; then
-        echo "INFO: $input directory contains cellranger-atac output structure"
+        echo "INFO: \$input directory contains cellranger-atac output structure"
         mapper="cellranger-atac"
         cellbender_input="\$input/raw_peak_bc_matrix"
         filt_bc_count=\$(zcat \$input/filtered_peak_bc_matrix/barcodes.tsv | wc -l)
     # Check if it's output from cellranger-arc
     elif [[ -f "\$input/atac_fragments.tsv.gz" && -f "\$input/filtered_feature_bc_matrix.h5" ]]; then
-        echo "INFO: $input directory contains cellranger-arc output structure"
+        echo "INFO: \$input directory contains cellranger-arc output structure"
         mapper="cellranger-arc"
         cellbender_input="\$input/raw_feature_bc_matrix"
         filt_bc_count=\$(zcat \$input/filtered_feature_bc_matrix/barcodes.tsv | wc -l)
     # Check if it's output from cellranger count
     elif [[ -f "\$input/filtered_feature_bc_matrix.h5" && -f "\$input/raw_feature_bc_matrix.h5" ]]; then
-        echo "INFO: $input directory contains cellranger count output structure"
+        echo "INFO: \$input directory contains cellranger count output structure"
         mapper="cellranger_count"
         cellbender_input="\$input/raw_feature_bc_matrix"
         filt_bc_count=\$(zcat \$input/filtered_feature_bc_matrix/barcodes.tsv | wc -l)
     # Check if it's output from STARsolo
     elif [[ -d "$input/output" ]]; then
-        echo "INFO: $input directory contains STARsolo output structure"
+        echo "INFO: ${input} directory contains STARsolo output structure"
         mapper="starsolo"
         cellbender_input="$input/output/\$starsolo_default_mapper/raw"
-        filt_bc_count=\$(zcat "$input/output/\$starsolo_default_mapper/filtered/barcodes.tsv.gz" | wc -l)
+        filt_bc_count=\$(zcat "${input}/output/${task.starsolo_mapper}/filtered/barcodes.tsv.gz" | wc -l)
     # Check if it's output from 10x Genomics
     elif [ -f "$input"/matrix.mtx?(.gz) ] && [ -f "$input"/barcodes.tsv?(.gz) ] && [ -f "$input"/features.tsv?(.gz) ]; then
-        echo "INFO: $input directory contains 10x Genomics output structure"
+        echo "INFO: ${input} directory contains 10x Genomics output structure"
         mapper="unknown_mtx"
         cellbender_input="$input"
     else
@@ -75,7 +74,7 @@ umi_threshold=""
 # Check of cellranger of version 2 is requested or if user requested to use mapper's preset for the params
 if [[ "${task.ext.version}" == "0.2" || "${task.ext.mapper_preset}" == "true" ]]; then
     echo "INFO: Using mapper's preset for parameters"
-    # Check if full mapper directory was paseed as an input to use mapper's preset
+    # Check if full mapper directory was passed as an input to use mapper's preset
     if [[ "\$mapper" == unknown* ]]; then
         echo "Error: Mapper preset is not available for unknown mapper type. Please specify expected cells, droplets and UMI threshold manually." >&2
         exit 1
