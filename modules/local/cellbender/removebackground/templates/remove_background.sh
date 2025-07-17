@@ -94,13 +94,13 @@ fi
 
 # Use user-specified parameters if provided
 if [[ -n "${task.ext.expected_cells}" ]]; then
-    expected_cells="--expected-cells ${task.ext.expected_cells}"
+    expected_cells_arg="--expected-cells ${task.ext.expected_cells}"
 fi
 if [[ -n "${task.ext.total_droplets}" ]]; then
-    total_droplets="--total-droplets-included ${task.ext.total_droplets}"
+    total_droplets_arg="--total-droplets-included ${task.ext.total_droplets}"
 fi
 if [[ -n "${task.ext.umi_threshold}" ]]; then
-    umi_threshold="--low-count-threshold ${task.ext.umi_threshold}"
+    umi_threshold_arg="--low-count-threshold ${task.ext.umi_threshold}"
 fi
 
 
@@ -123,7 +123,7 @@ END_VERSIONS
 ### Run CellBender
 
 echo "INFO: Running CellBender remove-background with input: \$cellbender_input"
-echo "INFO: Using the following arguments: \$expected_cells \$total_droplets \$umi_threshold ${task.ext.args ?: ''}"
+echo "INFO: Using the following arguments: \$expected_cells_arg \$total_droplets_arg \$umi_threshold_arg ${task.ext.args ?: ''}"
 
 cellbender remove-background \
     ${task.ext.args ?: ''} \
