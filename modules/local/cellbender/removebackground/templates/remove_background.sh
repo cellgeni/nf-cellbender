@@ -93,13 +93,13 @@ if [[ "${task.ext.version}" == "0.2" || "${task.ext.mapper_preset}" == "true" ]]
 fi
 
 # Use user-specified parameters if provided
-if [[ ${task.ext.expected_cells} != "null" ]]; then
+if [[ -n "${task.ext.expected_cells}" ]]; then
     expected_cells="--expected-cells ${task.ext.expected_cells}"
 fi
-if [[ ${task.ext.total_droplets} != "null" ]]; then
+if [[ -n "${task.ext.total_droplets}" ]]; then
     total_droplets="--total-droplets-included ${task.ext.total_droplets}"
 fi
-if [[ ${task.ext.umi_threshold} != "null" ]]; then
+if [[ -n "${task.ext.umi_threshold}" ]]; then
     umi_threshold="--low-count-threshold ${task.ext.umi_threshold}"
 fi
 
