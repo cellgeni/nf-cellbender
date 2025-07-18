@@ -57,3 +57,11 @@ FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 ```
 
 and includes installations of `cellbender` and `R-4.4.2`. The up to date image can be loaded from `quay` [repository](https://quay.io/repository/cellgeni/cellbender?tab=logs)
+
+## Run tests (for developers)
+
+```
+mkdir logs
+N=19
+bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < run_tests.bsub
+```
