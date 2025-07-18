@@ -20,33 +20,36 @@ if [[ -d "\$input" ]]; then
         echo "INFO: \$input directory contains cellranger multi output structure"
         mapper="cellranger_multi"
         cellbender_input="\$input/multi/count/raw_feature_bc_matrix"
-        filt_bc_old=\$input/multi/per_sample_outs/*/count/sample_feature_bc_matrix/barcodes.tsv.gz
-        filt_bc=\$input/multi/per_sample_outs/*/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+        filt_bc_old=\$(ls \$input/multi/per_sample_outs/*/count/sample_feature_bc_matrix/barcodes.tsv*)
+        filt_bc=\$(ls \$input/multi/per_sample_outs/*/count/sample_filtered_feature_bc_matrix/barcodes.tsv*)
         filt_bc_count=\$(zcat \$filt_bc \$filt_bc_old | wc -l)
     # Check if it's output from cellranger-atac
-    elif [[ -f "\$input/filtered_peak_bc_matrix.h5" ]]; then
+    elif [[ -f "\$input/raw_peak_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger-atac output structure"
         mapper="cellranger-atac"
-        cellbender_input="\$input/raw_peak_bc_matrix"
-        filt_bc_count=\$(zcat \$input/filtered_peak_bc_matrix/barcodes.tsv | wc -l)
+        cellbender_input="\$input/raw_peak_bc_matrix.h5"
+        bc_file=\$(ls \$input/filtered_peak_bc_matrix/barcodes.tsv*)
+        filt_bc_count=\$(cat \$bc_file | wc -l)
     # Check if it's output from cellranger-arc
     elif [[ -f "\$input/atac_fragments.tsv.gz" && -f "\$input/filtered_feature_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger-arc output structure"
         mapper="cellranger-arc"
         cellbender_input="\$input/raw_feature_bc_matrix"
-        filt_bc_count=\$(zcat \$input/filtered_feature_bc_matrix/barcodes.tsv | wc -l)
+        bc_file=\$(ls \$input/filtered_feature_bc_matrix/barcodes.tsv*)
+        filt_bc_count=\$(zcat \$bc_file | wc -l)
     # Check if it's output from cellranger count
     elif [[ -f "\$input/filtered_feature_bc_matrix.h5" && -f "\$input/raw_feature_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger count output structure"
         mapper="cellranger_count"
         cellbender_input="\$input/raw_feature_bc_matrix"
-        filt_bc_count=\$(zcat \$input/filtered_feature_bc_matrix/barcodes.tsv | wc -l)
+        bc_file=\$(ls \$input/filtered_feature_bc_matrix/barcodes.tsv*)
+        filt_bc_count=\$(zcat \$bc_file | wc -l)
     # Check if it's output from STARsolo
     elif [[ -d "$input/output" ]]; then
         echo "INFO: ${input} directory contains STARsolo output structure"
         mapper="starsolo"
         cellbender_input="$input/output/${task.ext.starsolo_mapper}/raw"
-        filt_bc_count=\$(zcat "${input}/output/${task.ext.starsolo_mapper}/filtered/barcodes.tsv.gz" | wc -l)
+        filt_bc_count=\$(zcat "${input}/output/${task.ext.starsolo_mapper}/filtered/barcodes.tsv" | wc -l)
     # Check if it's output from 10x Genomics
     elif [ -f "$input"/matrix.mtx?(.gz) ] && [ -f "$input"/barcodes.tsv?(.gz) ] && [ -f "$input"/features.tsv?(.gz) ]; then
         echo "INFO: ${input} directory contains 10x Genomics output structure"
@@ -84,11 +87,11 @@ if [[ "${task.ext.version}" == "0.2" || "${task.ext.mapper_preset}" == "true" ]]
     source preset.sh
 
     # Calculate presets
-    expected_cells=\$(preset_cells "\$cellbender_input" \$filt_bc_count)
+    expected_cells=\$(preset_cells "\${cellbender_input%.h5}" \$filt_bc_count)
     expected_cells_arg="--expected-cells \$expected_cells"
     total_droplets=\$(preset_droplets \$expected_cells)
     total_droplets_arg="--total-droplets-included \$total_droplets"
-    umi_threshold_arg="--low-count-threshold \$(preset_umi_threshold "\$cellbender_input" \$total_droplets)"
+    umi_threshold_arg="--low-count-threshold \$(preset_umi_threshold "\${cellbender_input%.h5}" \$total_droplets)"
     echo "INFO: Using preset values: expected_cells=\$expected_cells_arg, total_droplets=\$total_droplets_arg, umi_threshold=\$umi_threshold_arg"
 fi
 
