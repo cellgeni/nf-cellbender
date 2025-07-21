@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# enable extglob so ?(…) works
+shopt -s extglob
+
 function get_cat_command() {
   local file="$1"
   
@@ -22,16 +25,18 @@ function preset_cells() {
   local cells_umi200
 
   ## Ensure required file exists
-  file=$(ls "$raw_matrix_dir"/matrix.mtx*)
-  if [[ ! -f $file ]]; then
+  # Use array to expand glob pattern
+  mtx_files=("$raw_matrix_dir"/matrix.mtx?(.gz))
+  if [[ ! -f "${mtx_files[0]}" ]]; then
     echo "Error: Raw matrix file missing" >&2
     exit 1
   fi
 
-
   ## Calculate expected number of cell
-  command=$(get_cat_command "$file")
-  cells_umi200=$($command "$file" | count_cells.awk -v threshold=200)
+  echo "DEBUG: Calculating expected cells from raw matrix directory: $raw_matrix_dir" >&2
+  command=$(get_cat_command "${mtx_files[0]}")
+  echo "DEBUG: Using command: $command"  >&2
+  cells_umi200=$($command "${mtx_files[0]}" | count_cells.awk -v threshold=200)
 
   ## Return the minimum of the two values
   echo $((filt_bc_count < cells_umi200 ? filt_bc_count : cells_umi200))
@@ -60,16 +65,20 @@ function preset_umi_threshold() {
   local cells_umi10
 
   ## Ensure required file exists
-  file=$(ls "$raw_matrix_dir"/matrix.mtx*)
-  if [[ ! -f $file ]]; then
+  mtx_files=("$raw_matrix_dir"/matrix.mtx?(.gz))
+  if [[ ! -f "${mtx_files[0]}" ]]; then
     echo "Error: Raw matrix file missing" >&2
     exit 1
   fi
 
   ## Calculate UMI number for the 20000th cell and count cells with UMI > 10
-  command=$(get_cat_command "$file")
-  umi_rank20000=$($command "$file" | sort_cells.awk -v target_cell=20000 -v preset_value=10)
-  cells_umi10=$($command "$file" | count_cells.awk -v threshold=10)
+  echo "DEBUG: Calculating UMI threshold from raw matrix directory: $raw_matrix_dir" >&2
+  command=$(get_cat_command "${mtx_files[0]}")
+  echo "DEBUG: Using command: $command" >&2
+  umi_rank20000=$($command "${mtx_files[0]}" | sort_cells.awk -v target_cell=20000 -v preset_value=10)
+  echo "DEBUG: UMI rank for 20000th cell: $umi_rank20000" >&2
+  cells_umi10=$($command "${mtx_files[0]}" | count_cells.awk -v threshold=10)
+  echo "DEBUG: Cells with UMI > 10: $cells_umi10" >&2
 
   ## Use the maximum of `umi_rank20000` or `10`
   if ((cells_umi10 < expected_total_barcodes + 20000)); then
