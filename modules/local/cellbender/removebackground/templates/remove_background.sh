@@ -20,7 +20,7 @@ if [[ -d "\$input" ]]; then
     if [[ -d "\$input/multi" ]]; then
         echo "INFO: \$input directory contains cellranger multi output structure"
         mapper="cellranger_multi"
-        cellbender_input="\$input/multi/count/raw_feature_bc_matrix"
+        cellbender_input="\$input/multi/count/raw_feature_bc_matrix.h5"
         filt_bc_files=(\$input/multi/per_sample_outs/*/count/sample_?(filtered_)feature_bc_matrix/barcodes.tsv?(.gz))
     # Check if it's output from cellranger-atac
     elif [[ -f "\$input/raw_peak_bc_matrix.h5" ]]; then
@@ -32,13 +32,13 @@ if [[ -d "\$input" ]]; then
     elif [[ -f "\$input/atac_fragments.tsv.gz" && -f "\$input/filtered_feature_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger-arc output structure"
         mapper="cellranger-arc"
-        cellbender_input="\$input/raw_feature_bc_matrix"
+        cellbender_input="\$input/raw_feature_bc_matrix.h5"
         filt_bc_files=(\$input/filtered_feature_bc_matrix/barcodes.tsv?(.gz))
     # Check if it's output from cellranger count
     elif [[ -f "\$input/filtered_feature_bc_matrix.h5" && -f "\$input/raw_feature_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger count output structure"
         mapper="cellranger_count"
-        cellbender_input="\$input/raw_feature_bc_matrix"
+        cellbender_input="\$input/raw_feature_bc_matrix.h5"
         filt_bc_files=(\$input/filtered_feature_bc_matrix/barcodes.tsv?(.gz))
     # Check if it's output from STARsolo
     elif [[ -d "$input/output" ]]; then
@@ -63,6 +63,15 @@ elif [[ -f "$input" && "$input" == *.h5 ]]; then
 else
     echo "Error: Input is neither a directory nor a .h5 file. Check manual for more information" >&2
     exit 1
+fi
+
+# For starsolo and raw mtx inputs check if matrix.mtx is in uncompressed format becasause CellBender expects gzipped matrix.mtx
+# See https://github.com/broadinstitute/CellBender/blob/04c2f5b460721fd55cf62a4cd23617b2555d69b8/cellbender/remove_background/data/io.py#L617
+if [[ -f "\$cellbender_input/matrix.mtx" ]]; then
+    echo "INFO: matrix.mtx found in ugzipped format, proceding to gzip it"
+    cp -r \$cellbender_input gzipped_raw_input
+    gzip gzipped_raw_input/*
+    cellbender_input="gzipped_raw_input"
 fi
 
 # Initialize variables
