@@ -5,6 +5,7 @@ shopt -s extglob
 
 # Variables
 cellbender_input=""
+filt_bc_files=()
 
 ### Figure out the input structure. See a diagram explaining the steps here: FUTURE LINK
 # Check if exists cellranger's input/outs directory
@@ -20,36 +21,31 @@ if [[ -d "\$input" ]]; then
         echo "INFO: \$input directory contains cellranger multi output structure"
         mapper="cellranger_multi"
         cellbender_input="\$input/multi/count/raw_feature_bc_matrix"
-        filt_bc_old=\$(ls \$input/multi/per_sample_outs/*/count/sample_feature_bc_matrix/barcodes.tsv*)
-        filt_bc=\$(ls \$input/multi/per_sample_outs/*/count/sample_filtered_feature_bc_matrix/barcodes.tsv*)
-        filt_bc_count=\$(zcat \$filt_bc \$filt_bc_old | wc -l)
+        filt_bc_files=(\$input/multi/per_sample_outs/*/count/sample_?(filtered_)feature_bc_matrix/barcodes.tsv?(.gz))
     # Check if it's output from cellranger-atac
     elif [[ -f "\$input/raw_peak_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger-atac output structure"
         mapper="cellranger-atac"
         cellbender_input="\$input/raw_peak_bc_matrix.h5"
-        bc_file=\$(ls \$input/filtered_peak_bc_matrix/barcodes.tsv*)
-        filt_bc_count=\$(cat \$bc_file | wc -l)
+        filt_bc_files=(\$input/filtered_peak_bc_matrix/barcodes.tsv?(.gz))
     # Check if it's output from cellranger-arc
     elif [[ -f "\$input/atac_fragments.tsv.gz" && -f "\$input/filtered_feature_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger-arc output structure"
         mapper="cellranger-arc"
         cellbender_input="\$input/raw_feature_bc_matrix"
-        bc_file=\$(ls \$input/filtered_feature_bc_matrix/barcodes.tsv*)
-        filt_bc_count=\$(zcat \$bc_file | wc -l)
+        filt_bc_files=(\$input/filtered_feature_bc_matrix/barcodes.tsv?(.gz))
     # Check if it's output from cellranger count
     elif [[ -f "\$input/filtered_feature_bc_matrix.h5" && -f "\$input/raw_feature_bc_matrix.h5" ]]; then
         echo "INFO: \$input directory contains cellranger count output structure"
         mapper="cellranger_count"
         cellbender_input="\$input/raw_feature_bc_matrix"
-        bc_file=\$(ls \$input/filtered_feature_bc_matrix/barcodes.tsv*)
-        filt_bc_count=\$(zcat \$bc_file | wc -l)
+        filt_bc_files=(\$input/filtered_feature_bc_matrix/barcodes.tsv?(.gz))
     # Check if it's output from STARsolo
     elif [[ -d "$input/output" ]]; then
         echo "INFO: ${input} directory contains STARsolo output structure"
         mapper="starsolo"
         cellbender_input="$input/output/${task.ext.starsolo_mapper}/raw"
-        filt_bc_count=\$(zcat "${input}/output/${task.ext.starsolo_mapper}/filtered/barcodes.tsv" | wc -l)
+        filt_bc_files=($input/output/${task.ext.starsolo_mapper}/filtered/barcodes.tsv?(.gz))
     # Check if it's output from 10x Genomics
     elif [ -f "$input"/matrix.mtx?(.gz) ] && [ -f "$input"/barcodes.tsv?(.gz) ] && [ -f "$input"/features.tsv?(.gz) ]; then
         echo "INFO: ${input} directory contains 10x Genomics output structure"
@@ -78,21 +74,34 @@ umi_threshold=""
 if [[ "${task.ext.version}" == "0.2" || "${task.ext.mapper_preset}" == "true" ]]; then
     echo "INFO: Using mapper's preset for parameters"
     # Check if full mapper directory was passed as an input to use mapper's preset
-    if [[ "\$mapper" == unknown* ]]; then
-        echo "Error: Mapper preset is not available for unknown mapper type. Please specify expected cells, droplets and UMI threshold manually." >&2
-        exit 1
+    if [[ "\$mapper" == unknown* && "${task.ext.version}" == "0.3" ]]; then
+        echo "INFO: Mapper preset is not available for \"\$mapper\" input type. Skipping preset calculation." >&2
+    elif [[ "\$mapper" == unknown* && "${task.ext.version}" == "0.2" ]]; then
+        echo "ERROR: CellBender version 0.2 does not support mapper presets. Please specify expected_cells, total_droplets, and umi_threshold manually." >&2
+    else
+        # Check that filtered barcodes file exists
+        if [[ -z "\$filt_bc_files" || ! -f "\${filt_bc_files[0]}" ]]; then
+            echo "Error: Filtered barcodes file not found: \$filt_bc_files" >&2
+            exit 1
+        fi
+
+        # Import preset functions
+        source preset.sh
+
+        # Calculate presets
+        echo "DEBUG: Calculating presets for CellBender remove-background" >&2
+        echo "DEBUG: Using filtered barcodes file: \${filt_bc_files[0]}" >&2
+        cat_command=\$(get_cat_command "\${filt_bc_files[0]}")
+        echo "DEBUG: Using command: \$cat_command" >&2
+        filt_bc_count=\$(\$cat_command "\${filt_bc_files[0]}" | wc -l)
+        echo "DEBUG: Filtered barcodes count: \$filt_bc_count" >&2
+        expected_cells=\$(preset_cells "\${cellbender_input%.h5}" \$filt_bc_count)
+        expected_cells_arg="--expected-cells \$expected_cells"
+        total_droplets=\$(preset_droplets \$expected_cells)
+        total_droplets_arg="--total-droplets-included \$total_droplets"
+        umi_threshold_arg="--low-count-threshold \$(preset_umi_threshold "\${cellbender_input%.h5}" \$total_droplets)"
+        echo "INFO: Using preset values: expected_cells=\$expected_cells_arg, total_droplets=\$total_droplets_arg, umi_threshold=\$umi_threshold_arg"
     fi
-
-    # Import preset functions
-    source preset.sh
-
-    # Calculate presets
-    expected_cells=\$(preset_cells "\${cellbender_input%.h5}" \$filt_bc_count)
-    expected_cells_arg="--expected-cells \$expected_cells"
-    total_droplets=\$(preset_droplets \$expected_cells)
-    total_droplets_arg="--total-droplets-included \$total_droplets"
-    umi_threshold_arg="--low-count-threshold \$(preset_umi_threshold "\${cellbender_input%.h5}" \$total_droplets)"
-    echo "INFO: Using preset values: expected_cells=\$expected_cells_arg, total_droplets=\$total_droplets_arg, umi_threshold=\$umi_threshold_arg"
 fi
 
 # Use user-specified parameters if provided
