@@ -52,7 +52,7 @@ if [[ -d "\$input" ]]; then
         mapper="unknown_mtx"
         cellbender_input="$input"
     else
-        echo "Error: Input directory does not contain expected structure. Check mannual for more information" >&2
+        echo "Error: Input directory does not contain expected structure. Check mannual for more information. Exiting..." >&2
         exit 1
     fi
 # Check if input is .h5 file
@@ -61,7 +61,7 @@ elif [[ -f "$input" && "$input" == *.h5 ]]; then
     mapper="unknown_h5"
     cellbender_input="$input"
 else
-    echo "Error: Input is neither a directory nor a .h5 file. Check manual for more information" >&2
+    echo "Error: Input is neither a directory nor a .h5 file. Check manual for more information. Exiting..." >&2
     exit 1
 fi
 
@@ -83,14 +83,13 @@ umi_threshold=""
 if [[ "${task.ext.version}" == "0.2" || "${task.ext.mapper_preset}" == "true" ]]; then
     echo "INFO: Using mapper's preset for parameters"
     # Check if full mapper directory was passed as an input to use mapper's preset
-    if [[ "\$mapper" == unknown* && "${task.ext.version}" == "0.3" ]]; then
-        echo "INFO: Mapper preset is not available for \"\$mapper\" input type. Skipping preset calculation." >&2
-    elif [[ "\$mapper" == unknown* && "${task.ext.version}" == "0.2" ]]; then
-        echo "ERROR: CellBender version 0.2 does not support mapper presets. Please specify expected_cells, total_droplets, and umi_threshold manually." >&2
+    if [[ "\$mapper" == unknown* ]]; then
+        echo "ERROR: Mapper preset is not available for \"\$mapper\" input type. Exiting..." >&2
+        exit 1
     else
         # Check that filtered barcodes file exists
         if [[ -z "\$filt_bc_files" || ! -f "\${filt_bc_files[0]}" ]]; then
-            echo "Error: Filtered barcodes file not found: \$filt_bc_files" >&2
+            echo "Error: Filtered barcodes file not found: \$filt_bc_files. Exiting..." >&2
             exit 1
         fi
 
