@@ -568,7 +568,7 @@ nextflow_process {
             params {
                 version       = "0.2"
                 cells         = 1200
-                dropouts      = 3200
+                droplets      = 3200
                 min_umi       = 10
             }
             process {
@@ -634,7 +634,7 @@ nextflow_process {
             params {
                 version       = "0.2"
                 cells         = 1200
-                dropouts      = 3200
+                droplets      = 3200
                 min_umi       = 10
             }
             process {
