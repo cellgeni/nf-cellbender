@@ -60,8 +60,15 @@ and includes installations of `cellbender` and `R-4.4.2`. The up to date image c
 
 ## Run tests (for developers)
 
+Run tests
 ```
-mkdir logs
-N=19
+mkdir -p logs
+N=25
 bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < run_tests.bsub
+```
+
+Count successful runs
+```
+echo "PASSED: $(grep -l "PASSED" logs/*Output*.log | wc -l), FAILED: $(grep -l "FAILURE" logs/*Output*.log | wc -l), RUNNING $(grep -L "Your job looked like:" logs/*Output*.log | wc -l)"
+echo "FAILED TEST LIST:"; grep -l "FAILURE" logs/*Output*.log
 ```
