@@ -63,7 +63,7 @@ and includes installations of `cellbender` and `R-4.4.2`. The up to date image c
 Run tests
 ```
 mkdir -p logs
-N=25
+N=26
 bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
 ```
 
