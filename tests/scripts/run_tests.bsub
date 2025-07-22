@@ -15,4 +15,4 @@ if [[ -z "$(which nf-test)" ]]; then
     module load cellgen/nf-test/0.9.2
 fi
 
-nf-test test modules/local/cellbender/removebackground/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}"
+nf-test test modules/local/cellbender/removebackground/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug --update-snapshot

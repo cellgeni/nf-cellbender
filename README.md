@@ -64,7 +64,7 @@ Run tests
 ```
 mkdir -p logs
 N=25
-bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < run_tests.bsub
+bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
 ```
 
 Count successful runs
