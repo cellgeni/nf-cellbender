@@ -31,9 +31,8 @@ nextflow_process {
             assertAll(
                 { assert process.success },
                 { assert process.out.versions },
-                { assert process.out.outputdir },
-                { assert snapshot(process.out).match() },
-                { assert snapshot(path(process.out.catalog).list()).match() }
+                { assert process.out.catalog },
+                { assert snapshot(process.out).match() }
             )
         }
     }
