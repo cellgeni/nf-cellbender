@@ -80,7 +80,7 @@ total_droplets=""
 umi_threshold=""
 
 # Check of cellranger of version 2 is requested or if user requested to use mapper's preset for the params
-if [[ "${task.ext.version}" == "0.2" || "${task.ext.mapper_preset}" == "true" ]]; then
+if [[ "${task.ext.mapper_preset}" == "true" ]]; then
     echo "INFO: Using mapper's preset for parameters"
     # Check if full mapper directory was passed as an input to use mapper's preset
     if [[ "\$mapper" == unknown* ]]; then
