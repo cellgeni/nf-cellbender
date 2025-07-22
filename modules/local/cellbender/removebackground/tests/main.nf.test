@@ -9,7 +9,6 @@ nextflow_process {
     tag "modules"
     tag "cellbender/removebackground"
 
-    // TODO nf-core: Change the test name preferably indicating the test-data and file-format used
     test("CellRanger count v3.0.0 - CellBender v0.3") {
         tag "cellranger-count"
         tag "gex"
@@ -540,7 +539,7 @@ nextflow_process {
                 """
                 input[0] = [
                     [id:'cellranger-count'], // meta map
-                    file(params.test_data_base + 'cellranger-count/outs/filtered_feature_bc_matrix.h5', checkIfExists: true),
+                    file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix.h5', checkIfExists: true),
                 ]
                 """
             }
@@ -575,7 +574,7 @@ nextflow_process {
                 """
                 input[0] = [
                     [id:'cellranger-count'], // meta map
-                    file(params.test_data_base + 'cellranger-count/outs/filtered_feature_bc_matrix.h5', checkIfExists: true),
+                    file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix.h5', checkIfExists: true),
                 ]
                 """
             }
@@ -606,7 +605,7 @@ nextflow_process {
                 """
                 input[0] = [
                     [id:'cellranger-count'], // meta map
-                    file(params.test_data_base + 'cellranger-count/outs/filtered_feature_bc_matrix', checkIfExists: true),
+                    file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix', checkIfExists: true),
                 ]
                 """
             }
@@ -641,7 +640,7 @@ nextflow_process {
                 """
                 input[0] = [
                     [id:'cellranger-count'], // meta map
-                    file(params.test_data_base + 'cellranger-count/outs/filtered_feature_bc_matrix', checkIfExists: true),
+                    file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix', checkIfExists: true),
                 ]
                 """
             }
