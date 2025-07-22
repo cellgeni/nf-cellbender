@@ -1,5 +1,6 @@
 // Imports
 include { CELLBENDER_REMOVEBACKGROUND } from './modules/local/cellbender/removebackground'
+include { IRODS_LOADCATALOG } from './modules/local/irods/loadcatalog'
 
 def helpMessage() {
   log.info(
@@ -52,57 +53,6 @@ def missingParametersError() {
   error("Please provide all required parameters: --sample_table, --mapper and --solo_quant (only required if --mapper is \"starsolo\")")
 }
 
-process LoadFromIrods {
-  tag "Getting the data for sample ${sample} from IRODS"
-
-  input:
-  tuple val(sample), val(catalog_path)
-
-  output:
-  tuple val(sample), path('*')
-
-  script:
-  """
-  iget -f -v -K -r -X restartfile.txt --retries 5 "${catalog_path}" "input_data"
-  """
-}
-
-process RemoveBackground {
-  tag "Running cellbender for sample ${sample}"
-
-  input:
-  tuple val(sample), path(mapper_output, stageAs: 'mapper_output')
-  val mapper
-  val solo_quant
-  val exclude_features
-  val cells
-  val droplets
-  val epochs
-  val fpr
-  val lr
-  val min_umi
-  val version
-
-  output:
-  path "${sample}"
-
-  script:
-  """
-    cellbender.sh \
-      --sample ${sample} \
-      --mapper_output ${mapper_output} \
-      --mapper ${mapper} \
-      --solo_quant ${solo_quant} \
-      --exclude_features "${exclude_features}" \
-      --cells ${cells} \
-      --droplets ${droplets} \
-      --min_umi ${min_umi} \
-      --epochs ${epochs} \
-      --fpr ${fpr} \
-      --learning_rate ${lr} \
-      --version ${version}
-    """
-}
 
 process QualityControl {
   tag "Running quality control"
@@ -145,7 +95,8 @@ workflow {
 
     // Get the data from IRODS
     if (params.on_irods) {
-      files = LoadFromIrods(files)
+      IRODS_LOADCATALOG(files)
+      files = IRODS_LOADCATALOG.out.catalog
     }
 
     // Run cellbender
