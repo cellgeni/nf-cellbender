@@ -1,0 +1,40 @@
+// TODO nf-core: Once you have added the required tests, please run the following command to build this file:
+// nf-core modules test irods/loadcatalog
+nextflow_process {
+
+    name "Test Process IRODS_LOADCATALOG"
+    script "../main.nf"
+    process "IRODS_LOADCATALOG"
+
+    tag "modules"
+    tag "irods/loadcatalog"
+
+    test("CellRanger count v3.0.0 - Ignore .html") {
+        tag "cellranger-count"
+        tag "html"
+
+        when {
+            params {
+                ignore_extensions = "html"
+            }
+            process {
+                """
+                input[0] = [
+                    [id:'cellranger-count'], // meta map
+                    '/archive/cellgeni/tests/cellranger-count', // catalog path on irods
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.versions },
+                { assert process.out.outputdir },
+                { assert snapshot(process.out).match() },
+                { assert snapshot(path(process.out.catalog).list()).match() }
+            )
+        }
+    }
+}
