@@ -1,0 +1,15 @@
+id,path
+cellranger-count,/archive/cellgeni/tests/cellranger-count
+cellranger-arc,/archive/cellgeni/tests/cellranger-arc
+cellranger-atac,/archive/cellgeni/tests/cellranger-atac
+multiplex-flex,/archive/cellgeni/tests/multiplex-flex
+sample-multiplexing,/archive/cellgeni/tests/sample-multiplexing
+singleplex-crispr,/archive/cellgeni/tests/singleplex-crispr
+starsolo,/archive/cellgeni/tests/starsolo
+cellranger-count-nogz,/archive/cellgeni/tests/cellranger-count-nogz
+cellranger-count-outs,/archive/cellgeni/tests/cellranger-count/outs
+cellranger-arc-outs,/archive/cellgeni/tests/cellranger-arc/outs
+cellranger-atac-outs,/archive/cellgeni/tests/cellranger-atac/outs
+multiplex-flex-outs,/archive/cellgeni/tests/multiplex-flex/outs
+sample-multiplexing-outs,/archive/cellgeni/tests/sample-multiplexing/outs
+singleplex-crispr-outs,/archive/cellgeni/tests/singleplex-crispr/outs
