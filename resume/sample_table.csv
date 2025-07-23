@@ -1,0 +1,17 @@
+id,path
+cellranger-count,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-count
+cellranger-arc,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-arc
+cellranger-atac,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-atac
+multiplex-flex,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/multiplex-flex
+sample-multiplexing,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/sample-multiplexing
+singleplex-crispr,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/singleplex-crispr
+starsolo,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/starsolo
+cellranger-count-nogz,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-count-nogz
+cellranger-count-mtx,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-count/outs/raw_feature_bc_matrix
+cellranger-count-h5,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-count/outs/raw_feature_bc_matrix.h5
+cellranger-count-outs,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-count/outs
+cellranger-arc-outs,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-arc/outs
+cellranger-atac-outs,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-atac/outs
+multiplex-flex-outs,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/multiplex-flex/outs
+sample-multiplexing-outs,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/sample-multiplexing/outs
+singleplex-crispr-outs,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/singleplex-crispr/outs
