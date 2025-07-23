@@ -7,22 +7,40 @@
                         {
                             "id": "cellranger-atac"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/78366a0564704150a8cc5c427c6b0b8/work/d2/5e485f40758568e838ad6a805132c4/cellranger-atac"
+                        [
+                            "cellbender.h5:md5,d9875555aeb9222b2d77d61e481911f7",
+                            "cellbender.log:md5,f3ecfdc04c1459dc3f7e74f401e7da53",
+                            "cellbender.pdf:md5,bab1741668c303a057cf467b2e27a064",
+                            "cellbender_cell_barcodes.csv:md5,df380af6c8c98d949416817fadd8c65d",
+                            "cellbender_filtered.h5:md5,1b1e0a26b35e2b0804aed5734de61422",
+                            "cellbender_metrics.csv:md5,48b953822b7c694bad601b4b3efdff86",
+                            "cellbender_posterior.h5:md5,55f2b0e2a640b710e5b085b7802871a5",
+                            "cellbender_report.html:md5,b83af09dbb53a660959afcc7fd090509"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/78366a0564704150a8cc5c427c6b0b8/work/d2/5e485f40758568e838ad6a805132c4/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-atac"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/78366a0564704150a8cc5c427c6b0b8/work/d2/5e485f40758568e838ad6a805132c4/cellranger-atac"
+                        [
+                            "cellbender.h5:md5,d9875555aeb9222b2d77d61e481911f7",
+                            "cellbender.log:md5,f3ecfdc04c1459dc3f7e74f401e7da53",
+                            "cellbender.pdf:md5,bab1741668c303a057cf467b2e27a064",
+                            "cellbender_cell_barcodes.csv:md5,df380af6c8c98d949416817fadd8c65d",
+                            "cellbender_filtered.h5:md5,1b1e0a26b35e2b0804aed5734de61422",
+                            "cellbender_metrics.csv:md5,48b953822b7c694bad601b4b3efdff86",
+                            "cellbender_posterior.h5:md5,55f2b0e2a640b710e5b085b7802871a5",
+                            "cellbender_report.html:md5,b83af09dbb53a660959afcc7fd090509"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/78366a0564704150a8cc5c427c6b0b8/work/d2/5e485f40758568e838ad6a805132c4/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -30,7 +48,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:08:55.847336702"
+        "timestamp": "2025-07-22T17:21:41.737026333"
     },
     "CellRanger atac v1.2.0 - CellBender v0.2": {
         "content": [
@@ -40,22 +58,34 @@
                         {
                             "id": "cellranger-atac"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e08fb718faa9b42d21cf0c9f9d2fa027/work/37/b13ec29911febdeba5e3a1ba959e71/cellranger-atac"
+                        [
+                            "cellbender.h5:md5,d248dfbb23bab4060dbde24d6cdfc96c",
+                            "cellbender.log:md5,086f969fd11e73ce86c2041359dba6f4",
+                            "cellbender.pdf:md5,9fac78ed43a1c945246689886bb99f93",
+                            "cellbender_cell_barcodes.csv:md5,9fde26d889544196bb8431ded25655ed",
+                            "cellbender_filtered.h5:md5,aa879916ac3a1b6c42f7eba446b601b1"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e08fb718faa9b42d21cf0c9f9d2fa027/work/37/b13ec29911febdeba5e3a1ba959e71/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-atac"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e08fb718faa9b42d21cf0c9f9d2fa027/work/37/b13ec29911febdeba5e3a1ba959e71/cellranger-atac"
+                        [
+                            "cellbender.h5:md5,d248dfbb23bab4060dbde24d6cdfc96c",
+                            "cellbender.log:md5,086f969fd11e73ce86c2041359dba6f4",
+                            "cellbender.pdf:md5,9fac78ed43a1c945246689886bb99f93",
+                            "cellbender_cell_barcodes.csv:md5,9fde26d889544196bb8431ded25655ed",
+                            "cellbender_filtered.h5:md5,aa879916ac3a1b6c42f7eba446b601b1"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e08fb718faa9b42d21cf0c9f9d2fa027/work/37/b13ec29911febdeba5e3a1ba959e71/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -63,7 +93,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:08:46.85400566"
+        "timestamp": "2025-07-22T17:11:45.579937522"
     },
     "CellRanger count v3.0.0 - .mtx directory input - CellBender v0.3": {
         "content": [
@@ -73,22 +103,40 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a727aeb0c6fc65baea9d119e3937e7b2/work/1a/43329cc8c7b87621fbbeb85f40700f/cellranger-count"
+                        [
+                            "cellbender.h5:md5,6949eb3980e0a971ea75b6a9db068b12",
+                            "cellbender.log:md5,6341995d40f1656a0c8bb1365912246a",
+                            "cellbender.pdf:md5,e0f0621deb4e8a0a30442410d43d1d00",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,6408e99220044773bb7f1729895ebccc",
+                            "cellbender_metrics.csv:md5,4d43ea66d9461d3aadc62d5be6371979",
+                            "cellbender_posterior.h5:md5,bd0c428ffbdd23a6154225aea7875f99",
+                            "cellbender_report.html:md5,dfb4dd91619d023db43c05ac72ab7f64"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a727aeb0c6fc65baea9d119e3937e7b2/work/1a/43329cc8c7b87621fbbeb85f40700f/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a727aeb0c6fc65baea9d119e3937e7b2/work/1a/43329cc8c7b87621fbbeb85f40700f/cellranger-count"
+                        [
+                            "cellbender.h5:md5,6949eb3980e0a971ea75b6a9db068b12",
+                            "cellbender.log:md5,6341995d40f1656a0c8bb1365912246a",
+                            "cellbender.pdf:md5,e0f0621deb4e8a0a30442410d43d1d00",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,6408e99220044773bb7f1729895ebccc",
+                            "cellbender_metrics.csv:md5,4d43ea66d9461d3aadc62d5be6371979",
+                            "cellbender_posterior.h5:md5,bd0c428ffbdd23a6154225aea7875f99",
+                            "cellbender_report.html:md5,dfb4dd91619d023db43c05ac72ab7f64"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a727aeb0c6fc65baea9d119e3937e7b2/work/1a/43329cc8c7b87621fbbeb85f40700f/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -96,7 +144,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:05:50.043638123"
+        "timestamp": "2025-07-22T17:13:05.05934008"
     },
     "CellRanger count v3.0.0 - use CellRanger's preset for number of cells and droplets - CellBender v0.3": {
         "content": [
@@ -106,22 +154,40 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/263bda0cb10ece4abdc0c0bd5f06ce83/work/8c/b08c85747a7a5ada2ce5a5e1436f80/cellranger-count"
+                        [
+                            "cellbender.h5:md5,d2562c4dd1df3a5b0d393c4569df2e59",
+                            "cellbender.log:md5,c9850601d4187eafba53ad669cb9a955",
+                            "cellbender.pdf:md5,d17e17fd861a2296bc1b2c9420496a8f",
+                            "cellbender_cell_barcodes.csv:md5,193cc1d4605ec978f6f0441a0168510b",
+                            "cellbender_filtered.h5:md5,1d21f150048b95f719d2ba435ee6ada5",
+                            "cellbender_metrics.csv:md5,70131474297e01a4b77f72c9b1b553dc",
+                            "cellbender_posterior.h5:md5,b64008da075a08c5958889555e26bcba",
+                            "cellbender_report.html:md5,7e4ac9aaaa6b16215dfbb660ffc68674"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/263bda0cb10ece4abdc0c0bd5f06ce83/work/8c/b08c85747a7a5ada2ce5a5e1436f80/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/263bda0cb10ece4abdc0c0bd5f06ce83/work/8c/b08c85747a7a5ada2ce5a5e1436f80/cellranger-count"
+                        [
+                            "cellbender.h5:md5,d2562c4dd1df3a5b0d393c4569df2e59",
+                            "cellbender.log:md5,c9850601d4187eafba53ad669cb9a955",
+                            "cellbender.pdf:md5,d17e17fd861a2296bc1b2c9420496a8f",
+                            "cellbender_cell_barcodes.csv:md5,193cc1d4605ec978f6f0441a0168510b",
+                            "cellbender_filtered.h5:md5,1d21f150048b95f719d2ba435ee6ada5",
+                            "cellbender_metrics.csv:md5,70131474297e01a4b77f72c9b1b553dc",
+                            "cellbender_posterior.h5:md5,b64008da075a08c5958889555e26bcba",
+                            "cellbender_report.html:md5,7e4ac9aaaa6b16215dfbb660ffc68674"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/263bda0cb10ece4abdc0c0bd5f06ce83/work/8c/b08c85747a7a5ada2ce5a5e1436f80/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -129,7 +195,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:08:06.089547022"
+        "timestamp": "2025-07-22T17:07:43.631015502"
     },
     "CellRanger count v3.0.0 - .mtx directory input - CellBender v0.2": {
         "content": [
@@ -139,22 +205,34 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e93ff4b6f2d0a97adf7452cf390d5c7/work/27/0f7c811b25eb97e1f671155cba28bf/cellranger-count"
+                        [
+                            "cellbender.h5:md5,41964bb7a73078ba1e7585398bc47186",
+                            "cellbender.log:md5,78c554665b6eeec2666574c49ac07806",
+                            "cellbender.pdf:md5,af17841122e72dc69489a6063ee14838",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,a640486b4375bdb0fe00638b6a8eb254"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e93ff4b6f2d0a97adf7452cf390d5c7/work/27/0f7c811b25eb97e1f671155cba28bf/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e93ff4b6f2d0a97adf7452cf390d5c7/work/27/0f7c811b25eb97e1f671155cba28bf/cellranger-count"
+                        [
+                            "cellbender.h5:md5,41964bb7a73078ba1e7585398bc47186",
+                            "cellbender.log:md5,78c554665b6eeec2666574c49ac07806",
+                            "cellbender.pdf:md5,af17841122e72dc69489a6063ee14838",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,a640486b4375bdb0fe00638b6a8eb254"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e93ff4b6f2d0a97adf7452cf390d5c7/work/27/0f7c811b25eb97e1f671155cba28bf/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -162,7 +240,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:09:31.320922549"
+        "timestamp": "2025-07-22T17:09:20.431384122"
     },
     "CellRanger count v3.0.0 - CellRanger's preset + mannual preset - CellBender v0.2": {
         "content": [
@@ -172,22 +250,34 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ddbc0f0e2525634603da4ac621a5048c/work/83/372e36da8bd5726b71f01e15263dc0/cellranger-count"
+                        [
+                            "cellbender.h5:md5,74cf6d16a46fc40fcaded22aaddc2f54",
+                            "cellbender.log:md5,90008286408885b142e006a18918bffa",
+                            "cellbender.pdf:md5,acc731682b6548902bc49c7557d71fb3",
+                            "cellbender_cell_barcodes.csv:md5,6d47577a08ccf51eae5b33a76b41b815",
+                            "cellbender_filtered.h5:md5,78e0b73e92f8ac166568268ed265d1f3"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ddbc0f0e2525634603da4ac621a5048c/work/83/372e36da8bd5726b71f01e15263dc0/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ddbc0f0e2525634603da4ac621a5048c/work/83/372e36da8bd5726b71f01e15263dc0/cellranger-count"
+                        [
+                            "cellbender.h5:md5,74cf6d16a46fc40fcaded22aaddc2f54",
+                            "cellbender.log:md5,90008286408885b142e006a18918bffa",
+                            "cellbender.pdf:md5,acc731682b6548902bc49c7557d71fb3",
+                            "cellbender_cell_barcodes.csv:md5,6d47577a08ccf51eae5b33a76b41b815",
+                            "cellbender_filtered.h5:md5,78e0b73e92f8ac166568268ed265d1f3"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ddbc0f0e2525634603da4ac621a5048c/work/83/372e36da8bd5726b71f01e15263dc0/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -195,7 +285,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:04:44.26089891"
+        "timestamp": "2025-07-22T17:12:44.341934076"
     },
     "CellRanger count v3.0.0 - .h5 file input - CellBender v0.2": {
         "content": [
@@ -205,22 +295,34 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/33aa7ee49ff47af54996ebf9ded8fb97/work/3d/0521943c01bc0c2d914bf886bf701c/cellranger-count"
+                        [
+                            "cellbender.h5:md5,8126c628c78f46c90135962b0d6da3bc",
+                            "cellbender.log:md5,4704f15727c8f245dd56d17195afd953",
+                            "cellbender.pdf:md5,9ea6759aae6d0ddb4afa6eb8026c7265",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,fede614d0d302e8900bdd383bb6e93c4"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/33aa7ee49ff47af54996ebf9ded8fb97/work/3d/0521943c01bc0c2d914bf886bf701c/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/33aa7ee49ff47af54996ebf9ded8fb97/work/3d/0521943c01bc0c2d914bf886bf701c/cellranger-count"
+                        [
+                            "cellbender.h5:md5,8126c628c78f46c90135962b0d6da3bc",
+                            "cellbender.log:md5,4704f15727c8f245dd56d17195afd953",
+                            "cellbender.pdf:md5,9ea6759aae6d0ddb4afa6eb8026c7265",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,fede614d0d302e8900bdd383bb6e93c4"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/33aa7ee49ff47af54996ebf9ded8fb97/work/3d/0521943c01bc0c2d914bf886bf701c/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -228,7 +330,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:03:16.968256211"
+        "timestamp": "2025-07-22T17:01:10.975172256"
     },
     "CellRanger count v3.0.0 - .h5 file input - CellBender v0.3": {
         "content": [
@@ -238,22 +340,40 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e7227ef9abea241adbd93b7913a42950/work/d3/341c06553542059f268391f799ce4c/cellranger-count"
+                        [
+                            "cellbender.h5:md5,be149233dd6eec15a88155bf82bff226",
+                            "cellbender.log:md5,84d667038890d0f8192133c111b24ecf",
+                            "cellbender.pdf:md5,ac249c4de9586a5c2869b5cf643e948a",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,a0eed65ed362bf2a371bea5d16511ab7",
+                            "cellbender_metrics.csv:md5,eab44367b56a200d1dcbb70df1eff041",
+                            "cellbender_posterior.h5:md5,f14a42b33c9e5d26e49e79ed80f341ea",
+                            "cellbender_report.html:md5,67744d51efd21564925b38b6793e6339"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e7227ef9abea241adbd93b7913a42950/work/d3/341c06553542059f268391f799ce4c/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e7227ef9abea241adbd93b7913a42950/work/d3/341c06553542059f268391f799ce4c/cellranger-count"
+                        [
+                            "cellbender.h5:md5,be149233dd6eec15a88155bf82bff226",
+                            "cellbender.log:md5,84d667038890d0f8192133c111b24ecf",
+                            "cellbender.pdf:md5,ac249c4de9586a5c2869b5cf643e948a",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,a0eed65ed362bf2a371bea5d16511ab7",
+                            "cellbender_metrics.csv:md5,eab44367b56a200d1dcbb70df1eff041",
+                            "cellbender_posterior.h5:md5,f14a42b33c9e5d26e49e79ed80f341ea",
+                            "cellbender_report.html:md5,67744d51efd21564925b38b6793e6339"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/e7227ef9abea241adbd93b7913a42950/work/d3/341c06553542059f268391f799ce4c/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -261,7 +381,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:12:33.85866651"
+        "timestamp": "2025-07-22T17:07:32.893467973"
     },
     "CellRanger arc v1.0.0 - CellBender v0.3": {
         "content": [
@@ -271,22 +391,40 @@
                         {
                             "id": "cellranger-arc"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/207fc0e6a921bd527f3f1cce0cc9cd09/work/b8/a727d629a7e9096f436ebb078d193d/cellranger-arc"
+                        [
+                            "cellbender.h5:md5,7d0aecaa6d1559c217f4aea4c3ae3c2b",
+                            "cellbender.log:md5,4d8ec671014d6e6f2f344aa364b88a5d",
+                            "cellbender.pdf:md5,d3d17b2390101ef6eb96b241140206cc",
+                            "cellbender_cell_barcodes.csv:md5,a2929d036b2aff0e4fa8886c3ff08382",
+                            "cellbender_filtered.h5:md5,a20c9dc0c4390ff85ba49f5cff0557c2",
+                            "cellbender_metrics.csv:md5,45a118fc1b822463ff05495e680a16ae",
+                            "cellbender_posterior.h5:md5,4ff57cbf47c6d32846530e1ec7a5b854",
+                            "cellbender_report.html:md5,c156308a0451860a692661ca3ec42c3a"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/207fc0e6a921bd527f3f1cce0cc9cd09/work/b8/a727d629a7e9096f436ebb078d193d/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-arc"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/207fc0e6a921bd527f3f1cce0cc9cd09/work/b8/a727d629a7e9096f436ebb078d193d/cellranger-arc"
+                        [
+                            "cellbender.h5:md5,7d0aecaa6d1559c217f4aea4c3ae3c2b",
+                            "cellbender.log:md5,4d8ec671014d6e6f2f344aa364b88a5d",
+                            "cellbender.pdf:md5,d3d17b2390101ef6eb96b241140206cc",
+                            "cellbender_cell_barcodes.csv:md5,a2929d036b2aff0e4fa8886c3ff08382",
+                            "cellbender_filtered.h5:md5,a20c9dc0c4390ff85ba49f5cff0557c2",
+                            "cellbender_metrics.csv:md5,45a118fc1b822463ff05495e680a16ae",
+                            "cellbender_posterior.h5:md5,4ff57cbf47c6d32846530e1ec7a5b854",
+                            "cellbender_report.html:md5,c156308a0451860a692661ca3ec42c3a"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/207fc0e6a921bd527f3f1cce0cc9cd09/work/b8/a727d629a7e9096f436ebb078d193d/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -294,7 +432,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:39:24.055961619"
+        "timestamp": "2025-07-22T17:17:56.330570254"
     },
     "CellRanger count v3.0.0 - output files in ungzipped format - CellBender v0.2": {
         "content": [
@@ -304,22 +442,34 @@
                         {
                             "id": "cellranger-count-nogz"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/adbecb20d8e3e7e805664254137b289e/work/ee/8d340d6aec3653e1fc6f34a8bcf371/cellranger-count-nogz"
+                        [
+                            "cellbender.h5:md5,cef5911382ac25f03d2b5bbff7327c02",
+                            "cellbender.log:md5,2ef5c890756086c7b1162388a430e1d5",
+                            "cellbender.pdf:md5,6b8462d3c054ed1a5647377ee970b1b7",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,0b2b6ddb02073b40e938da61d28de45e"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/adbecb20d8e3e7e805664254137b289e/work/ee/8d340d6aec3653e1fc6f34a8bcf371/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count-nogz"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/adbecb20d8e3e7e805664254137b289e/work/ee/8d340d6aec3653e1fc6f34a8bcf371/cellranger-count-nogz"
+                        [
+                            "cellbender.h5:md5,cef5911382ac25f03d2b5bbff7327c02",
+                            "cellbender.log:md5,2ef5c890756086c7b1162388a430e1d5",
+                            "cellbender.pdf:md5,6b8462d3c054ed1a5647377ee970b1b7",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,0b2b6ddb02073b40e938da61d28de45e"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/adbecb20d8e3e7e805664254137b289e/work/ee/8d340d6aec3653e1fc6f34a8bcf371/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -327,7 +477,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:05:12.666522354"
+        "timestamp": "2025-07-22T17:05:14.356055679"
     },
     "CellRanger multi v6.0.0 - sample multiplexing - CellBender v0.2": {
         "content": [
@@ -337,22 +487,34 @@
                         {
                             "id": "sample-multiplexing"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/9e8aba604e741c96c612280b6b38c6fa/work/f2/232ba0f48b5e004d359dcc99d94c47/sample-multiplexing"
+                        [
+                            "cellbender.h5:md5,621e198376336e6339d103857e245db6",
+                            "cellbender.log:md5,06bedbe98a168c6fa7531bd380f2473a",
+                            "cellbender.pdf:md5,aac8d5e05c6f89f5ae0f79b3dbbd8d07",
+                            "cellbender_cell_barcodes.csv:md5,bb8b8b6547a59ec6e152b2013a303384",
+                            "cellbender_filtered.h5:md5,1574b4b9e83f1ceb8e4e3e02a96f6c39"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/9e8aba604e741c96c612280b6b38c6fa/work/f2/232ba0f48b5e004d359dcc99d94c47/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "sample-multiplexing"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/9e8aba604e741c96c612280b6b38c6fa/work/f2/232ba0f48b5e004d359dcc99d94c47/sample-multiplexing"
+                        [
+                            "cellbender.h5:md5,621e198376336e6339d103857e245db6",
+                            "cellbender.log:md5,06bedbe98a168c6fa7531bd380f2473a",
+                            "cellbender.pdf:md5,aac8d5e05c6f89f5ae0f79b3dbbd8d07",
+                            "cellbender_cell_barcodes.csv:md5,bb8b8b6547a59ec6e152b2013a303384",
+                            "cellbender_filtered.h5:md5,1574b4b9e83f1ceb8e4e3e02a96f6c39"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/9e8aba604e741c96c612280b6b38c6fa/work/f2/232ba0f48b5e004d359dcc99d94c47/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -360,7 +522,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:56:09.020293292"
+        "timestamp": "2025-07-22T17:22:45.286638437"
     },
     "CellRanger arc v1.0.0 - CellBender v0.2": {
         "content": [
@@ -370,22 +532,34 @@
                         {
                             "id": "cellranger-arc"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6475caef1a010d4e325233d38c5fada2/work/14/3d197ccc70f08fb0da7859ba55bc45/cellranger-arc"
+                        [
+                            "cellbender.h5:md5,59ae45e33e3750b8d2444e4a625e1b52",
+                            "cellbender.log:md5,9f4f4047e4e7b43f317cd149a04b993c",
+                            "cellbender.pdf:md5,d1a2e3ec40cb4b40032a617aa6e513cd",
+                            "cellbender_cell_barcodes.csv:md5,4af98ea8cac910a121327b84a8d78944",
+                            "cellbender_filtered.h5:md5,b5ad6188158a41c657d43dcabc54234e"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6475caef1a010d4e325233d38c5fada2/work/14/3d197ccc70f08fb0da7859ba55bc45/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-arc"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6475caef1a010d4e325233d38c5fada2/work/14/3d197ccc70f08fb0da7859ba55bc45/cellranger-arc"
+                        [
+                            "cellbender.h5:md5,59ae45e33e3750b8d2444e4a625e1b52",
+                            "cellbender.log:md5,9f4f4047e4e7b43f317cd149a04b993c",
+                            "cellbender.pdf:md5,d1a2e3ec40cb4b40032a617aa6e513cd",
+                            "cellbender_cell_barcodes.csv:md5,4af98ea8cac910a121327b84a8d78944",
+                            "cellbender_filtered.h5:md5,b5ad6188158a41c657d43dcabc54234e"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6475caef1a010d4e325233d38c5fada2/work/14/3d197ccc70f08fb0da7859ba55bc45/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -393,7 +567,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T14:02:31.413328482"
+        "timestamp": "2025-07-22T17:36:08.788308038"
     },
     "CellRanger count v3.0.0 - output files in ungzipped format - CellBender v0.3": {
         "content": [
@@ -403,22 +577,40 @@
                         {
                             "id": "cellranger-count-nogz"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6717b769cdf679da0c8a43b46c92fa73/work/9f/1dfaec0404fa172ce66f63b468bc97/cellranger-count-nogz"
+                        [
+                            "cellbender.h5:md5,7cbb62f90a4a36154d85bb1e777eb098",
+                            "cellbender.log:md5,2e2d0e0f0de1369a24c7bd9b78ea35d1",
+                            "cellbender.pdf:md5,2b2857af607a792b4ec11505b3f276f6",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,12943bb7a7483de55546af0627c767dc",
+                            "cellbender_metrics.csv:md5,eab44367b56a200d1dcbb70df1eff041",
+                            "cellbender_posterior.h5:md5,04223d8386be44f3019e46816858bd35",
+                            "cellbender_report.html:md5,168acdaa25a893e495c17bbf2acb388c"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6717b769cdf679da0c8a43b46c92fa73/work/9f/1dfaec0404fa172ce66f63b468bc97/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count-nogz"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6717b769cdf679da0c8a43b46c92fa73/work/9f/1dfaec0404fa172ce66f63b468bc97/cellranger-count-nogz"
+                        [
+                            "cellbender.h5:md5,7cbb62f90a4a36154d85bb1e777eb098",
+                            "cellbender.log:md5,2e2d0e0f0de1369a24c7bd9b78ea35d1",
+                            "cellbender.pdf:md5,2b2857af607a792b4ec11505b3f276f6",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,12943bb7a7483de55546af0627c767dc",
+                            "cellbender_metrics.csv:md5,eab44367b56a200d1dcbb70df1eff041",
+                            "cellbender_posterior.h5:md5,04223d8386be44f3019e46816858bd35",
+                            "cellbender_report.html:md5,168acdaa25a893e495c17bbf2acb388c"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6717b769cdf679da0c8a43b46c92fa73/work/9f/1dfaec0404fa172ce66f63b468bc97/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -426,7 +618,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:27:17.629222035"
+        "timestamp": "2025-07-22T17:11:33.748547105"
     },
     "CellRanger multi v6.0.0 - sample multiplexing - CellBender v0.3": {
         "content": [
@@ -436,22 +628,40 @@
                         {
                             "id": "sample-multiplexing"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ca46292fe7c24b2cb80028d42c4d528f/work/75/add1d8b2b8a3f4860844091f061196/sample-multiplexing"
+                        [
+                            "cellbender.h5:md5,56299f1b5e2e21742c0d2902a9742b9c",
+                            "cellbender.log:md5,3e4f088e71e411c2304b1c481a843b48",
+                            "cellbender.pdf:md5,8b5cc13c6153ad3483ff6adfb56cb227",
+                            "cellbender_cell_barcodes.csv:md5,b1cf1119f88fec9f42b269b2e680c2eb",
+                            "cellbender_filtered.h5:md5,7241509f13259262b4c1fb86c524d976",
+                            "cellbender_metrics.csv:md5,c0a6bf1fb8290de479213261507ae89d",
+                            "cellbender_posterior.h5:md5,f8b0e66ae483342a7076df9a6a7048b2",
+                            "cellbender_report.html:md5,1536e5df91dd08123cf180186c3835fd"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ca46292fe7c24b2cb80028d42c4d528f/work/75/add1d8b2b8a3f4860844091f061196/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "sample-multiplexing"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ca46292fe7c24b2cb80028d42c4d528f/work/75/add1d8b2b8a3f4860844091f061196/sample-multiplexing"
+                        [
+                            "cellbender.h5:md5,56299f1b5e2e21742c0d2902a9742b9c",
+                            "cellbender.log:md5,3e4f088e71e411c2304b1c481a843b48",
+                            "cellbender.pdf:md5,8b5cc13c6153ad3483ff6adfb56cb227",
+                            "cellbender_cell_barcodes.csv:md5,b1cf1119f88fec9f42b269b2e680c2eb",
+                            "cellbender_filtered.h5:md5,7241509f13259262b4c1fb86c524d976",
+                            "cellbender_metrics.csv:md5,c0a6bf1fb8290de479213261507ae89d",
+                            "cellbender_posterior.h5:md5,f8b0e66ae483342a7076df9a6a7048b2",
+                            "cellbender_report.html:md5,1536e5df91dd08123cf180186c3835fd"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/ca46292fe7c24b2cb80028d42c4d528f/work/75/add1d8b2b8a3f4860844091f061196/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -459,7 +669,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T14:07:55.243505318"
+        "timestamp": "2025-07-22T17:21:28.560837794"
     },
     "CellRanger multi v7.1.0 - multiplex flex - CellBender v0.3": {
         "content": [
@@ -469,22 +679,40 @@
                         {
                             "id": "multiplex-flex"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f92a6ac477e0d9cc94dafebc496e41fe/work/3d/d0ecc274cbe2d60bf818cb294020c8/multiplex-flex"
+                        [
+                            "cellbender.h5:md5,8da6cf7d4a526e57b4d3f1adaa0fabda",
+                            "cellbender.log:md5,ba808bbad6883e176c325fcc004c312d",
+                            "cellbender.pdf:md5,753fe20ea199b7ee250aa9fba8345991",
+                            "cellbender_cell_barcodes.csv:md5,f72fa91a392fa2352ce67c1906d277e0",
+                            "cellbender_filtered.h5:md5,4661586bc08708711051ea8c7d739fec",
+                            "cellbender_metrics.csv:md5,38052814391321bb565bee22b2a60457",
+                            "cellbender_posterior.h5:md5,7cb4950978e1fa21a5a9ebe7c65c6e18",
+                            "cellbender_report.html:md5,fa4f61559b01cbe6d4ebc01b783d8138"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f92a6ac477e0d9cc94dafebc496e41fe/work/3d/d0ecc274cbe2d60bf818cb294020c8/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "multiplex-flex"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f92a6ac477e0d9cc94dafebc496e41fe/work/3d/d0ecc274cbe2d60bf818cb294020c8/multiplex-flex"
+                        [
+                            "cellbender.h5:md5,8da6cf7d4a526e57b4d3f1adaa0fabda",
+                            "cellbender.log:md5,ba808bbad6883e176c325fcc004c312d",
+                            "cellbender.pdf:md5,753fe20ea199b7ee250aa9fba8345991",
+                            "cellbender_cell_barcodes.csv:md5,f72fa91a392fa2352ce67c1906d277e0",
+                            "cellbender_filtered.h5:md5,4661586bc08708711051ea8c7d739fec",
+                            "cellbender_metrics.csv:md5,38052814391321bb565bee22b2a60457",
+                            "cellbender_posterior.h5:md5,7cb4950978e1fa21a5a9ebe7c65c6e18",
+                            "cellbender_report.html:md5,fa4f61559b01cbe6d4ebc01b783d8138"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f92a6ac477e0d9cc94dafebc496e41fe/work/3d/d0ecc274cbe2d60bf818cb294020c8/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -492,7 +720,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:55:50.48754569"
+        "timestamp": "2025-07-22T17:48:04.368976817"
     },
     "CellRanger count v3.0.0 - CellRanger's preset + mannual preset - CellBender v0.3": {
         "content": [
@@ -502,22 +730,40 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a602dae72bcc16bbbf23f0b4b8580d4f/work/40/17eafe3f8be7228341b610833d303b/cellranger-count"
+                        [
+                            "cellbender.h5:md5,5f0610af138dfa7f4c25482d9cabfa88",
+                            "cellbender.log:md5,20c22dec0fa9558baf4a170245f7a88d",
+                            "cellbender.pdf:md5,96922ea09809ac16589f9e1ccb482035",
+                            "cellbender_cell_barcodes.csv:md5,9b9a429191ee27462ac3bb44f25ec775",
+                            "cellbender_filtered.h5:md5,f92061bc693a2be2bdb6956678cd7a29",
+                            "cellbender_metrics.csv:md5,6c1dbecb3ca68235475da6583a69adb4",
+                            "cellbender_posterior.h5:md5,1fe79484c496f1f1ac773dbdd4c23058",
+                            "cellbender_report.html:md5,83f79c21594b369d68780c5d23d72076"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a602dae72bcc16bbbf23f0b4b8580d4f/work/40/17eafe3f8be7228341b610833d303b/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a602dae72bcc16bbbf23f0b4b8580d4f/work/40/17eafe3f8be7228341b610833d303b/cellranger-count"
+                        [
+                            "cellbender.h5:md5,5f0610af138dfa7f4c25482d9cabfa88",
+                            "cellbender.log:md5,20c22dec0fa9558baf4a170245f7a88d",
+                            "cellbender.pdf:md5,96922ea09809ac16589f9e1ccb482035",
+                            "cellbender_cell_barcodes.csv:md5,9b9a429191ee27462ac3bb44f25ec775",
+                            "cellbender_filtered.h5:md5,f92061bc693a2be2bdb6956678cd7a29",
+                            "cellbender_metrics.csv:md5,6c1dbecb3ca68235475da6583a69adb4",
+                            "cellbender_posterior.h5:md5,1fe79484c496f1f1ac773dbdd4c23058",
+                            "cellbender_report.html:md5,83f79c21594b369d68780c5d23d72076"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/a602dae72bcc16bbbf23f0b4b8580d4f/work/40/17eafe3f8be7228341b610833d303b/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -525,7 +771,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:07:23.362613069"
+        "timestamp": "2025-07-22T17:12:23.584538373"
     },
     "CellRanger multi v7.1.0 - multiplex flex - CellBender v0.2": {
         "content": [
@@ -568,22 +814,40 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e123fad1e9bf95a8c91087c013233ae/work/03/1201fb452cf810832e25bd67e97ef9/cellranger-count"
+                        [
+                            "cellbender.h5:md5,ba0279d1dddad64222d6bab0c602bfad",
+                            "cellbender.log:md5,79d6824a0bdf35bb6f42d99fb0e0d221",
+                            "cellbender.pdf:md5,66e2b9a0c6bd81d81bb674fe640fdc9a",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,2ca62ba1f96809f69ababa738c1ef467",
+                            "cellbender_metrics.csv:md5,eab44367b56a200d1dcbb70df1eff041",
+                            "cellbender_posterior.h5:md5,a8595c216cb0ed54f1abba1cc2aff9bd",
+                            "cellbender_report.html:md5,ef7f9175febf2d4d7046a04a7827aeab"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e123fad1e9bf95a8c91087c013233ae/work/03/1201fb452cf810832e25bd67e97ef9/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e123fad1e9bf95a8c91087c013233ae/work/03/1201fb452cf810832e25bd67e97ef9/cellranger-count"
+                        [
+                            "cellbender.h5:md5,ba0279d1dddad64222d6bab0c602bfad",
+                            "cellbender.log:md5,79d6824a0bdf35bb6f42d99fb0e0d221",
+                            "cellbender.pdf:md5,66e2b9a0c6bd81d81bb674fe640fdc9a",
+                            "cellbender_cell_barcodes.csv:md5,ca4a4086dff691db97b3ac6d491ebb4d",
+                            "cellbender_filtered.h5:md5,2ca62ba1f96809f69ababa738c1ef467",
+                            "cellbender_metrics.csv:md5,eab44367b56a200d1dcbb70df1eff041",
+                            "cellbender_posterior.h5:md5,a8595c216cb0ed54f1abba1cc2aff9bd",
+                            "cellbender_report.html:md5,ef7f9175febf2d4d7046a04a7827aeab"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/7e123fad1e9bf95a8c91087c013233ae/work/03/1201fb452cf810832e25bd67e97ef9/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -591,7 +855,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:27:24.309818108"
+        "timestamp": "2025-07-22T17:02:58.997029139"
     },
     "CellRanger count v3.0.0 - CellBender v0.2": {
         "content": [
@@ -601,22 +865,34 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/1a08d8573b2e324c4d3c32f4a3862273/work/82/b53197dc0c61179f296f1e72282704/cellranger-count"
+                        [
+                            "cellbender.h5:md5,242e4cd748f1fec1501b4728aa952d81",
+                            "cellbender.log:md5,3b87fcccfc41c8f665e58293e430809b",
+                            "cellbender.pdf:md5,e5b5d9881158312bd000c8fe187e0707",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,67ff992af77c5bf5913314cc10d7fd27"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/1a08d8573b2e324c4d3c32f4a3862273/work/82/b53197dc0c61179f296f1e72282704/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/1a08d8573b2e324c4d3c32f4a3862273/work/82/b53197dc0c61179f296f1e72282704/cellranger-count"
+                        [
+                            "cellbender.h5:md5,242e4cd748f1fec1501b4728aa952d81",
+                            "cellbender.log:md5,3b87fcccfc41c8f665e58293e430809b",
+                            "cellbender.pdf:md5,e5b5d9881158312bd000c8fe187e0707",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,67ff992af77c5bf5913314cc10d7fd27"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/1a08d8573b2e324c4d3c32f4a3862273/work/82/b53197dc0c61179f296f1e72282704/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -624,7 +900,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:10:06.688049274"
+        "timestamp": "2025-07-22T17:01:19.465640296"
     },
     "CellRanger count v3.0.0 - not outs directory - CellBender v0.3": {
         "content": [
@@ -667,22 +943,34 @@
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/26a4b8014371cb3866bae3f82a12f395/work/d7/975ee2eddb2163f946f2052f0c4c61/cellranger-count"
+                        [
+                            "cellbender.h5:md5,0587271869fbb5503162316af06ded5d",
+                            "cellbender.log:md5,8496c88a1ca59a718a5cad2a1ab9e4a0",
+                            "cellbender.pdf:md5,ab0f1c102f3f2f440f8158bb8ac353c4",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,a4dffc1457d272b450cfeb6c9ade7da9"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/26a4b8014371cb3866bae3f82a12f395/work/d7/975ee2eddb2163f946f2052f0c4c61/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "cellranger-count"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/26a4b8014371cb3866bae3f82a12f395/work/d7/975ee2eddb2163f946f2052f0c4c61/cellranger-count"
+                        [
+                            "cellbender.h5:md5,0587271869fbb5503162316af06ded5d",
+                            "cellbender.log:md5,8496c88a1ca59a718a5cad2a1ab9e4a0",
+                            "cellbender.pdf:md5,ab0f1c102f3f2f440f8158bb8ac353c4",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,a4dffc1457d272b450cfeb6c9ade7da9"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/26a4b8014371cb3866bae3f82a12f395/work/d7/975ee2eddb2163f946f2052f0c4c61/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -690,7 +978,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:13:08.383116759"
+        "timestamp": "2025-07-22T17:06:00.139287729"
     },
     "STARsolo - CellBender v0.3": {
         "content": [
@@ -700,22 +988,40 @@
                         {
                             "id": "starsolo"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/647ddb9550ca53c3056f3b4b94886084/work/a2/d1631f505096522897a458868d7811/starsolo"
+                        [
+                            "cellbender.h5:md5,fa90ee2e25de9a7e9906ffcbdf95073c",
+                            "cellbender.log:md5,bc8c0bb7781a1b61985553df35a79f72",
+                            "cellbender.pdf:md5,348af07239827d811479c06489d9051f",
+                            "cellbender_cell_barcodes.csv:md5,312be8cf74e0036a4777665600e9a049",
+                            "cellbender_filtered.h5:md5,aac6022da8f7444302a8f9fa86c13471",
+                            "cellbender_metrics.csv:md5,85d0940123e1dd1b7c75fb7a3d64cd14",
+                            "cellbender_posterior.h5:md5,4a8f8171cc2733b32211ab27b5fcbe32",
+                            "cellbender_report.html:md5,336d8b0d07adeb96322b9ab75bffedd6"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/647ddb9550ca53c3056f3b4b94886084/work/a2/d1631f505096522897a458868d7811/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "starsolo"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/647ddb9550ca53c3056f3b4b94886084/work/a2/d1631f505096522897a458868d7811/starsolo"
+                        [
+                            "cellbender.h5:md5,fa90ee2e25de9a7e9906ffcbdf95073c",
+                            "cellbender.log:md5,bc8c0bb7781a1b61985553df35a79f72",
+                            "cellbender.pdf:md5,348af07239827d811479c06489d9051f",
+                            "cellbender_cell_barcodes.csv:md5,312be8cf74e0036a4777665600e9a049",
+                            "cellbender_filtered.h5:md5,aac6022da8f7444302a8f9fa86c13471",
+                            "cellbender_metrics.csv:md5,85d0940123e1dd1b7c75fb7a3d64cd14",
+                            "cellbender_posterior.h5:md5,4a8f8171cc2733b32211ab27b5fcbe32",
+                            "cellbender_report.html:md5,336d8b0d07adeb96322b9ab75bffedd6"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/647ddb9550ca53c3056f3b4b94886084/work/a2/d1631f505096522897a458868d7811/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -723,7 +1029,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:08:34.282962177"
+        "timestamp": "2025-07-22T17:10:54.392274198"
     },
     "STARsolo - CellBender v0.2": {
         "content": [
@@ -733,22 +1039,34 @@
                         {
                             "id": "starsolo"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/3cd12d61f050657b5e32b248ff444bd0/work/a2/79805926dda1734dbeacf67f7221af/starsolo"
+                        [
+                            "cellbender.h5:md5,76d73e769d0fd35dc90db6a190d17c45",
+                            "cellbender.log:md5,cc32e8dcb23858fda1c36ac1f2b2216e",
+                            "cellbender.pdf:md5,2bf60bd5fa6d79fc895145cf73097e81",
+                            "cellbender_cell_barcodes.csv:md5,e223cf9c56e03d2eb6ffd8b58e842257",
+                            "cellbender_filtered.h5:md5,28bd1cca0b7715b72284115dcf6b61a8"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/3cd12d61f050657b5e32b248ff444bd0/work/a2/79805926dda1734dbeacf67f7221af/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "starsolo"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/3cd12d61f050657b5e32b248ff444bd0/work/a2/79805926dda1734dbeacf67f7221af/starsolo"
+                        [
+                            "cellbender.h5:md5,76d73e769d0fd35dc90db6a190d17c45",
+                            "cellbender.log:md5,cc32e8dcb23858fda1c36ac1f2b2216e",
+                            "cellbender.pdf:md5,2bf60bd5fa6d79fc895145cf73097e81",
+                            "cellbender_cell_barcodes.csv:md5,e223cf9c56e03d2eb6ffd8b58e842257",
+                            "cellbender_filtered.h5:md5,28bd1cca0b7715b72284115dcf6b61a8"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/3cd12d61f050657b5e32b248ff444bd0/work/a2/79805926dda1734dbeacf67f7221af/versions.yml"
+                    "versions.yml:md5,7bfa44a1aea85917032eb92c257f219e"
                 ]
             }
         ],
@@ -756,7 +1074,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:15:01.905149237"
+        "timestamp": "2025-07-22T17:14:39.468740248"
     },
     "CellRanger multi v6.0.0 - singleplex crispr - CellBender v0.3": {
         "content": [
@@ -766,22 +1084,40 @@
                         {
                             "id": "singleplex-crispr"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f27309550bbd7a9f5ec0487efbf1fc06/work/9d/dd5fe79d55baa7e3a069f807fc41ee/singleplex-crispr"
+                        [
+                            "cellbender.h5:md5,d8cc9f3148a14570a817099d87bafa56",
+                            "cellbender.log:md5,024404fdd8eb7011d40e58696f11eb40",
+                            "cellbender.pdf:md5,fcd48f5bf9e1c20b0f200298c6cbb245",
+                            "cellbender_cell_barcodes.csv:md5,7df72b997a5f1dc11e35233680dfdd80",
+                            "cellbender_filtered.h5:md5,e81181b7ef143de1471207e3ab64846a",
+                            "cellbender_metrics.csv:md5,e708205f45dd7d158f2b74255372add6",
+                            "cellbender_posterior.h5:md5,5636791f7ce110255f1a1df38c81d7db",
+                            "cellbender_report.html:md5,813610b658f25c922249554da0fed7f8"
+                        ]
                     ]
                 ],
                 "1": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f27309550bbd7a9f5ec0487efbf1fc06/work/9d/dd5fe79d55baa7e3a069f807fc41ee/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ],
                 "outputdir": [
                     [
                         {
                             "id": "singleplex-crispr"
                         },
-                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f27309550bbd7a9f5ec0487efbf1fc06/work/9d/dd5fe79d55baa7e3a069f807fc41ee/singleplex-crispr"
+                        [
+                            "cellbender.h5:md5,d8cc9f3148a14570a817099d87bafa56",
+                            "cellbender.log:md5,024404fdd8eb7011d40e58696f11eb40",
+                            "cellbender.pdf:md5,fcd48f5bf9e1c20b0f200298c6cbb245",
+                            "cellbender_cell_barcodes.csv:md5,7df72b997a5f1dc11e35233680dfdd80",
+                            "cellbender_filtered.h5:md5,e81181b7ef143de1471207e3ab64846a",
+                            "cellbender_metrics.csv:md5,e708205f45dd7d158f2b74255372add6",
+                            "cellbender_posterior.h5:md5,5636791f7ce110255f1a1df38c81d7db",
+                            "cellbender_report.html:md5,813610b658f25c922249554da0fed7f8"
+                        ]
                     ]
                 ],
                 "versions": [
-                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/f27309550bbd7a9f5ec0487efbf1fc06/work/9d/dd5fe79d55baa7e3a069f807fc41ee/versions.yml"
+                    "versions.yml:md5,53e48cca1f71828723220055334da62d"
                 ]
             }
         ],
@@ -789,7 +1125,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-07-22T13:26:01.156537993"
+        "timestamp": "2025-07-22T17:24:24.449283518"
     },
     "CellRanger multi v6.0.0 - singleplex crispr - CellBender v0.2": {
         "content": [
