@@ -98,7 +98,7 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 * `--estimator` - An estimator that is used for posterior generation (default: "mckp")
 * `--version` — Cellbender version (available: `0.2`, `0.3`; `default: 0.3`)
 * `--qc_mode` — Quality control mode (`default: 3`)
-* `--output_dir` — Output directory (`default: cellbender-results`)
+* `--output_dir` — Output directory (`default: results`)
 
 ## Docker Image
 The image is based on

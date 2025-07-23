@@ -6,43 +6,60 @@ def helpMessage() {
   log.info(
     """
     ===================
-    Cellbender pipeline
+    nf-cellbender pipeline
     ===================
-    This pipeline runs Cellbender to eliminate technical artifacts from high-throughput single-cell omics data 
+    This pipeline runs Cellbender to eliminate technical artifacts from high-throughput single-cell omics data using Nextflow.
+
     Usage: nextflow run main.nf [parameters]
-        Required parameters:
-            --sample_table <string>  Path to a .tsv file containing a list of sample IDs and paths to mappers result directory (see in example directory)
-            --mapper       <string>  Either "cellranger" or "starsolo"
-            --solo_quant   <string>  Either "Gene" or "GeneFull"(only required if --mapper is "starsolo")
-        
-        Optional parameters:
-            --help              Display this help message
-            --on_irods          Set this flag if the data is on IRODS
-            --exclude_features  Specify a list of features to exclude. The most popular one include: Antibody Capture, VDJ, Peaks, etc. 
-                                For cellbender 0.2 only "All" (not available for version 0.3) is available. See README.md for more info. (default: "")
-            --outdir            Output directory (default: cellbender-results)
-            --cells             Number of cells (default: "cellbender-default")
-            --droplets          Number of droplets (default: "cellbender-default")
-            --epochs            Number of epochs (default: "cellbender-default")
-            --fpr               False positive rate (default: "cellbender-default")
-            --lr                Learning rate (default: "cellbender-default")
-            --min_umi           Minimal UMI threshold (default: "cellbender-default") 
-            --version           Cellbender version (available: 0.2, 0.3; default: 0.3)
-            --qc_mode           Quality control mode (default: 3)
-        
 
-        Examples:
-        1. Run version 0.2 for cellranger output without any parameters specified:
-            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper cellranger --version 0.2
+    Required parameters:
+      --sample_table <string>   Path to a .csv file with sample IDs and paths to CellRanger/STARsolo output, .h5, or .mtx directory
+      --cells <int>             Number of cells (required for version 0.2 with .h5 or .mtx input)
+      --droplets <int>          Number of droplets (required for version 0.2 with .h5 or .mtx input)
 
-        2. Run version 0.3 for starsolo output without any parameters specified, when data is on IRODS:
-            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper starsolo --solo_quant GeneFull --version 0.3 --on_irods
-        
-        3. Specify some parameters as well as exclude features for version 0.2 (only "All" is available for version 0.2):
-            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper cellranger --version 0.2 --cells 5000 --exclude_features All
-        
-        4. Specify some parameters as well as exclude some features for version 0.3 ("All" is not available for version 0.3):
-            nextflow run main.nf --sample_table examples/sample_table.tsv --mapper cellranger --version 0.3 --cells 5000 --exclude_features "Antibody Capture"
+    Optional parameters:
+      --help                    Display this help message
+      --on_irods                Set this flag if the sample table points to IRODS catalog
+      --ignore_extensions       File extensions to ignore during IRODS catalog loading (default: "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2")
+      --mapper_preset           Use CellRanger/STARsolo output to estimate --cells, --droplets, --min_umi (whole output dir required)
+      --starsolo_mapper         STARsolo output type for CellBender (default: "GeneFull")
+      --exclude_features        Comma-separated features to exclude (see README for options)
+      --epochs                  Number of epochs
+      --fpr                     False positive rate
+      --lr                      Learning rate
+      --min_umi                 Lower bound for empty-droplet UMI count
+      --force_empty_umi_prior   Higher bound for empty-droplet UMI count
+      --estimator               Estimator for posterior generation (default: "mckp")
+      --version                 Cellbender version (available: 0.2, 0.3; default: 0.3)
+      --qc_mode                 Quality control mode (default: 3)
+      --output_dir              Output directory (default: results)
+
+    Examples:
+      # Basic usage - CellBender v0.2 with local data (manual cell/droplet counts required)
+      nextflow run main.nf --version "0.2" --sample_table examples/sample_table.csv --cells <val> --droplets <val>
+      
+      # Basic usage - CellBender v0.3 with iRODS data (automatic parameter estimation)
+      nextflow run main.nf --sample_table examples/sample_table_irods.csv --on_irods
+      
+      # Use mapper preset - CellBender v0.2 (preset applied by default for v0.2)
+      nextflow run main.nf --sample_table examples/sample_table_preset.csv --version "0.2" --on_irods
+      
+      # Use mapper preset - CellBender v0.3 (explicitly enable preset for v0.3)
+      nextflow run main.nf --sample_table examples/sample_table_preset.csv --on_irods --mapper_preset --version "0.3"
+      
+      # Exclude features - CellBender v0.2 (only "All" option available)
+      nextflow run main.nf --version "0.2" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "All"
+      
+      # Exclude features - CellBender v0.3 (specify comma-separated feature types)
+      nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --mapper_preset
+      
+      # Advanced usage - CellBender v0.2 with feature exclusion, custom extensions, and output directory
+      nextflow run main.nf --version "0.2" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "All" --ignore_extensions "bam,bz2" --output_dir "my-cellbender-v2-results"
+      
+      # Advanced usage - CellBender v0.3 with multiple feature exclusions, custom extensions, and output directory
+      nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --ignore_extensions "bam,bz2" --output_dir "my-cellbender-v3-results"
+
+    For more details, see the README.md file in this repository.
     """.stripIndent()
   )
 }
