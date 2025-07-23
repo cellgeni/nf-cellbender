@@ -12,24 +12,71 @@ There are two branches:
 ## Contents of Repo:
 * `main.nf`  the Nextflow pipeline that executes cellbender.
 * `nextflow.config` — the configuration script that allows the processes to be submitted to IBM LSF on Sanger's HPC and ensures correct environment is set via singularity container (this is an absolute path). Global default parameters are also set in this file.
-* `examples/sample_table.tsv` — an example of `.tsv` file containing path to `cellranger` output directory for each specified sample
-* `examples/sample_table_irods.tsv` — an example of `.tsv` file containing `IRODS` path to `starsolo` output directory for each specified sample
+* `examples/sample_table.csv` — an example of `.csv` file containing path to `cellranger` output directory for each specified sample
+* `examples/sample_table_irods.csv` — an example of `.csv` file containing `IRODS` path to `starsolo` output directory for each specified sample
 * `examples/run_cellranger_local_v2.sh` — an example run script that executes the pipeline with `--mapper cellranger` and version `0.2` options.
 * `examples/run_starsolo_irods_v3.sh` — an example run script that executes the pipeline with `--mapper starsolo` and version `0.3` options.
 * `docker/Dockerfile_v2` — a `Dockerfile` with image for `cellbender` of version `0.2.2`
 * `docker/Dockerfile_v3` — a `Dockerfile` with image for `cellbender` of version `0.3.2` 
 
+## Examples
+### Default parameters
+Running `Cellbender` version `0.2` using local data
+```
+nextflow run main.nf --version "0.2" --sample_table examples/sample_table.csv --cells <val> --droplets <val>
+```
+
+Running `Cellbender` version `0.3` (used by default) using data on `iRODS`
+```
+nextflow run main.nf --sample_table examples/sample_table_irods.csv --on_irods
+```
+
+### CellRanger/STARsolo preset
+Running `Cellbender` version `0.2`. The parameter `--mapper_preset` is applied for version `0.2` by default
+```
+nextflow run main.nf --sample_table examples/sample_table_preset.csv --version "0.2" --on_irods
+```
+
+Running `Cellbender` version `0.3` with `--mapper_preset`
+```
+nextflow run main.nf --sample_table examples/sample_table_preset.csv --on_irods --mapper_preset --version "0.3"
+```
+
+### Exclude features
+Only `"All"` is available for version `0.2`
+```
+nextflow run main.nf --version "0.2" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "All"
+```
+
+Specify a list of comma-separated features you want to exclude for version `0.3`
+```
+nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --mapper_preset
+```
+
+### Combine all together
+Use mapper preset with feature exclusion for version `0.2`. Load the data from iRODS (do not load `.bam` and `.bz2` files) and change the name of output directory to `my-cellbender-v2-results`
+```
+nextflow run main.nf --version "0.2" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "All" --ignore_extensions "bam,bz2" --output_dir "my-cellbender-v2-results"
+```
+
+Use mapper preset with feature exclusion for version `0.3`. Load the data from iRODS (do not load `.bam` and `.bz2` files) and change the name of output directory to `my-cellbender-v3-results`
+```
+nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --ignore_extensions "bam,bz2" --output_dir "my-cellbender-v3-results"
+```
+
+
+
 ## Pipeline Parameters:
 ### Required parameters:
-* `--sample_table` — Path to a .tsv file containing a list of sample IDs and paths to mappers result directory (see in example directory)
-* `--cells` — Number of cells (**Required** for version `0.2`; **Optional** for version `0.3`)
-* `--droplets` — Number of droplets (**Required** for version `0.2`; **Optional** for version `0.3`)
+* `--sample_table` — Path to a .csv file containing a list of sample IDs and paths to one of the following: `CellRanger`/`STARsolo` output directory (works for all flavors of `CellRanger`), `.h5` file, `.mtx` directory. For more details see `examples/sample_table.csv` file.
+* `--cells` — Number of cells. **Required** for version `0.2` when `.h5` file or `.mtx` file is provided in `--sample_table`. Otherwise `--mapper_preset` is used for version `0.2` or `CellBender`'s parameter estimation is used for version `0.3`.
+* `--droplets` — Number of droplets. **Required** for version `0.2` when `.h5` file or `.mtx` file is provided in `--sample_table`. Otherwise `--mapper_preset` is used for version `0.2` or `CellBender`'s parameter estimation is used for version `0.3`.
 
 ### Optional parameters:
 * `--help` — Display this help message
-* `--on_irods` — Set this flag if the data is on IRODS
+* `--on_irods` — Set this flag if the path in `--sample_table` file points to IRODS catalog
 * `--ignore_extensions` - Specify file extensions to drop those files during catalog loading from `iRODS` (default: "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2")
-* `--mapper_preset` - Use `CellRanger`'s or `STARsolo`'s output to estimate `--cells`, `--droplets` and `--min_umi` parameters
+* `--mapper_preset` - Use `CellRanger`'s or `STARsolo`'s output to estimate `--cells`, `--droplets` and `--min_umi` parameters. Works only if the whole output directory is specified as path in `--sample_table`
 * `--starsolo_mapper` - Specify `STARsolo`'s output type to use for `CellBender` (`default: "GeneFull"`)
 * `--exclude_features` — Specify a list of features to exclude. Available options include:
   *  `"Antibody Capture"` — only available for version `0.3` of `cellbender`
