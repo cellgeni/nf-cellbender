@@ -12,10 +12,11 @@ There are two branches:
 ## Contents of Repo:
 * `main.nf`  the Nextflow pipeline that executes cellbender.
 * `nextflow.config` — the configuration script that allows the processes to be submitted to IBM LSF on Sanger's HPC and ensures correct environment is set via singularity container (this is an absolute path). Global default parameters are also set in this file.
-* `examples/sample_table.csv` — an example of `.csv` file containing path to `cellranger` output directory for each specified sample
-* `examples/sample_table_irods.csv` — an example of `.csv` file containing `IRODS` path to `starsolo` output directory for each specified sample
-* `examples/run_cellranger_local_v2.sh` — an example run script that executes the pipeline with `--mapper cellranger` and version `0.2` options.
-* `examples/run_starsolo_irods_v3.sh` — an example run script that executes the pipeline with `--mapper starsolo` and version `0.3` options.
+* `examples/sample_table.csv` — example CSV file with sample IDs and local filesystem paths to CellRanger output directories for each sample
+* `examples/sample_table_irods.csv` — example CSV file with sample IDs and iRODS catalog paths to STARsolo output directories for each sample (excluded `.h5` files)
+* `examples/sample_table_preset.csv` — example CSV file designed for use with `--mapper_preset` option to automatically estimate cell/droplet parameters from CellRanger/STARsolo output (excluded `.mtx` and `.h5` files)
+* `examples/sample_table_exclude_features.csv` — example CSV file for demonstrating feature exclusion workflows with different CellBender versions
+* `examples/run_cellbender.sh` — example of bash script to run this pipeline
 * `docker/Dockerfile_v2` — a `Dockerfile` with image for `cellbender` of version `0.2.2`
 * `docker/Dockerfile_v3` — a `Dockerfile` with image for `cellbender` of version `0.3.2` 
 
