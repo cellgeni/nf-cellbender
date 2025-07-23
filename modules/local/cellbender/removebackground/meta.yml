@@ -1,0 +1,52 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "cellbender_removebackground"
+description: "Remove technical artifacts from high-throughput single-cell RNA sequencing data using CellBender"
+keywords:
+  - single-cell
+  - RNA-seq
+  - artifact removal
+  - empty droplets
+  - cellbender
+tools:
+  - "cellbender":
+      description: "A software package for eliminating technical artifacts from high-throughput single-cell RNA sequencing (scRNA-seq) data"
+      homepage: "https://cellbender.readthedocs.io/en/latest/"
+      documentation: "https://cellbender.readthedocs.io/en/latest/"
+      tool_dev_url: "https://github.com/broadinstitute/CellBender"
+      licence: ["BSD-3-clause"]
+      identifier: biotools:CellBender
+
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'sample1' ]`
+    - input:
+        type: file
+        description: |
+          CellRanger/STARsolo output directory, .h5 file, or .mtx directory containing single-cell RNA-seq data
+        pattern: "*.{h5,mtx}|*/"
+
+output:
+  outputdir:
+    - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'sample1' ]`
+    - "*":
+        type: directory
+        description: Directory containing CellBender output files including filtered count matrices
+        pattern: "*/"
+  versions:
+    - "versions.yml":
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
+
+authors:
+  - "@claptar"
+maintainers:
+  - "@claptar"
