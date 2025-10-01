@@ -2,13 +2,11 @@
 
 set -euo pipefail
 
-sample_table=sample_table.tsv
+sample_table=sample_table.csv
 
 [[ -e "$sample_table" ]] || (echo "File $sample_table not found" && false)
 
 nextflow run cellgeni/nf-cellbender -r main \
   --sample_table $sample_table \
-  --mapper starsolo \
-  --solo_quant GeneFull \
   --version 0.3 \
   -resume

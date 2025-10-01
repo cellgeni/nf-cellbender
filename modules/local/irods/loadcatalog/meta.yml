@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "irods_loadcatalog"
+description: "Load data from iRODS catalogs with selective file filtering based on extensions"
+keywords:
+  - irods
+  - data transfer
+  - catalog loading
+  - file filtering
+  - remote data
+tools:
+  - "irods":
+      description: "Integrated Rule-Oriented Data System for data management and sharing"
+      homepage: "https://irods.org/"
+      documentation: "https://docs.irods.org/"
+      tool_dev_url: "https://github.com/irods/irods"
+      licence: ["BSD-3-Clause"]
+      identifier: biotools:iRODS
+
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'sample1' ]`
+    - catalog:
+        type: string
+        description: iRODS catalog path containing single-cell data files
+output:
+  catalog:
+    - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'sample1' ]`
+    - "*":
+        type: directory
+        description: Directory containing downloaded files from iRODS catalog with filtered extensions
+        pattern: "*/"
+  versions:
+    - "versions.yml":
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
+        ontologies:
+          - edam: "http://edamontology.org/format_3750" # YAML
+authors:
+  - "@claptar"
+maintainers:
+  - "@claptar"

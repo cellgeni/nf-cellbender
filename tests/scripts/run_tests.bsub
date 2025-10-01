@@ -1,0 +1,18 @@
+#BSUB -G cellgeni
+#BSUB -q "basement"
+#BSUB -n 1
+#BSUB -M 2G
+#BSUB -R "select[mem>2G] rusage[mem=2G]"
+#BSUB -o "logs/testOutput%I.%J.log"
+#BSUB -e "logs/testError%I.%J.log"
+
+# Set job index (comes from LSF) and total number of jobs (comes from -env command)
+i=$LSB_JOBINDEX
+n=$N
+
+# Load nf-test if needed
+if [[ -z "$(which nf-test)" ]]; then
+    module load cellgen/nf-test/0.9.2
+fi
+
+nf-test test modules/local/irods/loadcatalog/tests/main.nf.test modules/local/cellbender/removebackground/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug
