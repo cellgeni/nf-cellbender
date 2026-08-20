@@ -102,6 +102,7 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 * `--output_dir` — Output directory (`default: results`)
 * `--gpuqueue` — GPU queue to submit `CellBender` jobs to (e.g. `gpu-normal`, `cub22-inference`; `default: "gpu-normal"`). `tiger` queues are not supported; `cub` queues require `--costcode`
 * `--costcode` — Costcode to bill the job to. Only required if `--gpuqueue` is a `cub` queue
+* `--ignore_failed` — Ignore failed `CellBender` jobs on the final retry instead of stopping the pipeline (`default: false`)
 
 ## Docker Image
 The image is based on
