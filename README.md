@@ -77,6 +77,7 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 * `--help` — Display this help message
 * `--on_irods` — Set this flag if the path in `--sample_table` file points to IRODS catalog
 * `--ignore_extensions` - Specify file extensions to drop those files during catalog loading from `iRODS` (default: "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2")
+* `--ingore_failed` - Ignore failed `CellBender` jobs
 * `--mapper_preset` - Use `CellRanger`'s or `STARsolo`'s output to estimate `--cells`, `--droplets` and `--min_umi` parameters. Works only if the whole output directory is specified as path in `--sample_table`
 * `--starsolo_mapper` - Specify `STARsolo`'s output type to use for `CellBender` (`default: "GeneFull"`)
 * `--exclude_features` — Specify a list of features to exclude. Available options include:
