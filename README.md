@@ -100,6 +100,8 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 * `--version` — Cellbender version (available: `0.2`, `0.3`; `default: 0.3`)
 * `--qc_mode` — Quality control mode (`default: 3`)
 * `--output_dir` — Output directory (`default: results`)
+* `--gpuqueue` — GPU queue to submit `CellBender` jobs to (e.g. `gpu-normal`, `cub22-inference`; `default: "gpu-normal"`). `tiger` queues are not supported; `cub` queues require `--costcode`
+* `--costcode` — Costcode to bill the job to. Only required if `--gpuqueue` is a `cub` queue
 
 ## Docker Image
 The image is based on
