@@ -33,6 +33,8 @@ def helpMessage() {
       --version                 Cellbender version (available: 0.2, 0.3; default: 0.3)
       --qc_mode                 Quality control mode (default: 3)
       --output_dir              Output directory (default: results)
+      --gpuqueue                GPU queue to submit cellbender jobs to (e.g. "gpu-normal", "cub22-inference"; default: "gpu-normal"). "tiger" queues are not supported; "cub" queues require --costcode
+      --costcode                Costcode to bill the job to (only required if --gpuqueue is a "cub" queue)
 
     Examples:
       # Basic usage - CellBender v0.2 with local data (manual cell/droplet counts required)
@@ -106,6 +108,17 @@ workflow {
     if (params.sample_table == null) {
       missingParametersError()
     }
+
+    // Check that costcode is provided for cub and tiger clusters
+    if (params.gpuqueue.contains("tiger")) {
+      log.error "Tiger cluster is not suited for running this pipeline. Please use cub cluster instead."
+      error "Use --gpuqueue cub22-inference --costcode <costcode> to run the pipeline on cub cluster"
+    }
+    else if (params.gpuqueue.contains("cub") && params.costcode == "") {
+      log.error "Missing costcode parameter"
+      error "Please provide a costcode using the --costcode parameter"
+    }
+
     // Puts samplefile into a channel unless it is null, if it is null then it displays error message and exits with status 1.
     sample_table = params.sample_table != null ? Channel.fromPath(params.sample_table) : missingParametersError()
     files = sample_table.splitCsv(sep: ',', header: true).map { row -> [row, row["path"]] }
