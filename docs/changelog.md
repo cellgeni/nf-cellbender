@@ -15,6 +15,8 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-294] - 2026-10-21
+
 ### Breaking
 
 - Nextflow 26.04 or later is required (was `>=25.04.4, <25.10.0`).
@@ -136,7 +138,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/25-274...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-294...dev
+[26-294]: https://github.com/cellgeni/nf-cellbender/compare/25-274...26-294
 [25-274]: https://github.com/cellgeni/nf-cellbender/compare/25-056...25-274
 [25-056]: https://github.com/cellgeni/nf-cellbender/compare/23-314...25-056
 [23-314]: https://github.com/cellgeni/nf-cellbender/compare/23-190...23-314

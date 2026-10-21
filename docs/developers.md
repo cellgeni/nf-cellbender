@@ -116,8 +116,8 @@ Singularity copy is cached in `/nfs/cellgeni/singularity/images/`.
 
 ## Releasing
 
-Releases are tagged with the year and day of the year, `YY-DDD` (for example `25-274` for
-2025-10-01):
+Releases are tagged with the year and day of the year, `YY-DDD` (for example `26-294` for
+2026-10-21):
 
 1. Move the `[Unreleased]` entries in [`docs/changelog.md`](changelog.md) under a new heading with
    the tag and date.
