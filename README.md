@@ -13,9 +13,9 @@ There are two branches:
 * The [nf-schema](https://registry.nextflow.io/plugins/nf-schema@3.0.0) plugin (`3.0.0`) checks the parameters and the sample table. Nextflow downloads it on the first run.
 
 ## Contents of Repo:
-* `main.nf` — the Nextflow pipeline that executes cellbender.
+* `main.nf` — the Nextflow pipeline that executes cellbender. Its `output {}` block defines what is published where.
 * `nextflow.config` — global settings: default parameters, LSF executor, Singularity, nf-schema plugin and help text. Each process has its own config in `configs/`.
-* `configs/` — per-process settings (queue, resources, `ext` arguments, publishing): `irods_loadcatalog.config`, `cellbender_removebackground.config`, `cellbender_qc.config`, `multiqc.config`.
+* `configs/` — per-process settings (queue, resources, `ext` arguments): `irods_loadcatalog.config`, `cellbender_removebackground.config`, `cellbender_qc.config`, `multiqc.config`.
 * `nextflow_schema.json` — parameter definitions (types, allowed values, cross-parameter rules) used for validation and `--help`.
 * `assets/schema_sample_table.json` — the format of `--sample_table`.
 * `assets/multiqc_config.yaml` — MultiQC report layout.
@@ -148,6 +148,9 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 results/
 ├── raw/<id>/                       data downloaded from iRODS (with --on_irods)
 ├── cellbender/<id>/                CellBender output: cellbender.h5, cellbender_filtered.h5, cellbender.pdf, cellbender.log, ...
+├── index/
+│   ├── cellbender.csv              id,path of every CellBender output folder
+│   └── raw.csv                     id,path of every iRODS download (empty without --on_irods)
 └── qc_report/
     ├── cellbender_qc_summary.tsv   one row per sample, most problematic samples first
     ├── cellbender_qc_report.pdf    summary table, training curves, cell probabilities, soup fractions
@@ -155,6 +158,8 @@ results/
     ├── multiqc_data/
     └── multiqc/                    MultiQC input files
 ```
+
+Outputs are published with Nextflow [workflow outputs](https://docs.seqera.io/nextflow/workflow#workflow-outputs) into `--output_dir`, copied by default (`--publish_mode`, hidden). The index files use the sample table format, so `index/raw.csv` can be passed back as `--sample_table` (without `--on_irods`) to rerun CellBender on data already downloaded.
 
 ## Modules
 The CellBender modules are written in this repository in the [Nextflow module registry](https://registry.nextflow.io/) layout, one per CellBender version:
