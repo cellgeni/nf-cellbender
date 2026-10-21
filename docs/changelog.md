@@ -73,7 +73,6 @@ and the day of the year.
 
 - `.nf-core.yml`: the pipeline no longer follows nf-core conventions.
 - `bin/cellbender_qc.R`, replaced by the Python QC module.
-- The local iRODS download module (`modules/local/irods/loadcatalog`).
 
 ## [25-274] - 2025-10-01
 

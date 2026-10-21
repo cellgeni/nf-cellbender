@@ -15,4 +15,4 @@ if [[ -z "$(which nf-test)" ]]; then
     module load cellgen/nf-test/0.9.2
 fi
 
-nf-test test modules/cellgeni/cellbender/removebackground_v02/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v03/tests/main.nf.test modules/cellgeni/multiqc/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug
+nf-test test modules/local/irods/loadcatalog/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v02/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v03/tests/main.nf.test modules/cellgeni/multiqc/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug
