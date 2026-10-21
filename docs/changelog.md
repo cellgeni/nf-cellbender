@@ -15,6 +15,13 @@ and the day of the year.
 
 ## [Unreleased]
 
+### Changed
+
+- The iRODS download module is now a registry module, `cellgeni/irods/loadcatalog`. It skips
+  nothing when no extensions are given, matches extensions after a literal dot, no longer fails
+  when every file in a collection is skipped, and calls `ils2paths.awk` through `awk -f`, so it
+  works even when the executable bit is lost on install.
+
 ## [26-294] - 2026-10-21
 
 ### Breaking

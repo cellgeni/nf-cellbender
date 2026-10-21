@@ -40,7 +40,7 @@ version of the pipeline for running from Nextflow Tower.
 | `cellgeni/cellbender/removebackground_v03` | `CELLBENDER_REMOVEBACKGROUND_V03` | `quay.io/cellgeni/cellbender:0.3` |
 | `cellgeni/cellbender/qc` | `CELLBENDER_QC` | `quay.io/cellgeni/cellbender:0.3` |
 | `cellgeni/multiqc` | `MULTIQC` | `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2` |
-| `modules/local/irods/loadcatalog` (local) | `IRODS_LOADCATALOG` | none: the host's icommands |
+| `cellgeni/irods/loadcatalog` | `IRODS_LOADCATALOG` | none: the host's icommands |
 
 The `cellgeni/` module folders have `main.nf`, `meta.yml` (module schema v1), a `README.md` with its inputs,
 outputs and `ext` variables, and `tests/`. They are published to the

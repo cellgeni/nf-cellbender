@@ -1,0 +1,45 @@
+$schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
+name: cellgeni/irods/loadcatalog
+version: 0.1.0
+description: >
+  Downloads a whole iRODS collection with iget, keeping its folder layout and skipping files
+  with unwanted extensions (e.g. BAM/CRAM/FASTQ).
+keywords:
+  - irods
+  - download
+  - data transfer
+  - collection
+license: MIT
+authors:
+  - "@claptar"
+maintainers:
+  - "@claptar"
+requires:
+  nextflow: ">=25.04.0"
+tools:
+  - irods:
+      description: "iRODS icommands (ils, iget), used from the host."
+      homepage: "https://irods.org/"
+      documentation: "https://docs.irods.org/"
+      tool_dev_url: "https://github.com/irods/irods"
+      licence:
+        - "BSD-3-Clause"
+input:
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata. Must contain key 'id', used as the output folder name, e.g. [ id:'sample1' ]"
+    - name: catalog
+      type: string
+      description: "iRODS collection to download, e.g. /archive/cellgeni/tests/cellranger-count"
+output:
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata, passed through from input."
+    - name: catalog
+      type: directory
+      description: "The downloaded collection (named after meta.id), with the same folder layout as on iRODS."
+      pattern: "${meta.id}"
+  - name: versions
+    type: file
+    description: "YAML file recording the iRODS version."
+    pattern: "versions.yml"
