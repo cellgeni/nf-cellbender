@@ -168,7 +168,7 @@
             3
           ],
           "description": "QC detail level.",
-          "help_text": "1: log-based summary and training curves only; 2: also cell probabilities from the output `.h5`; 3: also soup fraction.",
+          "help_text": "1: log-based summary and training curves only; 2: also cell calling, latent PCA and top ambient genes from the output `.h5`; 3: also reads the CellBender input for the UMI curve, soup fraction and per-gene removal.",
           "fa_icon": "fas fa-chart-line"
         }
       }

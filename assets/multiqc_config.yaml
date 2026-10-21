@@ -7,27 +7,64 @@ intro_text: >
 
 report_section_order:
   cellbender_summary:
-    order: 40
+    order: 70
   cellbender_training:
+    order: 60
+  cellbender_cell_calling:
+    order: 50
+  cellbender_latent_pca:
+    order: 40
+  cellbender_soup_fraction:
     order: 30
-  cellbender_cell_probability:
+  cellbender_soup_histogram:
     order: 20
+  cellbender_gene_removal:
+    order: 10
 
 custom_content:
   order:
     - cellbender_summary
     - cellbender_training
-    - cellbender_cell_probability
+    - cellbender_cell_calling
+    - cellbender_latent_pca
+    - cellbender_soup_fraction
+    - cellbender_soup_histogram
+    - cellbender_gene_removal
 
-# Soup fraction density plots are embedded as images
+# Plots MultiQC cannot draw itself are embedded as images, one per page of the PDF report
 custom_data:
+  cellbender_cell_calling:
+    section_name: "CellBender cell calling"
+    description: >
+      UMI count of each barcode CellBender analysed, by rank (black, left axis), and its cell
+      probability (red, right axis); the dashed line is the number of called cells. Expect a plateau
+      of probability 1 down to the knee of the UMI curve and a sharp drop to 0 after it. Without
+      the CellBender input (QC mode 2) only the probabilities are shown, in CellBender's barcode order.
+  cellbender_latent_pca:
+    section_name: "CellBender latent PCA"
+    description: >
+      PCA of CellBender's latent gene expression of called cells (cell probability > 0.5), coloured by
+      soup fraction. Distinct clusters mean CellBender learned cell types; a cluster of high-soup cells
+      may be empty droplets called as cells.
   cellbender_soup_fraction:
     section_name: "CellBender soup fraction"
     description: "Soup (background) fraction of cells (cell probability > 0.5) against their total UMI count."
+  cellbender_gene_removal:
+    section_name: "CellBender gene removal"
+    description: >
+      UMI per feature summed over called cells, before (x) and after (y) CellBender. Most features lose
+      a small, similar share and sit just below the dashed y = x line; features far below it were
+      mostly ambient. The features that lost the most UMI are listed in red with the share removed.
 
 sp:
+  cellbender_cell_calling:
+    fn: "cellbender_cell_calling_*_mqc.png"
+  cellbender_latent_pca:
+    fn: "cellbender_latent_pca_*_mqc.png"
   cellbender_soup_fraction:
     fn: "cellbender_soup_fraction_*_mqc.png"
+  cellbender_gene_removal:
+    fn: "cellbender_gene_removal_*_mqc.png"
 
 disable_version_detection: true
 show_analysis_paths: false

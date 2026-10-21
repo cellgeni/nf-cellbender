@@ -42,7 +42,7 @@ details for one parameter.
 | `--min_umi` | integer | – | Lower bound for empty-droplet UMI count (`--low-count-threshold`). Range: ≥ 0. |
 | `--force_empty_umi_prior` | integer | – | Force the empty-droplet UMI count prior (version 0.3 only). Range: ≥ 0. |
 | `--estimator` | string | – | Estimator for posterior generation (version 0.3 only; CellBender default: `mckp`). Allowed: `naive`, `map`, `mean`, `cdf`, `mckp`. |
-| `--qc_mode` | integer | `3` | QC detail level. Allowed: `1`, `2`, `3`. 1: log-based summary and training curves only; 2: also cell probabilities from the output `.h5`; 3: also soup fraction. |
+| `--qc_mode` | integer | `3` | QC detail level. Allowed: `1`, `2`, `3`. 1: log-based summary and training curves only; 2: also cell calling, latent PCA and top ambient genes from the output `.h5`; 3: also reads the CellBender input for the UMI curve, soup fraction and per-gene removal. |
 
 ## Cluster options
 

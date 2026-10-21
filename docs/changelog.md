@@ -15,6 +15,13 @@ and the day of the year.
 
 ## [Unreleased]
 
+### Added
+
+- QC report (`cellgeni/cellbender/qc@0.2.0`): a PCA of CellBender's latent gene expression of
+  cells, coloured by soup fraction; a soup fraction histogram, overlaid for all samples in
+  MultiQC; a per-gene raw vs corrected plot that lists the features that lost the most UMIs; and
+  a `top_ambient_genes` summary column.
+
 ### Changed
 
 - The iRODS download module is now a registry module, `cellgeni/irods/loadcatalog`. It skips
@@ -23,6 +30,16 @@ and the day of the year.
   does fail on any other `grep` error, and calls `ils2paths.awk` through `awk -f`, so it works
   even when the executable bit is lost on install.
 - `--ignore_extensions` accepts only letters, digits, `_`, `.` and `-` in each extension.
+- The QC cell probability plot is now CellBender's own: the UMI curve by barcode rank with the
+  cell probability on a second axis. In MultiQC it replaces the cell probability line graph.
+- `--qc_mode 3` now reads every sample's CellBender input, not only the 0.2 ones, for the UMI
+  curve and the gene removal plot. It reads 10x `.h5` and `.mtx` inputs in chunks.
+
+### Fixed
+
+- The QC cell probability plot and `Top-10 min cell prob` (mode 3) rank barcodes by their raw UMI
+  count. They used CellBender's stored barcode order, which is not exactly the UMI order, and
+  drew a solid black block for samples with many intermediate probabilities.
 
 ## [26-294] - 2026-10-21
 

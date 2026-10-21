@@ -1,4 +1,5 @@
-// Collects QC statistics and plots from CellBender outputs into a PDF, a TSV and MultiQC custom content
+// Collects QC statistics and plots from CellBender outputs (and, in QC mode 3, their inputs) into a PDF, a TSV
+// and MultiQC custom content
 process CELLBENDER_QC {
     tag "Running quality control"
 
@@ -25,6 +26,8 @@ process CELLBENDER_QC {
         python: \$(python --version | cut -d' ' -f 2)
         h5py: \$(python -c "import h5py; print(h5py.__version__)")
         matplotlib: \$(python -c "import matplotlib; print(matplotlib.__version__)")
+        numpy: \$(python -c "import numpy; print(numpy.__version__)")
+        pandas: \$(python -c "import pandas; print(pandas.__version__)")
     END_VERSIONS
     """
 
@@ -39,6 +42,8 @@ process CELLBENDER_QC {
         python: \$(python --version | cut -d' ' -f 2)
         h5py: \$(python -c "import h5py; print(h5py.__version__)")
         matplotlib: \$(python -c "import matplotlib; print(matplotlib.__version__)")
+        numpy: \$(python -c "import numpy; print(numpy.__version__)")
+        pandas: \$(python -c "import pandas; print(pandas.__version__)")
     END_VERSIONS
     """
 }
