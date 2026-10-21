@@ -11,7 +11,8 @@ process IRODS_LOADCATALOG {
 
     script:
     def args              = task.ext.args ?: '-f -v -K -X restartfile.txt --retries 5'
-    def ignore_extensions = (task.ext.ignore_extensions ?: '').tokenize(',').collect { extension -> extension.trim() }.join('|')
+    // Dots inside an extension (fastq.gz) are literal, not regex wildcards
+    def ignore_extensions = (task.ext.ignore_extensions ?: '').tokenize(',').collect { extension -> extension.trim().replace('.', '\\.') }.join('|')
     // Called through awk rather than from PATH, so it works even when the executable bit is lost
     def ils2paths         = "${moduleDir}/resources/usr/bin/ils2paths.awk"
     """
@@ -22,9 +23,10 @@ process IRODS_LOADCATALOG {
     # Get a list of files in the catalog
     ils -r \$catalog | awk -f ${ils2paths} > files.list
 
-    # Ignore files with specified extensions
+    # Ignore files with specified extensions. grep exits with 1 when every file is skipped, which is
+    # fine, and with 2 on an error such as an invalid pattern, which must fail the task
     if [[ -n "${ignore_extensions}" ]]; then
-        grep -vE '\\.(${ignore_extensions})\$' files.list > filtered_files.list || true
+        grep -vE '\\.(${ignore_extensions})\$' files.list > filtered_files.list || [[ \$? -eq 1 ]]
     else
         cp files.list filtered_files.list
     fi

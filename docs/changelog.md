@@ -18,9 +18,11 @@ and the day of the year.
 ### Changed
 
 - The iRODS download module is now a registry module, `cellgeni/irods/loadcatalog`. It skips
-  nothing when no extensions are given, matches extensions after a literal dot, no longer fails
-  when every file in a collection is skipped, and calls `ils2paths.awk` through `awk -f`, so it
-  works even when the executable bit is lost on install.
+  nothing when no extensions are given, matches extensions literally after a dot (`fastq.gz`
+  no longer matches `fastqXgz`), no longer fails when every file in a collection is skipped but
+  does fail on any other `grep` error, and calls `ils2paths.awk` through `awk -f`, so it works
+  even when the executable bit is lost on install.
+- `--ignore_extensions` accepts only letters, digits, `_`, `.` and `-` in each extension.
 
 ## [26-294] - 2026-10-21
 

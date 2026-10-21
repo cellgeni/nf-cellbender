@@ -34,7 +34,7 @@ Run `iinit` before starting the pipeline.
 
 | Variable | Type | Default | Description |
 |---|---|---|---|
-| `ext.ignore_extensions` | string | `""` (download everything) | Comma-separated extensions to skip, e.g. `"bam,cram,fastq.gz"`. |
+| `ext.ignore_extensions` | string | `""` (download everything) | Comma-separated extensions to skip, e.g. `"bam,cram,fastq.gz"`. Each matches literally after a dot; other regex characters are passed to `grep -E`, and an invalid pattern fails the task. |
 | `ext.args` | string | `"-f -v -K -X restartfile.txt --retries 5"` | Arguments for `iget`: overwrite, verbose, verify checksums, restart file, retries. |
 
 ```groovy
