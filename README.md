@@ -54,7 +54,7 @@ nextflow run main.nf --helpFull               # all parameters
 nextflow run main.nf --help --showHidden      # include hidden parameters
 ```
 
-Parameters are validated before any job is submitted. A wrong value fails at once with a message like:
+Parameters are validated before any job is submitted, including combinations that would otherwise be silently ignored (a version 0.3 option with `--version 0.2`, `--costcode` with the `gpu` queue, `--ignore_extensions` without `--on_irods`). A wrong value fails at once with a message like:
 ```
 * --gpuqueue (gpu-normal): Expected any of [gpu, cub22-inference, tiger22-inference]
 * Missing required parameter(s): costcode (`--costcode` is required for `cub` and `tiger` queues)
@@ -115,14 +115,14 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 ### Input/output options
 * `--sample_table` — **Required.** Path to a `.csv` file with sample IDs and paths, see [Sample table](#sample-table).
 * `--on_irods` — Set this flag if the paths in `--sample_table` point to iRODS collections (`default: false`)
-* `--ignore_extensions` — Comma-separated file extensions to skip when downloading from `iRODS` (`default: "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2"`)
+* `--ignore_extensions` — Comma-separated file extensions to skip when downloading from `iRODS`. Only with `--on_irods` (`default: "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2"`)
 * `--output_dir` — Output directory (`default: results`)
 
 ### CellBender options
 * `--version` — CellBender version (available: `0.2`, `0.3`; `default: 0.3`)
 * `--cells` — Number of cells. **Required** together with `--droplets` for version `0.2` when `.h5` files or `.mtx` directories are given in `--sample_table`. Otherwise the mapper preset is used for version `0.2`, and `CellBender`'s own estimation for version `0.3`.
 * `--droplets` — Number of droplets. **Required** together with `--cells` for version `0.2` when `.h5` files or `.mtx` directories are given in `--sample_table`.
-* `--mapper_preset` — Use `CellRanger`'s or `STARsolo`'s output to estimate `--cells`, `--droplets` and `--min_umi`. Works only if the whole output directory is given as `path` in `--sample_table`. Always on for version `0.2` unless both `--cells` and `--droplets` are given (`default: false`)
+* `--mapper_preset` — Use `CellRanger`'s or `STARsolo`'s output to estimate `--cells`, `--droplets` and `--min_umi`. Works only if the whole output directory is given as `path` in `--sample_table`. Version `0.3` only: version `0.2` always uses the preset unless both `--cells` and `--droplets` are given (`default: false`)
 * `--starsolo_mapper` — `STARsolo` output type to use for `CellBender` (`default: "GeneFull"`)
 * `--exclude_features` — Feature types to exclude:
   * version `0.3`: a comma-separated list of `"Antibody Capture"`, `"CRISPR Guide Capture"`, `"Custom"`, `"Peaks"`, `"Multiplexing Capture"`, `"VDJ"`, `"VDJ-T"`, `"VDJ-T-GD"`, `"VDJ-B"`, `"Antigen Capture"`
@@ -132,12 +132,12 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 * `--lr` — Learning rate
 * `--min_umi` — Lower bound for empty-droplet UMI count
 * `--force_empty_umi_prior` — Higher bound for empty-droplet UMI count (version `0.3` only)
-* `--estimator` — Estimator for posterior generation: `naive`, `map`, `mean`, `cdf` or `mckp` (version `0.3` only; `default: "mckp"`)
+* `--estimator` — Estimator for posterior generation: `naive`, `map`, `mean`, `cdf` or `mckp` (version `0.3` only; CellBender's default is `mckp`)
 * `--qc_mode` — QC detail level (`default: 3`): `1` reads logs only; `2` also reads cell probabilities from the output `.h5`; `3` also computes soup fractions
 
 ### Cluster options
 * `--gpuqueue` — GPU queue to submit `CellBender` jobs to (available: `gpu`, `cub22-inference`, `tiger22-inference`; `default: "gpu"`). `cub` and `tiger` queues require `--costcode`
-* `--costcode` — Costcode to bill the job to (converted to lowercase). Only required if `--gpuqueue` is a `cub` or `tiger` queue
+* `--costcode` — Costcode to bill the job to (converted to lowercase). Required for `cub` and `tiger` queues, and not allowed with `gpu`
 * `--ignore_failed` — Ignore `CellBender` jobs that still fail after the last retry instead of stopping the pipeline (`default: false`)
 
 ### Generic options

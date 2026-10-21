@@ -32,10 +32,10 @@
         },
         "ignore_extensions": {
           "type": "string",
-          "default": "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2",
           "pattern": "^[^,\\s]+(,[^,\\s]+)*$",
-          "description": "Comma-separated file extensions to skip when downloading from iRODS.",
-          "fa_icon": "fas fa-filter"
+          "description": "Comma-separated file extensions to skip when downloading from iRODS (with `--on_irods` only).",
+          "fa_icon": "fas fa-filter",
+          "help_text": "Default: `bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2`."
         },
         "output_dir": {
           "type": "string",
@@ -149,7 +149,6 @@
         },
         "estimator": {
           "type": "string",
-          "default": "mckp",
           "enum": [
             "naive",
             "map",
@@ -157,7 +156,7 @@
             "cdf",
             "mckp"
           ],
-          "description": "Estimator for posterior generation (version 0.3 only).",
+          "description": "Estimator for posterior generation (version 0.3 only; CellBender default: `mckp`).",
           "fa_icon": "fas fa-calculator"
         },
         "qc_mode": {
@@ -193,7 +192,7 @@
         "costcode": {
           "type": "string",
           "pattern": "^\\s*\\S+\\s*$",
-          "description": "Costcode to bill GPU jobs to (lowercased). Required for `cub` and `tiger` queues.",
+          "description": "Costcode to bill GPU jobs to (lowercased). Required for `cub` and `tiger` queues, not allowed with `gpu`.",
           "fa_icon": "fas fa-money-bill"
         },
         "ignore_failed": {
@@ -270,6 +269,23 @@
     {
       "if": {
         "properties": {
+          "gpuqueue": {
+            "const": "gpu"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "costcode": {
+            "const": null,
+            "errorMessage": "`--costcode` is only used with `cub` and `tiger` queues"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
           "version": {
             "enum": [
               "0.2",
@@ -287,6 +303,14 @@
           "force_empty_umi_prior": {
             "const": null,
             "errorMessage": "`--force_empty_umi_prior` is only available for CellBender 0.3"
+          },
+          "estimator": {
+            "const": null,
+            "errorMessage": "`--estimator` is only available for CellBender 0.3"
+          },
+          "mapper_preset": {
+            "const": false,
+            "errorMessage": "CellBender 0.2 uses the mapper preset automatically unless both `--cells` and `--droplets` are given"
           }
         },
         "dependentRequired": {
@@ -316,6 +340,28 @@
           "exclude_features": {
             "pattern": "^\\s*(Antibody Capture|CRISPR Guide Capture|Custom|Peaks|Multiplexing Capture|VDJ|VDJ\\-T|VDJ\\-T\\-GD|VDJ\\-B|Antigen Capture)\\s*(,\\s*(Antibody Capture|CRISPR Guide Capture|Custom|Peaks|Multiplexing Capture|VDJ|VDJ\\-T|VDJ\\-T\\-GD|VDJ\\-B|Antigen Capture)\\s*)*$",
             "errorMessage": "CellBender 0.3 takes a comma-separated list of: Antibody Capture, CRISPR Guide Capture, Custom, Peaks, Multiplexing Capture, VDJ, VDJ-T, VDJ-T-GD, VDJ-B, Antigen Capture"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "not": {
+          "properties": {
+            "on_irods": {
+              "const": true
+            }
+          },
+          "required": [
+            "on_irods"
+          ]
+        }
+      },
+      "then": {
+        "properties": {
+          "ignore_extensions": {
+            "const": null,
+            "errorMessage": "`--ignore_extensions` only applies with `--on_irods`"
           }
         }
       }
