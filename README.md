@@ -77,7 +77,6 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 * `--help` — Display this help message
 * `--on_irods` — Set this flag if the path in `--sample_table` file points to IRODS catalog
 * `--ignore_extensions` - Specify file extensions to drop those files during catalog loading from `iRODS` (default: "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2")
-* `--ingore_failed` - Ignore failed `CellBender` jobs
 * `--mapper_preset` - Use `CellRanger`'s or `STARsolo`'s output to estimate `--cells`, `--droplets` and `--min_umi` parameters. Works only if the whole output directory is specified as path in `--sample_table`
 * `--starsolo_mapper` - Specify `STARsolo`'s output type to use for `CellBender` (`default: "GeneFull"`)
 * `--exclude_features` — Specify a list of features to exclude. Available options include:
@@ -101,8 +100,8 @@ nextflow run main.nf --version "0.3" --sample_table examples/sample_table_exclud
 * `--version` — Cellbender version (available: `0.2`, `0.3`; `default: 0.3`)
 * `--qc_mode` — Quality control mode (`default: 3`)
 * `--output_dir` — Output directory (`default: results`)
-* `--gpuqueue` — GPU queue to submit `CellBender` jobs to (e.g. `gpu-normal`, `cub22-inference`; `default: "gpu-normal"`). `tiger` queues are not supported; `cub` queues require `--costcode`
-* `--costcode` — Costcode to bill the job to. Only required if `--gpuqueue` is a `cub` queue
+* `--gpuqueue` — GPU queue to submit `CellBender` jobs to (available: `gpu`, `cub22-inference`, `tiger22-inference`; `default: "gpu"`). `cub` and `tiger` queues require `--costcode`
+* `--costcode` — Costcode to bill the job to (converted to lowercase). Only required if `--gpuqueue` is a `cub` or `tiger` queue
 * `--ignore_failed` — Ignore failed `CellBender` jobs on the final retry instead of stopping the pipeline (`default: false`)
 
 ## Docker Image

@@ -33,8 +33,9 @@ def helpMessage() {
       --version                 Cellbender version (available: 0.2, 0.3; default: 0.3)
       --qc_mode                 Quality control mode (default: 3)
       --output_dir              Output directory (default: results)
-      --gpuqueue                GPU queue to submit cellbender jobs to (e.g. "gpu-normal", "cub22-inference"; default: "gpu-normal"). "tiger" queues are not supported; "cub" queues require --costcode
-      --costcode                Costcode to bill the job to (only required if --gpuqueue is a "cub" queue)
+      --gpuqueue                GPU queue to submit cellbender jobs to (available: "gpu", "cub22-inference", "tiger22-inference"; default: "gpu"). "cub" and "tiger" queues require --costcode
+      --costcode                Costcode to bill the job to (only required if --gpuqueue is a "cub" or "tiger" queue)
+      --ignore_failed           Ignore CellBender jobs that fail on the final retry instead of stopping the pipeline
 
     Examples:
       # Basic usage - CellBender v0.2 with local data (manual cell/droplet counts required)
@@ -110,11 +111,7 @@ workflow {
     }
 
     // Check that costcode is provided for cub and tiger clusters
-    if (params.gpuqueue.contains("tiger")) {
-      log.error "Tiger cluster is not suited for running this pipeline. Please use cub cluster instead."
-      error "Use --gpuqueue cub22-inference --costcode <costcode> to run the pipeline on cub cluster"
-    }
-    else if (params.gpuqueue.contains("cub") && params.costcode == "") {
+    if ((params.gpuqueue.contains("cub") || params.gpuqueue.contains("tiger")) && !params.costcode.trim()) {
       log.error "Missing costcode parameter"
       error "Please provide a costcode using the --costcode parameter"
     }
