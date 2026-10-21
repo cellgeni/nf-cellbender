@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/cellgeni/nf-cellbender/main/assets/schema_sample_table.json",
+  "title": "cellgeni/nf-cellbender sample table",
+  "description": "Schema for the file provided with --sample_table",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^\\S+$",
+        "meta": [
+          "id"
+        ],
+        "errorMessage": "Sample id must be provided and cannot contain spaces"
+      },
+      "path": {
+        "type": "string",
+        "pattern": "^\\S+$",
+        "errorMessage": "Path must be provided and cannot contain spaces"
+      }
+    },
+    "required": [
+      "id",
+      "path"
+    ]
+  },
+  "uniqueEntries": [
+    "id"
+  ]
+}
