@@ -1,0 +1,48 @@
+$schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
+name: cellgeni/cellbender/removebackground_v02
+version: 0.1.0
+description: >
+  Removes ambient RNA and empty droplet artifacts from single-cell RNA-seq data
+  using CellBender 0.2 (0.2.2), producing a per-sample output directory with filtered count matrices.
+keywords:
+  - cellbender
+  - cellbender-0.2
+  - single-cell
+  - RNA-seq
+  - ambient RNA
+  - empty droplets
+  - artifact removal
+license: MIT
+authors:
+  - "@claptar"
+maintainers:
+  - "@claptar"
+requires:
+  nextflow: ">=25.04.0"
+tools:
+  - cellbender:
+      description: "A software package for eliminating technical artifacts from high-throughput single-cell RNA sequencing data."
+      homepage: "https://cellbender.readthedocs.io/en/latest/"
+      tool_dev_url: "https://github.com/broadinstitute/CellBender"
+      licence:
+        - "BSD-3-Clause"
+input:
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata. Must contain key 'id' with the sample name, e.g. [ id:'sample1' ]"
+    - name: input
+      type: file
+      description: "Cell Ranger or STARsolo output directory, .h5 file, or .mtx directory containing raw single-cell RNA-seq counts."
+      pattern: "*.{h5,mtx}|*/"
+output:
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata, passed through from input."
+    - name: outputdir
+      type: directory
+      description: "CellBender output directory for the sample (named after meta.id), containing cellbender.h5, filtered matrices and summary files."
+      pattern: "${meta.id}"
+  - name: versions
+    type: file
+    description: "YAML file recording the CellBender version used by this process."
+    pattern: "versions.yml"

@@ -1,0 +1,9 @@
+{
+  "id": "example_table",
+  "section_name": "Example table",
+  "plot_type": "table",
+  "data": {
+    "sample_a": {"cells": 400, "median_soup_fraction": 0.031},
+    "sample_b": {"cells": 380, "median_soup_fraction": 0.025}
+  }
+}

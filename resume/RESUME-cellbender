@@ -2,11 +2,12 @@
 
 set -euo pipefail
 
-sample_table=sample_table.csv
+samples=samples.csv
 
-[[ -e "$sample_table" ]] || (echo "File $sample_table not found" && false)
+[[ -e "$samples" ]] || (echo "File $samples not found" && false)
 
+module load cellgen/nextflow/26.04.6
 nextflow run cellgeni/nf-cellbender -r main \
-  --sample_table $sample_table \
+  --samples $samples \
   --version 0.3 \
   -resume

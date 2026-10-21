@@ -44,7 +44,7 @@ process IRODS_LOADCATALOG {
     def ignore_extensions = task.ext.ignore_extensions.replace(",", "|")
     """
     echo $args
-    mkdir catalog
+    mkdir -p "${meta.id}"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

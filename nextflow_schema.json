@@ -1,0 +1,371 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/cellgeni/nf-cellbender/main/nextflow_schema.json",
+  "title": "cellgeni/nf-cellbender parameters",
+  "description": "Nextflow pipeline to run CellBender",
+  "type": "object",
+  "$defs": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "required": [
+        "samples"
+      ],
+      "properties": {
+        "samples": {
+          "type": "string",
+          "format": "file-path",
+          "exists": true,
+          "mimetype": "text/csv",
+          "schema": "assets/schema_samples.json",
+          "pattern": "^\\S+\\.csv$",
+          "description": "CSV file with columns `id` and `path`.",
+          "help_text": "`path` points to a CellRanger/STARsolo output directory (any CellRanger flavour), a `.h5` file or a `.mtx` directory. With `--on_irods` it is an iRODS collection instead. See https://cellgeni.github.io/nf-cellbender/reference/samples/",
+          "fa_icon": "fas fa-file-csv"
+        },
+        "on_irods": {
+          "type": "boolean",
+          "default": false,
+          "description": "Paths in `--samples` are iRODS collections; download them first.",
+          "fa_icon": "fas fa-cloud-download-alt"
+        },
+        "ignore_extensions": {
+          "type": "string",
+          "pattern": "^[^,\\s]+(,[^,\\s]+)*$",
+          "description": "Comma-separated file extensions to skip when downloading from iRODS (with `--on_irods` only).",
+          "fa_icon": "fas fa-filter",
+          "help_text": "Default: `bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2`."
+        },
+        "outdir": {
+          "type": "string",
+          "format": "directory-path",
+          "default": "results",
+          "description": "Directory to save results.",
+          "fa_icon": "fas fa-folder-open"
+        },
+        "publish_mode": {
+          "type": "string",
+          "default": "copy",
+          "enum": [
+            "symlink",
+            "rellink",
+            "link",
+            "copy",
+            "copyNoFollow",
+            "move"
+          ],
+          "description": "How published files are written into `--outdir`.",
+          "fa_icon": "fas fa-copy",
+          "hidden": true
+        }
+      }
+    },
+    "cellbender_options": {
+      "title": "CellBender options",
+      "type": "object",
+      "fa_icon": "fas fa-flask",
+      "properties": {
+        "version": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "default": "0.3",
+          "enum": [
+            "0.2",
+            "0.3",
+            0.2,
+            0.3
+          ],
+          "description": "CellBender version.",
+          "fa_icon": "fas fa-code-branch",
+          "help_text": "Passing `--version 0.2` on the command line gives a number, so both `0.2` and `\"0.2\"` are accepted."
+        },
+        "cells": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Expected number of cells (`--expected-cells`).",
+          "help_text": "Required together with `--droplets` for version 0.2 when the sample table points to `.h5` files or `.mtx` directories. Otherwise version 0.2 estimates it with the mapper preset and version 0.3 with CellBender's own estimation.",
+          "fa_icon": "fas fa-hashtag"
+        },
+        "droplets": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of droplets to include (`--total-droplets-included`).",
+          "help_text": "Required together with `--cells` for version 0.2 when the sample table points to `.h5` files or `.mtx` directories.",
+          "fa_icon": "fas fa-hashtag"
+        },
+        "mapper_preset": {
+          "type": "boolean",
+          "default": false,
+          "description": "Estimate `--cells`, `--droplets` and `--min_umi` from the CellRanger/STARsolo output.",
+          "help_text": "Needs the whole mapper output directory as `path`. Always on for version 0.2 unless both `--cells` and `--droplets` are given. See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
+          "fa_icon": "fas fa-magic"
+        },
+        "starsolo_mapper": {
+          "type": "string",
+          "default": "GeneFull",
+          "pattern": "^\\S+$",
+          "description": "STARsolo output type to use as CellBender input (e.g. `Gene`, `GeneFull`, `GeneFull_Ex50pAS`).",
+          "fa_icon": "fas fa-star"
+        },
+        "exclude_features": {
+          "type": "string",
+          "description": "Feature types to exclude from the analysis.",
+          "help_text": "Version 0.3: comma-separated list of `Antibody Capture`, `CRISPR Guide Capture`, `Custom`, `Peaks`, `Multiplexing Capture`, `VDJ`, `VDJ-T`, `VDJ-T-GD`, `VDJ-B`, `Antigen Capture`. Version 0.2: only `All` (excludes antibody capture). See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
+          "fa_icon": "fas fa-minus-circle"
+        },
+        "epochs": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of training epochs.",
+          "fa_icon": "fas fa-redo"
+        },
+        "fpr": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Target false positive rate.",
+          "fa_icon": "fas fa-percent"
+        },
+        "lr": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Learning rate.",
+          "fa_icon": "fas fa-tachometer-alt"
+        },
+        "min_umi": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Lower bound for empty-droplet UMI count (`--low-count-threshold`).",
+          "fa_icon": "fas fa-arrow-down"
+        },
+        "force_empty_umi_prior": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Force the empty-droplet UMI count prior (version 0.3 only).",
+          "fa_icon": "fas fa-arrow-up"
+        },
+        "estimator": {
+          "type": "string",
+          "enum": [
+            "naive",
+            "map",
+            "mean",
+            "cdf",
+            "mckp"
+          ],
+          "description": "Estimator for posterior generation (version 0.3 only; CellBender default: `mckp`).",
+          "fa_icon": "fas fa-calculator"
+        },
+        "qc_mode": {
+          "type": "integer",
+          "default": 3,
+          "enum": [
+            1,
+            2,
+            3
+          ],
+          "description": "QC detail level.",
+          "help_text": "1: log-based summary and training curves only; 2: also cell probabilities from the output `.h5`; 3: also soup fraction.",
+          "fa_icon": "fas fa-chart-line"
+        }
+      }
+    },
+    "cluster_options": {
+      "title": "Cluster options",
+      "type": "object",
+      "fa_icon": "fas fa-server",
+      "properties": {
+        "gpuqueue": {
+          "type": "string",
+          "default": "gpu",
+          "enum": [
+            "gpu",
+            "cub22-inference",
+            "tiger22-inference"
+          ],
+          "description": "LSF GPU queue for CellBender jobs. `cub` and `tiger` queues require `--costcode`.",
+          "fa_icon": "fas fa-microchip",
+          "help_text": "See https://cellgeni.github.io/nf-cellbender/guides/gpu-queues/"
+        },
+        "costcode": {
+          "type": "string",
+          "pattern": "^\\s*\\S+\\s*$",
+          "description": "Costcode to bill GPU jobs to (lowercased). Required for `cub` and `tiger` queues, not allowed with `gpu`.",
+          "fa_icon": "fas fa-money-bill"
+        },
+        "ignore_failed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Ignore CellBender jobs that still fail on the final retry instead of stopping the pipeline.",
+          "fa_icon": "fas fa-forward"
+        }
+      }
+    },
+    "generic_options": {
+      "title": "Generic options",
+      "type": "object",
+      "fa_icon": "fas fa-file-import",
+      "properties": {
+        "help": {
+          "type": [
+            "boolean",
+            "string"
+          ],
+          "default": false,
+          "description": "Show the help message; pass a parameter name for its detailed help.",
+          "fa_icon": "fas fa-question-circle",
+          "hidden": true
+        },
+        "helpFull": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show the help message for all parameters.",
+          "fa_icon": "fas fa-question-circle",
+          "hidden": true
+        },
+        "showHidden": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show hidden parameters in the help message.",
+          "fa_icon": "fas fa-eye-slash",
+          "hidden": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input_output_options"
+    },
+    {
+      "$ref": "#/$defs/cellbender_options"
+    },
+    {
+      "$ref": "#/$defs/cluster_options"
+    },
+    {
+      "$ref": "#/$defs/generic_options"
+    },
+    {
+      "if": {
+        "properties": {
+          "gpuqueue": {
+            "pattern": "^(cub|tiger)"
+          }
+        },
+        "required": [
+          "gpuqueue"
+        ]
+      },
+      "then": {
+        "required": [
+          "costcode"
+        ],
+        "errorMessage": "`--costcode` is required for `cub` and `tiger` queues"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gpuqueue": {
+            "const": "gpu"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "costcode": {
+            "const": null,
+            "errorMessage": "`--costcode` is only used with `cub` and `tiger` queues"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "version": {
+            "enum": [
+              "0.2",
+              0.2
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "exclude_features": {
+            "const": "All",
+            "errorMessage": "CellBender 0.2 only supports `--exclude_features All`"
+          },
+          "force_empty_umi_prior": {
+            "const": null,
+            "errorMessage": "`--force_empty_umi_prior` is only available for CellBender 0.3"
+          },
+          "estimator": {
+            "const": null,
+            "errorMessage": "`--estimator` is only available for CellBender 0.3"
+          },
+          "mapper_preset": {
+            "const": false,
+            "errorMessage": "CellBender 0.2 uses the mapper preset automatically unless both `--cells` and `--droplets` are given"
+          }
+        },
+        "dependentRequired": {
+          "cells": [
+            "droplets"
+          ],
+          "droplets": [
+            "cells"
+          ]
+        },
+        "errorMessage": "CellBender 0.2 needs `--cells` and `--droplets` together, or neither to use the mapper preset"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "version": {
+            "enum": [
+              "0.3",
+              0.3
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "exclude_features": {
+            "pattern": "^\\s*(Antibody Capture|CRISPR Guide Capture|Custom|Peaks|Multiplexing Capture|VDJ|VDJ\\-T|VDJ\\-T\\-GD|VDJ\\-B|Antigen Capture)\\s*(,\\s*(Antibody Capture|CRISPR Guide Capture|Custom|Peaks|Multiplexing Capture|VDJ|VDJ\\-T|VDJ\\-T\\-GD|VDJ\\-B|Antigen Capture)\\s*)*$",
+            "errorMessage": "CellBender 0.3 takes a comma-separated list of: Antibody Capture, CRISPR Guide Capture, Custom, Peaks, Multiplexing Capture, VDJ, VDJ-T, VDJ-T-GD, VDJ-B, Antigen Capture"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "not": {
+          "properties": {
+            "on_irods": {
+              "const": true
+            }
+          },
+          "required": [
+            "on_irods"
+          ]
+        }
+      },
+      "then": {
+        "properties": {
+          "ignore_extensions": {
+            "const": null,
+            "errorMessage": "`--ignore_extensions` only applies with `--on_irods`"
+          }
+        }
+      }
+    }
+  ]
+}

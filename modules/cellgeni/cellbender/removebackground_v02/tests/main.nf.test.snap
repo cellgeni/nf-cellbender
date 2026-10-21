@@ -1,0 +1,518 @@
+{
+    "CellRanger atac v1.2.0 - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-atac"
+                        },
+                        [
+                            "cellbender.h5:md5,d248dfbb23bab4060dbde24d6cdfc96c",
+                            "cellbender.log:md5,086f969fd11e73ce86c2041359dba6f4",
+                            "cellbender.pdf:md5,9fac78ed43a1c945246689886bb99f93",
+                            "cellbender_cell_barcodes.csv:md5,9fde26d889544196bb8431ded25655ed",
+                            "cellbender_filtered.h5:md5,aa879916ac3a1b6c42f7eba446b601b1"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-atac"
+                        },
+                        [
+                            "cellbender.h5:md5,d248dfbb23bab4060dbde24d6cdfc96c",
+                            "cellbender.log:md5,086f969fd11e73ce86c2041359dba6f4",
+                            "cellbender.pdf:md5,9fac78ed43a1c945246689886bb99f93",
+                            "cellbender_cell_barcodes.csv:md5,9fde26d889544196bb8431ded25655ed",
+                            "cellbender_filtered.h5:md5,aa879916ac3a1b6c42f7eba446b601b1"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:11:45.579937522"
+    },
+    "CellRanger count v3.0.0 - .mtx directory input - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,41964bb7a73078ba1e7585398bc47186",
+                            "cellbender.log:md5,78c554665b6eeec2666574c49ac07806",
+                            "cellbender.pdf:md5,af17841122e72dc69489a6063ee14838",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,a640486b4375bdb0fe00638b6a8eb254"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,41964bb7a73078ba1e7585398bc47186",
+                            "cellbender.log:md5,78c554665b6eeec2666574c49ac07806",
+                            "cellbender.pdf:md5,af17841122e72dc69489a6063ee14838",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,a640486b4375bdb0fe00638b6a8eb254"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:09:20.431384122"
+    },
+    "CellRanger count v3.0.0 - CellRanger's preset + mannual preset - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,74cf6d16a46fc40fcaded22aaddc2f54",
+                            "cellbender.log:md5,90008286408885b142e006a18918bffa",
+                            "cellbender.pdf:md5,acc731682b6548902bc49c7557d71fb3",
+                            "cellbender_cell_barcodes.csv:md5,6d47577a08ccf51eae5b33a76b41b815",
+                            "cellbender_filtered.h5:md5,78e0b73e92f8ac166568268ed265d1f3"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,74cf6d16a46fc40fcaded22aaddc2f54",
+                            "cellbender.log:md5,90008286408885b142e006a18918bffa",
+                            "cellbender.pdf:md5,acc731682b6548902bc49c7557d71fb3",
+                            "cellbender_cell_barcodes.csv:md5,6d47577a08ccf51eae5b33a76b41b815",
+                            "cellbender_filtered.h5:md5,78e0b73e92f8ac166568268ed265d1f3"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:12:44.341934076"
+    },
+    "CellRanger count v3.0.0 - .h5 file input - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,8126c628c78f46c90135962b0d6da3bc",
+                            "cellbender.log:md5,4704f15727c8f245dd56d17195afd953",
+                            "cellbender.pdf:md5,9ea6759aae6d0ddb4afa6eb8026c7265",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,fede614d0d302e8900bdd383bb6e93c4"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,8126c628c78f46c90135962b0d6da3bc",
+                            "cellbender.log:md5,4704f15727c8f245dd56d17195afd953",
+                            "cellbender.pdf:md5,9ea6759aae6d0ddb4afa6eb8026c7265",
+                            "cellbender_cell_barcodes.csv:md5,4f9de6f122ebc313440886791366ad00",
+                            "cellbender_filtered.h5:md5,fede614d0d302e8900bdd383bb6e93c4"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:01:10.975172256"
+    },
+    "CellRanger count v3.0.0 - output files in ungzipped format - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-count-nogz"
+                        },
+                        [
+                            "cellbender.h5:md5,cef5911382ac25f03d2b5bbff7327c02",
+                            "cellbender.log:md5,2ef5c890756086c7b1162388a430e1d5",
+                            "cellbender.pdf:md5,6b8462d3c054ed1a5647377ee970b1b7",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,0b2b6ddb02073b40e938da61d28de45e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-count-nogz"
+                        },
+                        [
+                            "cellbender.h5:md5,cef5911382ac25f03d2b5bbff7327c02",
+                            "cellbender.log:md5,2ef5c890756086c7b1162388a430e1d5",
+                            "cellbender.pdf:md5,6b8462d3c054ed1a5647377ee970b1b7",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,0b2b6ddb02073b40e938da61d28de45e"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:05:14.356055679"
+    },
+    "CellRanger multi v6.0.0 - sample multiplexing - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "sample-multiplexing"
+                        },
+                        [
+                            "cellbender.h5:md5,621e198376336e6339d103857e245db6",
+                            "cellbender.log:md5,06bedbe98a168c6fa7531bd380f2473a",
+                            "cellbender.pdf:md5,aac8d5e05c6f89f5ae0f79b3dbbd8d07",
+                            "cellbender_cell_barcodes.csv:md5,bb8b8b6547a59ec6e152b2013a303384",
+                            "cellbender_filtered.h5:md5,1574b4b9e83f1ceb8e4e3e02a96f6c39"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "sample-multiplexing"
+                        },
+                        [
+                            "cellbender.h5:md5,621e198376336e6339d103857e245db6",
+                            "cellbender.log:md5,06bedbe98a168c6fa7531bd380f2473a",
+                            "cellbender.pdf:md5,aac8d5e05c6f89f5ae0f79b3dbbd8d07",
+                            "cellbender_cell_barcodes.csv:md5,bb8b8b6547a59ec6e152b2013a303384",
+                            "cellbender_filtered.h5:md5,1574b4b9e83f1ceb8e4e3e02a96f6c39"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:22:45.286638437"
+    },
+    "CellRanger arc v1.0.0 - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-arc"
+                        },
+                        [
+                            "cellbender.h5:md5,59ae45e33e3750b8d2444e4a625e1b52",
+                            "cellbender.log:md5,9f4f4047e4e7b43f317cd149a04b993c",
+                            "cellbender.pdf:md5,d1a2e3ec40cb4b40032a617aa6e513cd",
+                            "cellbender_cell_barcodes.csv:md5,4af98ea8cac910a121327b84a8d78944",
+                            "cellbender_filtered.h5:md5,b5ad6188158a41c657d43dcabc54234e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-arc"
+                        },
+                        [
+                            "cellbender.h5:md5,59ae45e33e3750b8d2444e4a625e1b52",
+                            "cellbender.log:md5,9f4f4047e4e7b43f317cd149a04b993c",
+                            "cellbender.pdf:md5,d1a2e3ec40cb4b40032a617aa6e513cd",
+                            "cellbender_cell_barcodes.csv:md5,4af98ea8cac910a121327b84a8d78944",
+                            "cellbender_filtered.h5:md5,b5ad6188158a41c657d43dcabc54234e"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:36:08.788308038"
+    },
+    "CellRanger multi v7.1.0 - multiplex flex - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "multiplex-flex"
+                        },
+                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6642c93d626759c1db496f619e021e6f/work/84/a63c37aed1f82def364a4ac584e36c/multiplex-flex"
+                    ]
+                ],
+                "1": [
+                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6642c93d626759c1db496f619e021e6f/work/84/a63c37aed1f82def364a4ac584e36c/versions.yml"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "multiplex-flex"
+                        },
+                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6642c93d626759c1db496f619e021e6f/work/84/a63c37aed1f82def364a4ac584e36c/multiplex-flex"
+                    ]
+                ],
+                "versions": [
+                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/6642c93d626759c1db496f619e021e6f/work/84/a63c37aed1f82def364a4ac584e36c/versions.yml"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T13:14:20.847014075"
+    },
+    "CellRanger count v3.0.0 - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,242e4cd748f1fec1501b4728aa952d81",
+                            "cellbender.log:md5,3b87fcccfc41c8f665e58293e430809b",
+                            "cellbender.pdf:md5,e5b5d9881158312bd000c8fe187e0707",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,67ff992af77c5bf5913314cc10d7fd27"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,242e4cd748f1fec1501b4728aa952d81",
+                            "cellbender.log:md5,3b87fcccfc41c8f665e58293e430809b",
+                            "cellbender.pdf:md5,e5b5d9881158312bd000c8fe187e0707",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,67ff992af77c5bf5913314cc10d7fd27"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:01:19.465640296"
+    },
+    "CellRanger count v3.0.0 - not outs directory - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,0587271869fbb5503162316af06ded5d",
+                            "cellbender.log:md5,8496c88a1ca59a718a5cad2a1ab9e4a0",
+                            "cellbender.pdf:md5,ab0f1c102f3f2f440f8158bb8ac353c4",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,a4dffc1457d272b450cfeb6c9ade7da9"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "cellranger-count"
+                        },
+                        [
+                            "cellbender.h5:md5,0587271869fbb5503162316af06ded5d",
+                            "cellbender.log:md5,8496c88a1ca59a718a5cad2a1ab9e4a0",
+                            "cellbender.pdf:md5,ab0f1c102f3f2f440f8158bb8ac353c4",
+                            "cellbender_cell_barcodes.csv:md5,750ea126f34bd79fd4884459f3e64067",
+                            "cellbender_filtered.h5:md5,a4dffc1457d272b450cfeb6c9ade7da9"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:06:00.139287729"
+    },
+    "STARsolo - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "starsolo"
+                        },
+                        [
+                            "cellbender.h5:md5,76d73e769d0fd35dc90db6a190d17c45",
+                            "cellbender.log:md5,cc32e8dcb23858fda1c36ac1f2b2216e",
+                            "cellbender.pdf:md5,2bf60bd5fa6d79fc895145cf73097e81",
+                            "cellbender_cell_barcodes.csv:md5,e223cf9c56e03d2eb6ffd8b58e842257",
+                            "cellbender_filtered.h5:md5,28bd1cca0b7715b72284115dcf6b61a8"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "starsolo"
+                        },
+                        [
+                            "cellbender.h5:md5,76d73e769d0fd35dc90db6a190d17c45",
+                            "cellbender.log:md5,cc32e8dcb23858fda1c36ac1f2b2216e",
+                            "cellbender.pdf:md5,2bf60bd5fa6d79fc895145cf73097e81",
+                            "cellbender_cell_barcodes.csv:md5,e223cf9c56e03d2eb6ffd8b58e842257",
+                            "cellbender_filtered.h5:md5,28bd1cca0b7715b72284115dcf6b61a8"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e20f4e89386fa4572494480dae565086"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T17:14:39.468740248"
+    },
+    "CellRanger multi v6.0.0 - singleplex crispr - CellBender v0.2": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "singleplex-crispr"
+                        },
+                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/4205923a79ba6d764ad68144f243b755/work/81/aade4c0eae2b9b425a0e0a538cc3d3/singleplex-crispr"
+                    ]
+                ],
+                "1": [
+                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/4205923a79ba6d764ad68144f243b755/work/81/aade4c0eae2b9b425a0e0a538cc3d3/versions.yml"
+                ],
+                "outputdir": [
+                    [
+                        {
+                            "id": "singleplex-crispr"
+                        },
+                        "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/4205923a79ba6d764ad68144f243b755/work/81/aade4c0eae2b9b425a0e0a538cc3d3/singleplex-crispr"
+                    ]
+                ],
+                "versions": [
+                    "/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/.nf-test/tests/4205923a79ba6d764ad68144f243b755/work/81/aade4c0eae2b9b425a0e0a538cc3d3/versions.yml"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-07-22T13:51:26.980722482"
+    }
+}
