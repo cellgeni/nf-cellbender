@@ -6,6 +6,7 @@ samples=samples.csv
 
 [[ -e "$samples" ]] || (echo "File $samples not found" && false)
 
+module load cellgen/nextflow/26.04.6
 nextflow run cellgeni/nf-cellbender -r main \
   --samples $samples \
   --version 0.3 \
