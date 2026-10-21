@@ -1,7 +1,7 @@
 // IMPORT SUBWORKFLOW
 include { CELLBENDER } from './workflow/main.nf'
 include { CELLBENDER_QC } from './modules/cellgeni/cellbender/qc'
-include { MULTIQC } from './modules/local/multiqc'
+include { MULTIQC } from './modules/cellgeni/multiqc'
 include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 
 // HELP MESSAGE: the parameter list itself is generated from nextflow_schema.json by nf-schema

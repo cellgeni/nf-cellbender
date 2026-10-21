@@ -1,0 +1,75 @@
+nextflow_process {
+
+    name "Test Process MULTIQC"
+    script "../main.nf"
+    process "MULTIQC"
+
+    tag "modules"
+    tag "multiqc"
+
+    test("Custom content - with config") {
+        tag "multiqc-config"
+
+        when {
+            process {
+                """
+                input[0] = [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ]
+                input[1] = file("${moduleDir}/tests/data/multiqc_config.yaml", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert path(process.out.report[0]).text.contains("MultiQC module test") },
+                { assert path(process.out.report[0]).text.contains("Example table") },
+                { assert file("${process.out.data[0]}/multiqc_data.json").exists() },
+                { assert snapshot(process.out.versions).match("versions") }
+            )
+        }
+    }
+
+    test("Custom content - no config") {
+        tag "multiqc-no-config"
+
+        when {
+            process {
+                """
+                input[0] = [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ]
+                input[1] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert path(process.out.report[0]).text.contains("Example table") },
+                { assert file("${process.out.data[0]}/multiqc_data.json").exists() }
+            )
+        }
+    }
+
+    test("Stub") {
+        tag "multiqc-stub"
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ]
+                input[1] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.report },
+                { assert process.out.data }
+            )
+        }
+    }
+}

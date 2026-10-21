@@ -1,7 +1,4 @@
 title: "nf-cellbender QC report"
-# Keep the default file names, which a title would otherwise change
-output_fn_name: "multiqc_report.html"
-data_dir_name: "multiqc_data"
 subtitle: "CellBender remove-background quality control"
 intro_text: >
   Per-sample QC of CellBender outputs. Samples whose top-UMI barcodes get a cell probability

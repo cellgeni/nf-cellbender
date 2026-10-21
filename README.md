@@ -23,7 +23,7 @@ There are two branches:
 * `modules/cellgeni/cellbender/removebackground_v02/`, `modules/cellgeni/cellbender/removebackground_v03/` — CellBender `0.2` and `0.3` modules, each pinned to its own container (see [Modules](#modules)).
 * `modules/cellgeni/cellbender/qc/` — QC module (`cellbender_qc.py`): summary table, PDF report and MultiQC content.
 * `modules/local/irods/loadcatalog/` — downloads sample folders from iRODS.
-* `modules/local/multiqc/` — renders the HTML QC report.
+* `modules/cellgeni/multiqc/` — renders the HTML QC report (generic MultiQC module).
 * `examples/samples.csv` — example CSV file with sample IDs and local filesystem paths to CellRanger output directories for each sample
 * `examples/samples_irods.csv` — example CSV file with sample IDs and iRODS catalog paths to STARsolo output directories for each sample (excluded `.h5` files)
 * `examples/samples_preset.csv` — example CSV file designed for use with `--mapper_preset` option to automatically estimate cell/droplet parameters from CellRanger/STARsolo output (excluded `.mtx` and `.h5` files)
@@ -165,13 +165,14 @@ results/
 Outputs are published with Nextflow [workflow outputs](https://docs.seqera.io/nextflow/workflow#workflow-outputs) into `--outdir`, copied by default (`--publish_mode`, hidden). The index files use the sample table format, so `index/raw.csv` can be passed back as `--samples` (without `--on_irods`) to rerun CellBender on data already downloaded.
 
 ## Modules
-The CellBender modules are written in this repository in the [Nextflow module registry](https://registry.nextflow.io/) layout, one per CellBender version:
+The modules are written in this repository in the [Nextflow module registry](https://registry.nextflow.io/) layout, with one CellBender module per CellBender version:
 
 | Module | Process | Container |
 |---|---|---|
 | `cellgeni/cellbender/removebackground_v02` | `CELLBENDER_REMOVEBACKGROUND_V02` | `quay.io/cellgeni/cellbender:0.2` |
 | `cellgeni/cellbender/removebackground_v03` | `CELLBENDER_REMOVEBACKGROUND_V03` | `quay.io/cellgeni/cellbender:0.3` |
 | `cellgeni/cellbender/qc` | `CELLBENDER_QC` | `quay.io/cellgeni/cellbender:0.3` |
+| `cellgeni/multiqc` | `MULTIQC` | `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2` |
 
 `main.nf` runs one of the two CellBender modules depending on `--version`. To publish a new module version, bump `version` in its `meta.yml` and run:
 ```
@@ -193,7 +194,7 @@ and includes installations of `cellbender` and `R-4.4.2`. The up to date image c
 Run tests
 ```
 mkdir -p logs
-N=26
+N=28
 bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
 ```
 
