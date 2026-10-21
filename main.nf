@@ -23,6 +23,16 @@ def helpBefore() {
     """.stripIndent()
 }
 
+def helpShort() {
+    """
+    Usage:
+      nextflow run main.nf --sample_table <samples.csv> [--version 0.2|0.3] [--on_irods] [--output_dir results]
+
+    Run with --help for the main parameters and examples, --help <param> for one parameter,
+    or --helpFull for all of them.
+    """.stripIndent()
+}
+
 def helpAfter() {
     """
     == Examples ==
@@ -77,6 +87,12 @@ workflow {
             command   : "nextflow run main.nf --sample_table examples/sample_table.csv"
         )
         System.exit(0)
+    }
+
+    // Without a sample table there is nothing to run: show how to start instead of a validation error
+    if (!params.sample_table) {
+        log.info helpBefore() + helpShort()
+        System.exit(1)
     }
 
     // Types, enums and cross-parameter rules (costcode only for cub/tiger queues, version-specific
