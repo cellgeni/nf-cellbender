@@ -30,49 +30,24 @@ def helpShort() {
 
     Run with --help for the main parameters and examples, --help <param> for one parameter,
     or --helpFull for all of them.
+
+    Documentation: https://cellgeni.github.io/nf-cellbender/
     """.stripIndent()
 }
 
 def helpAfter() {
     """
     == Examples ==
-    # CellBender v0.2 with local .h5/.mtx data (manual cell/droplet counts required)
-    nextflow run main.nf --version "0.2" --samples examples/samples.csv --cells <val> --droplets <val>
+    # CellBender 0.3 on local CellRanger/STARsolo folders, .h5 files or .mtx folders
+    nextflow run main.nf --samples examples/samples.csv
 
-    # CellBender v0.3 with iRODS data (automatic parameter estimation)
+    # Sample folders on iRODS
     nextflow run main.nf --samples examples/samples_irods.csv --on_irods
 
-    # Mapper preset - CellBender v0.2 (applied by default for v0.2)
-    nextflow run main.nf --samples examples/samples_preset.csv --version "0.2" --on_irods
+    # The cub22 GPU queue, billed to a costcode
+    nextflow run main.nf --samples examples/samples.csv --gpuqueue cub22-inference --costcode s1234
 
-    # Mapper preset - CellBender v0.3 (enable explicitly)
-    nextflow run main.nf --samples examples/samples_preset.csv --on_irods --mapper_preset
-
-    # Exclude features - CellBender v0.2 (only "All" is available)
-    nextflow run main.nf --version "0.2" --samples examples/samples_exclude_features.csv --on_irods --exclude_features "All"
-
-    # Exclude features - CellBender v0.3 (comma-separated feature types)
-    nextflow run main.nf --samples examples/samples_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --mapper_preset
-
-    # Run on the cub22 GPU queue, billed to a costcode
-    nextflow run main.nf --samples examples/samples_irods.csv --on_irods --gpuqueue cub22-inference --costcode s1234
-
-    == Output structure ==
-    results/
-    ├── raw/<id>/                       Data downloaded from iRODS (with --on_irods)
-    ├── cellbender/<id>/                CellBender output: cellbender.h5, cellbender_filtered.h5, cellbender.pdf, ...
-    ├── index/
-    │   ├── cellbender.csv              id,path of every CellBender output folder
-    │   └── raw.csv                     id,path of every iRODS download (usable as --samples)
-    ├── qc_report/
-    │   ├── cellbender_qc_summary.tsv   Per-sample QC summary, most problematic samples first
-    │   ├── cellbender_qc_report.pdf    Summary table, training curves, cell probabilities, soup fractions
-    │   ├── multiqc_report.html         The same QC as an interactive HTML report
-    │   ├── multiqc_data/
-    │   └── multiqc/                    MultiQC input files
-    └── versions.yml                    Software versions
-
-    For more details, see the README.md file in this repository.
+    Documentation, more examples and the output layout: https://cellgeni.github.io/nf-cellbender/
     """.stripIndent()
 }
 

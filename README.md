@@ -1,205 +1,61 @@
 # nf-cellbender
 
-Our [cellbender repo](https://github.com/cellgeni/cellbender) but implemented in Nextflow: runs [CellBender](https://cellbender.readthedocs.io/en/latest/) `remove-background` on Sanger's farm22 (LSF + Singularity) for a table of samples, then builds a QC report across all of them.
+Runs [CellBender](https://cellbender.readthedocs.io/en/latest/) `remove-background` on Sanger's
+farm22 for a table of samples, and builds one QC report across all of them. Inputs can be
+CellRanger or STARsolo output folders, `.h5` files or `.mtx` folders, on Lustre or on iRODS.
+CellBender 0.2 and 0.3 are both supported and run on the GPU queues.
 
-There are two branches:
+**Documentation: <https://cellgeni.github.io/nf-cellbender/>**
 
-`main` — this branch contains the script for running cellbender on the FARM using Nextflow command line
+## Quick start
 
-`nextflow-tower` — this branch contains the script for running cellbender on the FARM using Nextflow Tower
+```bash
+module load cellgen/nextflow/26.04.6
 
-## Requirements
-* Nextflow `>=26.04.0` (e.g. `/software/cellgen/cellgeni/nextflow/26.04.6/nextflow`)
-* The [nf-schema](https://registry.nextflow.io/plugins/nf-schema@3.0.0) plugin (`3.0.0`) checks the parameters and the sample table. Nextflow downloads it on the first run.
+nextflow run cellgeni/nf-cellbender -r main --samples samples.csv
+```
 
-## Contents of Repo:
-* `main.nf` — the pipeline entry point: help text, parameter validation, loading the sample table, QC and MultiQC, and the `output {}` block that defines what is published where.
-* `workflow/main.nf` — the `CELLBENDER` subworkflow: optional iRODS download, then the CellBender module for the requested `--version`.
-* `nextflow.config` — global settings: default parameters, LSF executor, Singularity, nf-schema plugin, output directory. Each process has its own config in `configs/`.
-* `configs/` — per-process settings (queue, resources, `ext` arguments): `irods_loadcatalog.config`, `cellbender_removebackground.config`, `cellbender_qc.config`, `multiqc.config`.
-* `nextflow_schema.json` — parameter definitions (types, allowed values, cross-parameter rules) used for validation and `--help`.
-* `assets/schema_samples.json` — the format of the `--samples` table.
-* `assets/multiqc_config.yaml` — MultiQC report layout.
-* `modules/cellgeni/cellbender/removebackground_v02/`, `modules/cellgeni/cellbender/removebackground_v03/` — CellBender `0.2` and `0.3` modules, each pinned to its own container (see [Modules](#modules)).
-* `modules/cellgeni/cellbender/qc/` — QC module (`cellbender_qc.py`): summary table, PDF report and MultiQC content.
-* `modules/local/irods/loadcatalog/` — downloads sample folders from iRODS.
-* `modules/cellgeni/multiqc/` — renders the HTML QC report (generic MultiQC module).
-* `examples/samples.csv` — example CSV file with sample IDs and local filesystem paths to CellRanger output directories for each sample
-* `examples/samples_irods.csv` — example CSV file with sample IDs and iRODS catalog paths to STARsolo output directories for each sample (excluded `.h5` files)
-* `examples/samples_preset.csv` — example CSV file designed for use with `--mapper_preset` option to automatically estimate cell/droplet parameters from CellRanger/STARsolo output (excluded `.mtx` and `.h5` files)
-* `examples/samples_exclude_features.csv` — example CSV file for demonstrating feature exclusion workflows with different CellBender versions
-* `examples/run_cellbender.sh` — example of bash script to run this pipeline
-* `resume/RESUME-cellbender` — script to resume a run of the published pipeline (`-r main`) on `resume/samples.csv`
-* `docker/Dockerfile_v2` — a `Dockerfile` with image for `cellbender` of version `0.2.2`
-* `docker/Dockerfile_v3` — a `Dockerfile` with image for `cellbender` of version `0.3.2`
-
-## Samples table
-A `.csv` file passed with `--samples`, with two columns:
-
-| Column | Description |
-|---|---|
-| `id` | Sample name, used for the output folder. Must be unique and contain no spaces. |
-| `path` | `CellRanger`/`STARsolo` output directory (any `CellRanger` flavour), `.h5` file or `.mtx` directory. With `--on_irods`, an iRODS collection. |
+`samples.csv` has an `id` and a `path` column, one row per sample:
 
 ```
 id,path
-cellranger-count,/path/to/cellranger-count
-starsolo,/path/to/starsolo
+sample1,/lustre/scratch124/.../sample1/cellranger
+sample2,/lustre/scratch124/.../sample2/outs/raw_feature_bc_matrix.h5
 ```
 
-## Getting help
-The parameter list printed by `--help` is generated from `nextflow_schema.json`:
-```
-nextflow run main.nf --help                   # top-level parameters and examples
-nextflow run main.nf --help exclude_features  # details of one parameter
-nextflow run main.nf --helpFull               # all parameters
-nextflow run main.nf --help --showHidden      # include hidden parameters
-```
+Results are written to `results/`: CellBender output per sample in `results/cellbender/`, the QC
+report in `results/qc_report/`. Run `nextflow run cellgeni/nf-cellbender -r main --help` for the
+parameters.
 
-Parameters are validated before any job is submitted, including combinations that would otherwise be silently ignored (a version 0.3 option with `--version 0.2`, `--costcode` with the `gpu` queue, `--ignore_extensions` without `--on_irods`). A wrong value fails at once with a message like:
-```
-* --gpuqueue (gpu-normal): Expected any of [gpu, cub22-inference, tiger22-inference]
-* Missing required parameter(s): costcode (`--costcode` is required for `cub` and `tiger` queues)
-```
+## Documentation
 
-## Examples
-### Default parameters
-Running `Cellbender` version `0.2` using local data
-```
-nextflow run main.nf --version "0.2" --samples examples/samples.csv --cells <val> --droplets <val>
-```
+| Page | |
+|---|---|
+| [Getting started](https://cellgeni.github.io/nf-cellbender/getting-started/) | First run, samples table, help and validation |
+| [Guides](https://cellgeni.github.io/nf-cellbender/guides/) | CellBender 0.2 or 0.3, cell counts, iRODS, GPU queues, reruns |
+| [Reference](https://cellgeni.github.io/nf-cellbender/reference/) | Parameters, samples table, outputs, QC report |
+| [Troubleshooting](https://cellgeni.github.io/nf-cellbender/troubleshooting/) | Error messages and their fixes |
+| [Developers](https://cellgeni.github.io/nf-cellbender/developers/) | Layout, modules, tests, releases |
 
-Running `Cellbender` version `0.3` (used by default) using data on `iRODS`
-```
-nextflow run main.nf --samples examples/samples_irods.csv --on_irods
-```
+The pages are also readable on GitHub in [`docs/`](docs/).
 
-### CellRanger/STARsolo preset
-Running `Cellbender` version `0.2`. The mapper preset is applied for version `0.2` by default, unless both `--cells` and `--droplets` are given
-```
-nextflow run main.nf --samples examples/samples_preset.csv --version "0.2" --on_irods
-```
+## Repository
 
-Running `Cellbender` version `0.3` with `--mapper_preset`
-```
-nextflow run main.nf --samples examples/samples_preset.csv --on_irods --mapper_preset --version "0.3"
-```
+| Path | Contents |
+|---|---|
+| `main.nf`, `workflow/` | The pipeline |
+| `nextflow.config`, `configs/` | Global and per-process settings |
+| `nextflow_schema.json`, `assets/` | Parameter and samples table schemas, MultiQC config |
+| `modules/cellgeni/` | CellBender, QC and MultiQC modules, also published to the Nextflow registry |
+| `examples/`, `resume/` | Example samples tables and run scripts |
+| `docker/` | Dockerfiles for the CellBender images |
+| `tests/` | nf-test configuration and the LSF test runner |
+| `docs/` | Documentation site |
 
-### Exclude features
-Only `"All"` is available for version `0.2`
-```
-nextflow run main.nf --version "0.2" --samples examples/samples_exclude_features.csv --on_irods --exclude_features "All"
-```
+## Changes
 
-Specify a list of comma-separated features you want to exclude for version `0.3`
-```
-nextflow run main.nf --version "0.3" --samples examples/samples_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --mapper_preset
-```
+See the [changelog](docs/changelog.md).
 
-### GPU queues
-`CellBender` jobs go to the `gpu` queue by default. The `cub22-inference` and `tiger22-inference` queues need a costcode, which is passed to LSF as `-G` and converted to lowercase
-```
-nextflow run main.nf --samples examples/samples_irods.csv --on_irods --gpuqueue cub22-inference --costcode s1234
-```
+## Licence
 
-### Combine all together
-Use mapper preset with feature exclusion for version `0.2`. Load the data from iRODS (do not load `.bam` and `.bz2` files) and change the name of output directory to `my-cellbender-v2-results`
-```
-nextflow run main.nf --version "0.2" --samples examples/samples_exclude_features.csv --on_irods --exclude_features "All" --ignore_extensions "bam,bz2" --outdir "my-cellbender-v2-results"
-```
-
-Use mapper preset with feature exclusion for version `0.3`. Load the data from iRODS (do not load `.bam` and `.bz2` files) and change the name of output directory to `my-cellbender-v3-results`
-```
-nextflow run main.nf --version "0.3" --samples examples/samples_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --ignore_extensions "bam,bz2" --outdir "my-cellbender-v3-results"
-```
-
-## Pipeline Parameters:
-### Input/output options
-* `--samples` — **Required.** Path to a `.csv` file with sample IDs and paths, see [Sample table](#samples-table).
-* `--on_irods` — Set this flag if the paths in `--samples` point to iRODS collections (`default: false`)
-* `--ignore_extensions` — Comma-separated file extensions to skip when downloading from `iRODS`. Only with `--on_irods` (`default: "bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2"`)
-* `--outdir` — Output directory (`default: results`)
-
-### CellBender options
-* `--version` — CellBender version (available: `0.2`, `0.3`; `default: 0.3`)
-* `--cells` — Number of cells. **Required** together with `--droplets` for version `0.2` when `.h5` files or `.mtx` directories are given in `--samples`. Otherwise the mapper preset is used for version `0.2`, and `CellBender`'s own estimation for version `0.3`.
-* `--droplets` — Number of droplets. **Required** together with `--cells` for version `0.2` when `.h5` files or `.mtx` directories are given in `--samples`.
-* `--mapper_preset` — Use `CellRanger`'s or `STARsolo`'s output to estimate `--cells`, `--droplets` and `--min_umi`. Works only if the whole output directory is given as `path` in `--samples`. Version `0.3` only: version `0.2` always uses the preset unless both `--cells` and `--droplets` are given (`default: false`)
-* `--starsolo_mapper` — `STARsolo` output type to use for `CellBender` (`default: "GeneFull"`)
-* `--exclude_features` — Feature types to exclude:
-  * version `0.3`: a comma-separated list of `"Antibody Capture"`, `"CRISPR Guide Capture"`, `"Custom"`, `"Peaks"`, `"Multiplexing Capture"`, `"VDJ"`, `"VDJ-T"`, `"VDJ-T-GD"`, `"VDJ-B"`, `"Antigen Capture"`
-  * version `0.2`: only `"All"` (excludes antibody capture)
-* `--epochs` — Number of epochs
-* `--fpr` — False positive rate (between `0` and `1`)
-* `--lr` — Learning rate
-* `--min_umi` — Lower bound for empty-droplet UMI count
-* `--force_empty_umi_prior` — Higher bound for empty-droplet UMI count (version `0.3` only)
-* `--estimator` — Estimator for posterior generation: `naive`, `map`, `mean`, `cdf` or `mckp` (version `0.3` only; CellBender's default is `mckp`)
-* `--qc_mode` — QC detail level (`default: 3`): `1` reads logs only; `2` also reads cell probabilities from the output `.h5`; `3` also computes soup fractions
-
-### Cluster options
-* `--gpuqueue` — GPU queue to submit `CellBender` jobs to (available: `gpu`, `cub22-inference`, `tiger22-inference`; `default: "gpu"`). `cub` and `tiger` queues require `--costcode`
-* `--costcode` — Costcode to bill the job to (converted to lowercase). Required for `cub` and `tiger` queues, and not allowed with `gpu`
-* `--ignore_failed` — Ignore `CellBender` jobs that still fail after the last retry instead of stopping the pipeline (`default: false`)
-
-### Generic options
-* `--help`, `--helpFull`, `--showHidden` — see [Getting help](#getting-help)
-
-## Outputs
-```
-results/
-├── raw/<id>/                       data downloaded from iRODS (with --on_irods)
-├── cellbender/<id>/                CellBender output: cellbender.h5, cellbender_filtered.h5, cellbender.pdf, cellbender.log, ...
-├── index/
-│   ├── cellbender.csv              id,path of every CellBender output folder
-│   └── raw.csv                     id,path of every iRODS download (empty without --on_irods)
-├── qc_report/
-│   ├── cellbender_qc_summary.tsv   one row per sample, most problematic samples first
-│   ├── cellbender_qc_report.pdf    summary table, training curves, cell probabilities, soup fractions
-│   ├── multiqc_report.html         the same QC as an interactive HTML report
-│   ├── multiqc_data/
-│   └── multiqc/                    MultiQC input files
-└── versions.yml                    software versions
-```
-
-Outputs are published with Nextflow [workflow outputs](https://docs.seqera.io/nextflow/workflow#workflow-outputs) into `--outdir`, copied by default (`--publish_mode`, hidden). The index files use the sample table format, so `index/raw.csv` can be passed back as `--samples` (without `--on_irods`) to rerun CellBender on data already downloaded.
-
-## Modules
-The modules are written in this repository in the [Nextflow module registry](https://registry.nextflow.io/) layout, with one CellBender module per CellBender version:
-
-| Module | Process | Container |
-|---|---|---|
-| `cellgeni/cellbender/removebackground_v02` | `CELLBENDER_REMOVEBACKGROUND_V02` | `quay.io/cellgeni/cellbender:0.2` |
-| `cellgeni/cellbender/removebackground_v03` | `CELLBENDER_REMOVEBACKGROUND_V03` | `quay.io/cellgeni/cellbender:0.3` |
-| `cellgeni/cellbender/qc` | `CELLBENDER_QC` | `quay.io/cellgeni/cellbender:0.3` |
-| `cellgeni/multiqc` | `MULTIQC` | `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2` |
-
-`main.nf` runs one of the two CellBender modules depending on `--version`. To publish a new module version, bump `version` in its `meta.yml` and run:
-```
-nextflow module validate modules/cellgeni/cellbender/removebackground_v03
-nextflow module publish modules/cellgeni/cellbender/removebackground_v03 -dry-run
-nextflow module publish modules/cellgeni/cellbender/removebackground_v03
-```
-
-## Docker Image
-The image is based on
-```Dockerfile
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
-```
-
-and includes installations of `cellbender` and `R-4.4.2`. The up to date image can be loaded from `quay` [repository](https://quay.io/repository/cellgeni/cellbender?tab=logs)
-
-## Run tests (for developers)
-
-Run tests
-```
-mkdir -p logs
-N=28
-bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
-```
-
-Count successful runs
-```
-echo "PASSED: $(grep -l "PASSED" logs/*Output*.log | wc -l), FAILED: $(grep -l "FAILURE" logs/*Output*.log | wc -l), RUNNING $(grep -L "Your job looked like:" logs/*Output*.log | wc -l)"
-echo "FAILED TEST LIST:"; grep -l "FAILURE" logs/*Output*.log
-```
+[MIT](LICENSE)
