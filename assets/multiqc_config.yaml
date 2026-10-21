@@ -1,0 +1,36 @@
+title: "nf-cellbender QC report"
+# Keep the default file names, which a title would otherwise change
+output_fn_name: "multiqc_report.html"
+data_dir_name: "multiqc_data"
+subtitle: "CellBender remove-background quality control"
+intro_text: >
+  Per-sample QC of CellBender outputs. Samples whose top-UMI barcodes get a cell probability
+  below 0.5, or whose final test ELBO dropped well below its maximum, deserve a closer look;
+  the summary table lists them first. The same plots are in qc_report/cellbender_qc_report.pdf.
+
+report_section_order:
+  cellbender_summary:
+    order: 40
+  cellbender_training:
+    order: 30
+  cellbender_cell_probability:
+    order: 20
+
+custom_content:
+  order:
+    - cellbender_summary
+    - cellbender_training
+    - cellbender_cell_probability
+
+# Soup fraction density plots are embedded as images
+custom_data:
+  cellbender_soup_fraction:
+    section_name: "CellBender soup fraction"
+    description: "Soup (background) fraction of cells (cell probability > 0.5) against their total UMI count."
+
+sp:
+  cellbender_soup_fraction:
+    fn: "cellbender_soup_fraction_*_mqc.png"
+
+disable_version_detection: true
+show_analysis_paths: false

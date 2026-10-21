@@ -1,34 +1,10 @@
 // Imports
 include { CELLBENDER_REMOVEBACKGROUND_V02 } from './modules/cellgeni/cellbender/removebackground_v02'
 include { CELLBENDER_REMOVEBACKGROUND_V03 } from './modules/cellgeni/cellbender/removebackground_v03'
+include { CELLBENDER_QC } from './modules/cellgeni/cellbender/qc'
 include { IRODS_LOADCATALOG } from './modules/local/irods/loadcatalog'
+include { MULTIQC } from './modules/local/multiqc'
 include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
-
-process QualityControl {
-  tag "Running quality control"
-
-  input:
-  tuple val(meta), path(cellbender_output, stageAs: 'cellbender_output/*')
-
-  output:
-  path 'qc_report', emit: report
-  path "versions.yml", emit: versions
-
-  script:
-  """
-  mkdir "qc_report"
-  cellbender_qc.R \
-    cellbender_output \
-    -m ${task.ext.qc_mode} \
-    -o "qc_report"
-  
-  cat <<-END_VERSIONS > versions.yml
-  "${task.process}":
-      R: \$(Rscript --version | head -n 1)
-      Matrix: \$(Rscript -e "packageVersion('Matrix')")
-  END_VERSIONS
-  """
-}
 
 workflow {
   if (params.help || params.helpFull) {
@@ -59,9 +35,9 @@ workflow {
       CELLBENDER_REMOVEBACKGROUND_V03(files)
       cellbender_outputdir = CELLBENDER_REMOVEBACKGROUND_V03.out.outputdir
     }
-    def cellbender_output = cellbender_outputdir.collect(flat: false).transpose().toList()
 
-    // Run QC
-    QualityControl(cellbender_output)
+    // QC across all samples: PDF + TSV, and an HTML report through MultiQC
+    CELLBENDER_QC(cellbender_outputdir.map { _meta, outputdir -> outputdir }.collect())
+    MULTIQC(CELLBENDER_QC.out.multiqc_files, file("${projectDir}/assets/multiqc_config.yaml"))
   }
 }

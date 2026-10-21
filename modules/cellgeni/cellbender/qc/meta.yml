@@ -1,0 +1,41 @@
+$schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
+name: cellgeni/cellbender/qc
+version: 0.1.0
+description: >
+  Collects QC statistics from CellBender 0.2 and 0.3 remove-background outputs into a summary TSV,
+  a multi-page PDF (training curves, cell probabilities, soup fractions) and MultiQC custom content.
+keywords:
+  - cellbender
+  - single-cell
+  - quality control
+  - multiqc
+license: MIT
+authors:
+  - "@claptar"
+maintainers:
+  - "@claptar"
+requires:
+  nextflow: ">=25.04.0"
+tools:
+  - cellbender:
+      description: "A software package for eliminating technical artifacts from high-throughput single-cell RNA sequencing data."
+      homepage: "https://cellbender.readthedocs.io/en/latest/"
+      licence:
+        - "BSD-3-Clause"
+input:
+  - name: cellbender_output
+    type: directory
+    description: "CellBender output directories, one per sample (named after the sample), staged under cellbender_output/."
+output:
+  - name: report
+    type: directory
+    description: "qc_report/ with cellbender_qc_summary.tsv, cellbender_qc_report.pdf and multiqc/."
+    pattern: "qc_report"
+  - name: multiqc_files
+    type: file
+    description: "MultiQC custom content: summary table, general stats, ELBO and cell probability line graphs, soup fraction images."
+    pattern: "qc_report/multiqc/*_mqc.*"
+  - name: versions
+    type: file
+    description: "YAML file recording the python, h5py and matplotlib versions."
+    pattern: "versions.yml"
