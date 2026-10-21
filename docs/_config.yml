@@ -1,0 +1,58 @@
+# GitHub Pages configuration for the nf-cellbender documentation.
+# Source is set in Settings -> Pages to "Deploy from a branch": main, /docs.
+
+# Just the Docs gives a sidebar, search and callouts with no build step of our own:
+# GitHub Pages fetches the theme through jekyll-remote-theme. Pinned so a theme
+# release cannot change the site under us.
+remote_theme: just-the-docs/just-the-docs@v0.10.1
+plugins:
+  - jekyll-remote-theme
+  - jekyll-include-cache   # needed by the theme
+  - jekyll-relative-links  # links between pages are written as page.md
+
+title: nf-cellbender
+description: Run CellBender remove-background on farm22 and get a QC report across samples
+url: https://cellgeni.github.io
+baseurl: /nf-cellbender
+# Pages at /page/ rather than /page.html
+permalink: pretty
+
+search_enabled: true
+heading_anchors: true
+
+aux_links:
+  "nf-cellbender on GitHub":
+    - "https://github.com/cellgeni/nf-cellbender"
+aux_links_new_tab: true
+
+back_to_top: true
+back_to_top_text: "Back to top"
+
+gh_edit_link: true
+gh_edit_link_text: "Edit this page on GitHub"
+gh_edit_repository: "https://github.com/cellgeni/nf-cellbender"
+gh_edit_branch: "main"
+gh_edit_source: docs
+gh_edit_view_mode: "tree"
+
+# Callouts used across the pages: {: .note }, {: .warning }, {: .important }
+callouts:
+  note:
+    color: blue
+  important:
+    title: Important
+    color: yellow
+  warning:
+    color: red
+
+# GitHub Pages would pick the theme's default layout on its own (jekyll-default-layout);
+# setting it here makes local builds match and keeps pages free of a layout line
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+# Tooling, not pages
+exclude:
+  - _scripts

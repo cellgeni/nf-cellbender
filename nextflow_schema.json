@@ -21,7 +21,7 @@
           "schema": "assets/schema_samples.json",
           "pattern": "^\\S+\\.csv$",
           "description": "CSV file with columns `id` and `path`.",
-          "help_text": "`path` points to a CellRanger/STARsolo output directory (any CellRanger flavour), a `.h5` file or a `.mtx` directory. With `--on_irods` it is an iRODS collection instead. See `examples/samples.csv`.",
+          "help_text": "`path` points to a CellRanger/STARsolo output directory (any CellRanger flavour), a `.h5` file or a `.mtx` directory. With `--on_irods` it is an iRODS collection instead. See https://cellgeni.github.io/nf-cellbender/reference/samples/",
           "fa_icon": "fas fa-file-csv"
         },
         "on_irods": {
@@ -100,7 +100,7 @@
           "type": "boolean",
           "default": false,
           "description": "Estimate `--cells`, `--droplets` and `--min_umi` from the CellRanger/STARsolo output.",
-          "help_text": "Needs the whole mapper output directory as `path`. Always on for version 0.2 unless both `--cells` and `--droplets` are given.",
+          "help_text": "Needs the whole mapper output directory as `path`. Always on for version 0.2 unless both `--cells` and `--droplets` are given. See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
           "fa_icon": "fas fa-magic"
         },
         "starsolo_mapper": {
@@ -113,7 +113,7 @@
         "exclude_features": {
           "type": "string",
           "description": "Feature types to exclude from the analysis.",
-          "help_text": "Version 0.3: comma-separated list of `Antibody Capture`, `CRISPR Guide Capture`, `Custom`, `Peaks`, `Multiplexing Capture`, `VDJ`, `VDJ-T`, `VDJ-T-GD`, `VDJ-B`, `Antigen Capture`. Version 0.2: only `All` (excludes antibody capture).",
+          "help_text": "Version 0.3: comma-separated list of `Antibody Capture`, `CRISPR Guide Capture`, `Custom`, `Peaks`, `Multiplexing Capture`, `VDJ`, `VDJ-T`, `VDJ-T-GD`, `VDJ-B`, `Antigen Capture`. Version 0.2: only `All` (excludes antibody capture). See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
           "fa_icon": "fas fa-minus-circle"
         },
         "epochs": {
@@ -187,7 +187,8 @@
             "tiger22-inference"
           ],
           "description": "LSF GPU queue for CellBender jobs. `cub` and `tiger` queues require `--costcode`.",
-          "fa_icon": "fas fa-microchip"
+          "fa_icon": "fas fa-microchip",
+          "help_text": "See https://cellgeni.github.io/nf-cellbender/guides/gpu-queues/"
         },
         "costcode": {
           "type": "string",
