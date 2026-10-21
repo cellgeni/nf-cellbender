@@ -1,7 +1,6 @@
 // CellBender 0.2 remove-background: removes ambient RNA and empty droplets from single-cell data
 process CELLBENDER_REMOVEBACKGROUND_V02 {
-    tag "Running cellbender 0.2 for sample ${meta.id}"
-
+    tag meta.id
     container 'quay.io/cellgeni/cellbender:0.2'
 
     input:

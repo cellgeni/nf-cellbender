@@ -26,7 +26,7 @@ def helpBefore() {
 def helpShort() {
     """
     Usage:
-      nextflow run main.nf --sample_table <samples.csv> [--version 0.2|0.3] [--on_irods] [--output_dir results]
+      nextflow run main.nf --samples <samples.csv> [--version 0.2|0.3] [--on_irods] [--outdir results]
 
     Run with --help for the main parameters and examples, --help <param> for one parameter,
     or --helpFull for all of them.
@@ -37,25 +37,25 @@ def helpAfter() {
     """
     == Examples ==
     # CellBender v0.2 with local .h5/.mtx data (manual cell/droplet counts required)
-    nextflow run main.nf --version "0.2" --sample_table examples/sample_table.csv --cells <val> --droplets <val>
+    nextflow run main.nf --version "0.2" --samples examples/samples.csv --cells <val> --droplets <val>
 
     # CellBender v0.3 with iRODS data (automatic parameter estimation)
-    nextflow run main.nf --sample_table examples/sample_table_irods.csv --on_irods
+    nextflow run main.nf --samples examples/samples_irods.csv --on_irods
 
     # Mapper preset - CellBender v0.2 (applied by default for v0.2)
-    nextflow run main.nf --sample_table examples/sample_table_preset.csv --version "0.2" --on_irods
+    nextflow run main.nf --samples examples/samples_preset.csv --version "0.2" --on_irods
 
     # Mapper preset - CellBender v0.3 (enable explicitly)
-    nextflow run main.nf --sample_table examples/sample_table_preset.csv --on_irods --mapper_preset
+    nextflow run main.nf --samples examples/samples_preset.csv --on_irods --mapper_preset
 
     # Exclude features - CellBender v0.2 (only "All" is available)
-    nextflow run main.nf --version "0.2" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "All"
+    nextflow run main.nf --version "0.2" --samples examples/samples_exclude_features.csv --on_irods --exclude_features "All"
 
     # Exclude features - CellBender v0.3 (comma-separated feature types)
-    nextflow run main.nf --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --mapper_preset
+    nextflow run main.nf --samples examples/samples_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --mapper_preset
 
     # Run on the cub22 GPU queue, billed to a costcode
-    nextflow run main.nf --sample_table examples/sample_table_irods.csv --on_irods --gpuqueue cub22-inference --costcode s1234
+    nextflow run main.nf --samples examples/samples_irods.csv --on_irods --gpuqueue cub22-inference --costcode s1234
 
     == Output structure ==
     results/
@@ -63,7 +63,7 @@ def helpAfter() {
     ├── cellbender/<id>/                CellBender output: cellbender.h5, cellbender_filtered.h5, cellbender.pdf, ...
     ├── index/
     │   ├── cellbender.csv              id,path of every CellBender output folder
-    │   └── raw.csv                     id,path of every iRODS download (usable as --sample_table)
+    │   └── raw.csv                     id,path of every iRODS download (usable as --samples)
     ├── qc_report/
     │   ├── cellbender_qc_summary.tsv   Per-sample QC summary, most problematic samples first
     │   ├── cellbender_qc_report.pdf    Summary table, training curves, cell probabilities, soup fractions
@@ -84,13 +84,13 @@ workflow {
             parameter : params.help.toString() in ['true', 'false'] ? null : params.help,
             beforeText: helpBefore(),
             afterText : helpAfter(),
-            command   : "nextflow run main.nf --sample_table examples/sample_table.csv"
+            command   : "nextflow run main.nf --samples examples/samples.csv"
         )
         System.exit(0)
     }
 
     // Without a sample table there is nothing to run: show how to start instead of a validation error
-    if (!params.sample_table) {
+    if (!params.samples) {
         log.info helpBefore() + helpShort()
         System.exit(1)
     }
@@ -101,8 +101,8 @@ workflow {
     validateParameters()
     log.info paramsSummaryLog()
 
-    // Load files: sample table rows become [meta, path], checked against assets/schema_sample_table.json
-    samples        = channel.fromList(samplesheetToList(params.sample_table, "${projectDir}/assets/schema_sample_table.json"))
+    // Load files: sample table rows become [meta, path], checked against assets/schema_samples.json
+    samples        = channel.fromList(samplesheetToList(params.samples, "${projectDir}/assets/schema_samples.json"))
     multiqc_config = channel.value(file("${projectDir}/assets/multiqc_config.yaml", checkIfExists: true))
 
     // Define variables
@@ -141,7 +141,7 @@ workflow {
 
 output {
     raw {
-        // index/raw.csv can be passed back as --sample_table without --on_irods
+        // index/raw.csv can be passed back as --samples without --on_irods
         path "raw"
         index {
             path "index/raw.csv"

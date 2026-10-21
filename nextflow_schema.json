@@ -10,24 +10,24 @@
       "type": "object",
       "fa_icon": "fas fa-terminal",
       "required": [
-        "sample_table"
+        "samples"
       ],
       "properties": {
-        "sample_table": {
+        "samples": {
           "type": "string",
           "format": "file-path",
           "exists": true,
           "mimetype": "text/csv",
-          "schema": "assets/schema_sample_table.json",
+          "schema": "assets/schema_samples.json",
           "pattern": "^\\S+\\.csv$",
           "description": "CSV file with columns `id` and `path`.",
-          "help_text": "`path` points to a CellRanger/STARsolo output directory (any CellRanger flavour), a `.h5` file or a `.mtx` directory. With `--on_irods` it is an iRODS collection instead. See `examples/sample_table.csv`.",
+          "help_text": "`path` points to a CellRanger/STARsolo output directory (any CellRanger flavour), a `.h5` file or a `.mtx` directory. With `--on_irods` it is an iRODS collection instead. See `examples/samples.csv`.",
           "fa_icon": "fas fa-file-csv"
         },
         "on_irods": {
           "type": "boolean",
           "default": false,
-          "description": "Paths in `--sample_table` are iRODS collections; download them first.",
+          "description": "Paths in `--samples` are iRODS collections; download them first.",
           "fa_icon": "fas fa-cloud-download-alt"
         },
         "ignore_extensions": {
@@ -37,7 +37,7 @@
           "fa_icon": "fas fa-filter",
           "help_text": "Default: `bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2`."
         },
-        "output_dir": {
+        "outdir": {
           "type": "string",
           "format": "directory-path",
           "default": "results",
@@ -55,7 +55,7 @@
             "copyNoFollow",
             "move"
           ],
-          "description": "How published files are written into `--output_dir`.",
+          "description": "How published files are written into `--outdir`.",
           "fa_icon": "fas fa-copy",
           "hidden": true
         }
