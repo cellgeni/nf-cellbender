@@ -1,80 +1,154 @@
-// Imports
-include { CELLBENDER_REMOVEBACKGROUND_V02 } from './modules/cellgeni/cellbender/removebackground_v02'
-include { CELLBENDER_REMOVEBACKGROUND_V03 } from './modules/cellgeni/cellbender/removebackground_v03'
+// IMPORT SUBWORKFLOW
+include { CELLBENDER } from './workflow/main.nf'
 include { CELLBENDER_QC } from './modules/cellgeni/cellbender/qc'
-include { IRODS_LOADCATALOG } from './modules/local/irods/loadcatalog'
 include { MULTIQC } from './modules/local/multiqc'
 include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 
+// HELP MESSAGE: the parameter list itself is generated from nextflow_schema.json by nf-schema
+def helpBefore() {
+    """
+    ======================
+    nf-cellbender pipeline
+    ======================
+    This pipeline runs CellBender remove-background to eliminate technical artifacts
+    from high-throughput single-cell omics data, then builds a QC report across samples.
+
+    == sample table (comma-separated) ==
+    id,path
+    sample1,/path/to/cellranger/output
+    sample2,/path/to/raw_feature_bc_matrix.h5
+
+    path is a CellRanger/STARsolo output directory, a .h5 file or a .mtx directory;
+    with --on_irods it is an iRODS collection instead.
+    """.stripIndent()
+}
+
+def helpAfter() {
+    """
+    == Examples ==
+    # CellBender v0.2 with local .h5/.mtx data (manual cell/droplet counts required)
+    nextflow run main.nf --version "0.2" --sample_table examples/sample_table.csv --cells <val> --droplets <val>
+
+    # CellBender v0.3 with iRODS data (automatic parameter estimation)
+    nextflow run main.nf --sample_table examples/sample_table_irods.csv --on_irods
+
+    # Mapper preset - CellBender v0.2 (applied by default for v0.2)
+    nextflow run main.nf --sample_table examples/sample_table_preset.csv --version "0.2" --on_irods
+
+    # Mapper preset - CellBender v0.3 (enable explicitly)
+    nextflow run main.nf --sample_table examples/sample_table_preset.csv --on_irods --mapper_preset
+
+    # Exclude features - CellBender v0.2 (only "All" is available)
+    nextflow run main.nf --version "0.2" --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "All"
+
+    # Exclude features - CellBender v0.3 (comma-separated feature types)
+    nextflow run main.nf --sample_table examples/sample_table_exclude_features.csv --on_irods --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" --mapper_preset
+
+    # Run on the cub22 GPU queue, billed to a costcode
+    nextflow run main.nf --sample_table examples/sample_table_irods.csv --on_irods --gpuqueue cub22-inference --costcode s1234
+
+    == Output structure ==
+    results/
+    ├── raw/<id>/                       Data downloaded from iRODS (with --on_irods)
+    ├── cellbender/<id>/                CellBender output: cellbender.h5, cellbender_filtered.h5, cellbender.pdf, ...
+    ├── index/
+    │   ├── cellbender.csv              id,path of every CellBender output folder
+    │   └── raw.csv                     id,path of every iRODS download (usable as --sample_table)
+    ├── qc_report/
+    │   ├── cellbender_qc_summary.tsv   Per-sample QC summary, most problematic samples first
+    │   ├── cellbender_qc_report.pdf    Summary table, training curves, cell probabilities, soup fractions
+    │   ├── multiqc_report.html         The same QC as an interactive HTML report
+    │   ├── multiqc_data/
+    │   └── multiqc/                    MultiQC input files
+    └── versions.yml                    Software versions
+
+    For more details, see the README.md file in this repository.
+    """.stripIndent()
+}
+
 workflow {
-  main:
-  if (params.help || params.helpFull) {
-    // --help prints the top-level parameters, --help <param> details one parameter, --helpFull prints all of them
-    log.info paramsHelp(parameter: params.help.toString() in ['true', 'false'] ? null : params.help)
-    System.exit(0)
-  }
+    main:
+    if (params.help || params.helpFull) {
+        // --help prints the top-level parameters, --help <param> details one parameter, --helpFull prints all of them
+        log.info paramsHelp(
+            parameter : params.help.toString() in ['true', 'false'] ? null : params.help,
+            beforeText: helpBefore(),
+            afterText : helpAfter(),
+            command   : "nextflow run main.nf --sample_table examples/sample_table.csv"
+        )
+        System.exit(0)
+    }
 
-  // Types, enums and cross-parameter rules (costcode for cub/tiger queues, version-specific options) are in nextflow_schema.json
-  validateParameters()
-  log.info paramsSummaryLog()
+    // Types, enums and cross-parameter rules (costcode only for cub/tiger queues, version-specific
+    // options, --ignore_extensions only with --on_irods) are checked against nextflow_schema.json
+    // before anything is downloaded or submitted
+    validateParameters()
+    log.info paramsSummaryLog()
 
-  // Sample table rows become [meta, path], checked against assets/schema_sample_table.json
-  def files = channel.fromList(samplesheetToList(params.sample_table, "${projectDir}/assets/schema_sample_table.json"))
+    // Load files: sample table rows become [meta, path], checked against assets/schema_sample_table.json
+    samples        = channel.fromList(samplesheetToList(params.sample_table, "${projectDir}/assets/schema_sample_table.json"))
+    multiqc_config = channel.value(file("${projectDir}/assets/multiqc_config.yaml", checkIfExists: true))
 
-  // Get the data from IRODS
-  def raw_data = channel.empty()
-  if (params.on_irods) {
-    IRODS_LOADCATALOG(files)
-    raw_data = IRODS_LOADCATALOG.out.catalog
-    files = raw_data
-  }
+    // Define variables
+    def on_irods = params.on_irods as boolean
+    def version  = params.version.toString()  // --version 0.2 on the command line arrives as a number
 
-  // Run cellbender with the module pinned to the requested version (--version 0.2 arrives as a number)
-  def cellbender_outputdir
-  if (params.version.toString() == '0.2') {
-    CELLBENDER_REMOVEBACKGROUND_V02(files)
-    cellbender_outputdir = CELLBENDER_REMOVEBACKGROUND_V02.out.outputdir
-  }
-  else {
-    CELLBENDER_REMOVEBACKGROUND_V03(files)
-    cellbender_outputdir = CELLBENDER_REMOVEBACKGROUND_V03.out.outputdir
-  }
+    // Run main workflow
+    CELLBENDER(
+        samples,
+        on_irods,
+        version
+    )
 
-  // QC across all samples: PDF + TSV, and an HTML report through MultiQC
-  CELLBENDER_QC(cellbender_outputdir.map { _meta, outputdir -> outputdir }.collect())
-  MULTIQC(CELLBENDER_QC.out.multiqc_files, file("${projectDir}/assets/multiqc_config.yaml"))
+    // QC across all samples: PDF + TSV, and an HTML report through MultiQC
+    CELLBENDER_QC(
+        CELLBENDER.out.outputdir.map { _meta, outputdir -> outputdir }.collect()
+    )
+    MULTIQC(
+        CELLBENDER_QC.out.multiqc_files,
+        multiqc_config
+    )
 
-  publish:
-  // Records with a path field, so each output also gets an index CSV (id,path)
-  raw        = raw_data.map { meta, dir -> meta + [path: dir] }
-  cellbender = cellbender_outputdir.map { meta, dir -> meta + [path: dir] }
-  qc_report  = CELLBENDER_QC.out.report
-  multiqc    = MULTIQC.out.report.mix(MULTIQC.out.data)
+    // One versions.yml for the run: the first task of each process is enough
+    versions = CELLBENDER.out.versions
+        .mix(CELLBENDER_QC.out.versions, MULTIQC.out.versions)
+        .collectFile(name: 'versions.yml', sort: { versions_file -> versions_file.text })
+
+    publish:
+    // Records with a path field, so each output also gets an index CSV (id,path)
+    raw        = CELLBENDER.out.raw.map { meta, dir -> meta + [path: dir] }
+    cellbender = CELLBENDER.out.outputdir.map { meta, dir -> meta + [path: dir] }
+    qc_report  = CELLBENDER_QC.out.report
+    multiqc    = MULTIQC.out.report.mix(MULTIQC.out.data)
+    versions   = versions
 }
 
 output {
-  raw {
-    // index/raw.csv can be passed back as --sample_table without --on_irods
-    path "raw"
-    index {
-      path "index/raw.csv"
-      header true
-      sep ','
+    raw {
+        // index/raw.csv can be passed back as --sample_table without --on_irods
+        path "raw"
+        index {
+            path "index/raw.csv"
+            header true
+            sep ','
+        }
     }
-  }
-  cellbender {
-    path "cellbender"
-    index {
-      path "index/cellbender.csv"
-      header true
-      sep ','
+    cellbender {
+        path "cellbender"
+        index {
+            path "index/cellbender.csv"
+            header true
+            sep ','
+        }
     }
-  }
-  qc_report {
-    // the qc_report/ folder itself: summary TSV, PDF and MultiQC input files
-    path "."
-  }
-  multiqc {
-    path "qc_report"
-  }
+    qc_report {
+        // the qc_report/ folder itself: summary TSV, PDF and MultiQC input files
+        path "."
+    }
+    multiqc {
+        path "qc_report"
+    }
+    versions {
+        path "."
+    }
 }
