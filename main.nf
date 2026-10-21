@@ -1,5 +1,6 @@
 // Imports
-include { CELLBENDER_REMOVEBACKGROUND } from './modules/local/cellbender/removebackground'
+include { CELLBENDER_REMOVEBACKGROUND_V02 } from './modules/cellgeni/cellbender/removebackground_v02'
+include { CELLBENDER_REMOVEBACKGROUND_V03 } from './modules/cellgeni/cellbender/removebackground_v03'
 include { IRODS_LOADCATALOG } from './modules/local/irods/loadcatalog'
 include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 
@@ -48,9 +49,17 @@ workflow {
       files = IRODS_LOADCATALOG.out.catalog
     }
 
-    // Run cellbender
-    CELLBENDER_REMOVEBACKGROUND(files)
-    def cellbender_output = CELLBENDER_REMOVEBACKGROUND.out.outputdir.collect(flat: false).transpose().toList()
+    // Run cellbender with the module pinned to the requested version (--version 0.2 arrives as a number)
+    def cellbender_outputdir
+    if (params.version.toString() == '0.2') {
+      CELLBENDER_REMOVEBACKGROUND_V02(files)
+      cellbender_outputdir = CELLBENDER_REMOVEBACKGROUND_V02.out.outputdir
+    }
+    else {
+      CELLBENDER_REMOVEBACKGROUND_V03(files)
+      cellbender_outputdir = CELLBENDER_REMOVEBACKGROUND_V03.out.outputdir
+    }
+    def cellbender_output = cellbender_outputdir.collect(flat: false).transpose().toList()
 
     // Run QC
     QualityControl(cellbender_output)

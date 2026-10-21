@@ -79,8 +79,8 @@ expected_cells=""
 total_droplets=""
 umi_threshold=""
 
-# Check of cellranger of version 2 is requested or if user requested to use mapper's preset for the params
-if [[ "${task.ext.mapper_preset}" == "true" ]]; then
+# Check if user requested to use mapper's preset for the params
+if [[ "${task.ext.mapper_preset ?: false}" == "true" ]]; then
     echo "INFO: Using mapper's preset for parameters"
     # Check if full mapper directory was passed as an input to use mapper's preset
     if [[ "\$mapper" == unknown* ]]; then
@@ -112,15 +112,18 @@ if [[ "${task.ext.mapper_preset}" == "true" ]]; then
     fi
 fi
 
-# Use user-specified parameters if provided
-if [[ -n "${task.ext.expected_cells}" ]]; then
-    expected_cells_arg="--expected-cells ${task.ext.expected_cells}"
+# Use user-specified parameters if provided (unset ext values are null)
+user_expected_cells="${task.ext.expected_cells ?: ''}"
+user_total_droplets="${task.ext.total_droplets ?: ''}"
+user_umi_threshold="${task.ext.umi_threshold != null ? task.ext.umi_threshold : ''}"
+if [[ -n "\$user_expected_cells" ]]; then
+    expected_cells_arg="--expected-cells \$user_expected_cells"
 fi
-if [[ -n "${task.ext.total_droplets}" ]]; then
-    total_droplets_arg="--total-droplets-included ${task.ext.total_droplets}"
+if [[ -n "\$user_total_droplets" ]]; then
+    total_droplets_arg="--total-droplets-included \$user_total_droplets"
 fi
-if [[ -n "${task.ext.umi_threshold}" ]]; then
-    umi_threshold_arg="--low-count-threshold ${task.ext.umi_threshold}"
+if [[ -n "\$user_umi_threshold" ]]; then
+    umi_threshold_arg="--low-count-threshold \$user_umi_threshold"
 fi
 
 
@@ -128,13 +131,7 @@ fi
 mkdir -p "${meta.id}"
 
 ### Save file version information
-if [[ $task.ext.version == "0.2" ]]; then
-    version=\$(grep "version" /opt/cellbender/setup.py | cut -d"'" -f 2)
-elif [[ $task.ext.version == "0.3" ]]; then
-    version=\$(cellbender --version)
-else
-    echo "Error: Unsupported CellBender version specified: ${task.ext.version}" >&2
-fi
+version=\$(cellbender --version)
 cat <<-END_VERSIONS > versions.yml
 "${task.process}":
     cellbender: \$version
