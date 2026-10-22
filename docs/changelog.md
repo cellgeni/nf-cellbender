@@ -34,6 +34,10 @@ and the day of the year.
   cell probability on a second axis. In MultiQC it replaces the cell probability line graph.
 - `--qc_mode 3` now reads every sample's CellBender input, not only the 0.2 ones, for the UMI
   curve and the gene removal plot. It reads 10x `.h5` and `.mtx` inputs in chunks.
+- CellBender reserves more GPU memory on each retry (8 GB times the attempt), so a sample that ran
+  out of GPU memory moves to a larger card.
+- Temporarily, CellBender jobs avoid the host `farm-gpu0203`, whose GPU 3 fails every job with
+  CUDA errors.
 
 ### Fixed
 
