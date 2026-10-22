@@ -10,9 +10,23 @@
 i=$LSB_JOBINDEX
 n=$N
 
-# Load nf-test if needed
-if [[ -z "$(which nf-test)" ]]; then
-    module load cellgen/nf-test/0.9.2
-fi
+# nf-test 0.9.2 generates test scripts that Nextflow's strict syntax rejects (`PROCESS(*input)`)
+module load cellgen/nf-test/0.9.5
+module load cellgen/nextflow/26.04.6
 
-nf-test test modules/local/irods/loadcatalog/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v02/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v03/tests/main.nf.test modules/cellgeni/multiqc/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug
+# nf-test writes each test's script to .nf-test-<hash>.nf in the current folder, and on exit deletes
+# the scripts of every test it parsed, including those other shards are about to run. So each shard
+# runs in its own folder of links to the repository.
+repo=$PWD
+shard_dir="$repo/.nf-test-shards/$i"
+rm -rf "$shard_dir"
+mkdir -p "$shard_dir"
+for path in "$repo"/*; do
+    [[ "$(basename "$path")" == modules ]] || ln -s "$path" "$shard_dir"/
+done
+# A copy, not links: nf-test finds no tests under a linked folder, and Nextflow refuses linked
+# module resources. Snapshots updated with --update-snapshot therefore land in the shard's copy.
+cp -r "$repo/modules" "$shard_dir"/
+cd "$shard_dir"
+
+nf-test test modules/cellgeni/irods/loadcatalog/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v02/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v03/tests/main.nf.test modules/cellgeni/multiqc/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug

@@ -38,9 +38,9 @@ Run the same command again with `-resume` from the same folder. Finished tasks a
 nextflow run cellgeni/nf-cellbender -r main --samples samples.csv -resume
 ```
 
-`-resume` only works while `nf-work/` still holds the earlier tasks. The pipeline sets
-`cleanup = true`, which deletes the work folder after a successful run, so a finished run cannot
-be resumed. Change a parameter and run again from scratch instead.
+`-resume` only works while `nf-work/` still holds the earlier tasks. The pipeline keeps the work
+folder after a run, so a finished run can be resumed too, for example with a changed parameter.
+`nf-work/` can be large: delete it once the results are checked.
 
 ## A ready-made resume script
 

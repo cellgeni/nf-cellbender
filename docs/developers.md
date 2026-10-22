@@ -40,7 +40,7 @@ version of the pipeline for running from Nextflow Tower.
 | `cellgeni/cellbender/removebackground_v03` | `CELLBENDER_REMOVEBACKGROUND_V03` | `quay.io/cellgeni/cellbender:0.3` |
 | `cellgeni/cellbender/qc` | `CELLBENDER_QC` | `quay.io/cellgeni/cellbender:0.3` |
 | `cellgeni/multiqc` | `MULTIQC` | `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2` |
-| `modules/local/irods/loadcatalog` (local) | `IRODS_LOADCATALOG` | none: the host's icommands |
+| `cellgeni/irods/loadcatalog` | `IRODS_LOADCATALOG` | none: the host's icommands |
 
 The `cellgeni/` module folders have `main.nf`, `meta.yml` (module schema v1), a `README.md` with its inputs,
 outputs and `ext` variables, and `tests/`. They are published to the
@@ -91,7 +91,25 @@ N=29
 bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
 ```
 
-`N` is the number of tests; each LSF array job runs one shard. Count the results with:
+`N` is the number of tests; each LSF array job runs one shard, in its own folder under
+`.nf-test-shards/`. On exit nf-test deletes the scripts it generated for every test, so shards
+that shared a folder would delete each other's scripts.
+
+CellBender output is not byte-identical between runs, so the CellBender tests have no snapshots.
+They check that the run succeeded, that the output folder holds exactly the expected files and none
+of them is empty, that `versions.yml` reports the pinned CellBender version, and that the log ends
+with `Completed remove-background.`
+
+The CellBender tests read their inputs from `tests/data/`, one folder per dataset. These are the
+iRODS collections under `/archive/cellgeni/tests/`; a run with
+`--on_irods --samples examples/samples_irods.csv` downloads them to `results/raw/`, which can then
+be linked:
+
+```bash
+ln -s ../results/raw tests/data
+```
+
+Count the results with:
 
 ```bash
 echo "PASSED: $(grep -l "PASSED" logs/*Output*.log | wc -l), FAILED: $(grep -l "FAILURE" logs/*Output*.log | wc -l), RUNNING $(grep -L "Your job looked like:" logs/*Output*.log | wc -l)"

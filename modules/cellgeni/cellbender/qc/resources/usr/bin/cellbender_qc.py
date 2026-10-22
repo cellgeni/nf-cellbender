@@ -3,11 +3,12 @@
 
 Reads every per-sample folder in DIR (CellBender 0.2 or 0.3 output), and writes:
   cellbender_qc_summary.tsv    one row per sample, most problematic samples first
-  cellbender_qc_report.pdf     summary table, training curves, cell probabilities, soup fractions
+  cellbender_qc_report.pdf     summary table, training curves, cell calling, latent PCA, soup fractions, gene removal
   multiqc/                     the same data as MultiQC custom content
 """
 import argparse
 import glob
+import gzip
 import json
 import math
 import os
@@ -20,7 +21,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 from matplotlib.backends.backend_pdf import PdfPages  # noqa: E402
+
+plt.rcParams.update({"axes.spines.top": False, "axes.spines.right": False, "font.size": 8})
 
 # Numbers that follow these phrases in the CellBender log (both 0.2 and 0.3 wordings)
 LOG_PATTERNS = {
@@ -37,11 +41,14 @@ LOG_PATTERNS = {
 NUMBER = r"(\d+\.?\d*)"
 COLUMNS = [
     "sample_id", "cellbender_version", "epochs", "final_test_elbo_minus_max", "test_minus_train_elbo",
-    "cellbender_cells", "top10umi_min_cell_prob", "mean_soup_fraction", "median_soup_fraction",
+    "cellbender_cells", "top10umi_min_cell_prob", "mean_soup_fraction", "median_soup_fraction", "top_ambient_genes",
     *LOG_PATTERNS, "input",
 ]
 GRID_ROWS, GRID_COLS = 4, 6
-MULTIQC_LINE_POINTS = 1000
+CELL_PROB = 0.5
+TOP_GENES = 5
+SOUP_BINS = 50
+CHUNK = 20_000_000  # matrix entries read at once
 
 
 def log(msg, verbose=True):
@@ -81,73 +88,122 @@ def parse_log(path):
     return {"train": train, "test": test, "info": info}
 
 
-def column_sums(group):
-    """Total UMI per barcode from a CSC matrix stored as indices/indptr/data/shape."""
+def sparse_sums(group, cells=None):
+    """Total UMI per barcode, and UMI per feature over the barcodes in the mask `cells`, from a features x
+    barcodes CSC matrix stored as indices/indptr/data/shape. Reads CHUNK entries at a time."""
     indptr = group["indptr"][:]
-    data = group["data"][:].astype(float)
-    ncols = len(indptr) - 1
-    col = np.repeat(np.arange(ncols), np.diff(indptr))
-    return np.bincount(col, weights=data, minlength=ncols)
+    nrows, ncols = int(group["shape"][0]), len(indptr) - 1
+    per_barcode = np.zeros(ncols)
+    per_feature = np.zeros(nrows) if cells is not None else None
+    for start in range(0, int(indptr[-1]), CHUNK):
+        end = min(start + CHUNK, int(indptr[-1]))
+        first, last = np.searchsorted(indptr, [start, end - 1], side="right") - 1
+        col = np.repeat(np.arange(first, last + 1), np.diff(np.clip(indptr[first:last + 2], start, end)))
+        data = group["data"][start:end].astype(float)
+        per_barcode += np.bincount(col, weights=data, minlength=ncols)
+        if cells is not None:
+            keep = cells[col]
+            per_feature += np.bincount(group["indices"][start:end][keep], weights=data[keep], minlength=nrows)
+    return per_barcode, per_feature
+
+
+def mtx_sums(path, cells):
+    """Same as sparse_sums for a features x barcodes MatrixMarket file."""
+    with (gzip.open if path.endswith(".gz") else open)(path, "rt") as f:
+        line = f.readline()
+        while line.startswith("%"):
+            line = f.readline()
+        nrows, ncols = (int(n) for n in line.split()[:2])
+        per_barcode, per_feature = np.zeros(ncols), np.zeros(nrows)
+        for chunk in pd.read_csv(f, sep=" ", header=None, usecols=[0, 1, 2], chunksize=CHUNK // 2):
+            row, col = chunk[0].to_numpy() - 1, chunk[1].to_numpy() - 1
+            value = chunk[2].to_numpy(float)
+            per_barcode += np.bincount(col, weights=value, minlength=ncols)
+            keep = cells[col]
+            per_feature += np.bincount(row[keep], weights=value[keep], minlength=nrows)
+    return per_barcode, per_feature
 
 
 def decode(values):
+    values = np.asarray(values)
+    if values.dtype.kind == "S":
+        return values.astype(str)
     return np.array([v.decode() if isinstance(v, bytes) else v for v in values])
 
 
-def parse_h5(path, mode):
-    """Cell probabilities, learning curve, total UMI and (v0.3) soup fraction from the output h5."""
-    r = {}
-    with h5py.File(path, "r") as h5:
-        if "droplet_latents" in h5:  # CellBender 0.3
-            r["version"] = "0.3"
-            latents, matrix, meta = h5["droplet_latents"], h5["matrix"], h5["metadata"]
-            r["cell_probability"] = latents["cell_probability"][:]
-            idx = latents["barcode_indices_for_latents"][:]
-            r["train"] = dict(zip(meta["learning_curve_train_epoch"][:].astype(int), meta["learning_curve_train_elbo"][:]))
-            r["test"] = dict(zip(meta["learning_curve_test_epoch"][:].astype(int), meta["learning_curve_test_elbo"][:]))
-            filtered_umi = column_sums(matrix)[idx]
-            if mode > 2:
-                soup = latents["background_fraction"][:]
-                with np.errstate(divide="ignore", invalid="ignore"):
-                    r["raw_umi"] = np.round(filtered_umi / (1 - soup))
-                r["soup_fraction"] = soup
-        else:  # CellBender 0.2: a single top-level group
-            r["version"] = "0.2"
-            g = h5[list(h5.keys())[0]]
-            r["cell_probability"] = g["latent_cell_probability"][:]
-            idx = g["barcode_indices_for_latents"][:]
-            elbo = g["training_elbo_per_epoch"][:]
-            r["train"] = dict(zip(range(1, len(elbo) + 1), elbo))
-            r["test"] = dict(zip(g["test_epoch"][:].astype(int), g["test_elbo"][:]))
-            filtered_umi = column_sums(g)[idx]
-            r["barcodes"] = decode(g["barcodes"][:])[idx]
-        r["filtered_umi"] = filtered_umi
-    return r
+def optional(group, name):
+    return group[name][:] if name in group else None
 
 
-def raw_umi_from_input(path, barcodes):
-    """Total UMI per barcode from the CellBender input, needed for the v0.2 soup fraction."""
-    if path and os.path.isdir(path):
+def barcode_positions(barcodes, wanted, idx):
+    """Position of each wanted barcode in barcodes, -1 if absent. CellBender keeps the input barcode order,
+    so its own indices idx are usually the answer."""
+    if len(idx) and len(barcodes) > idx.max() and np.array_equal(barcodes[idx], wanted):
+        return idx
+    order = np.argsort(barcodes)
+    pos = order[np.clip(np.searchsorted(barcodes, wanted, sorter=order), 0, len(barcodes) - 1)]
+    return np.where(barcodes[pos] == wanted, pos, -1)
+
+
+def read_input(path, idx, barcodes, cells):
+    """Raw UMI per analysed barcode, and raw UMI per feature over cells, from the CellBender input."""
+    if path and os.path.isfile(path) and path.endswith(".h5"):
+        with h5py.File(path, "r") as h5:
+            g = h5["matrix"] if "matrix" in h5 else h5[list(h5.keys())[0]]
+            input_barcodes = decode(g["barcodes"][:])
+            pos = barcode_positions(input_barcodes, barcodes, idx)
+            in_cells = np.zeros(len(input_barcodes), dtype=bool)
+            in_cells[pos[cells & (pos >= 0)]] = True
+            per_barcode, per_feature = sparse_sums(g, in_cells)
+    elif path and os.path.isdir(path):
         mtx = glob.glob(os.path.join(path, "matrix.mtx*"))
         bcs = glob.glob(os.path.join(path, "barcodes.tsv*"))
         if not mtx or not bcs:
             return None
-        import gzip
-        import scipy.io
-
-        opener = gzip.open if bcs[0].endswith(".gz") else open
-        with opener(bcs[0], "rt") as f:
-            input_barcodes = np.array(f.read().split())
-        sums = np.asarray(scipy.io.mmread(mtx[0]).sum(axis=0)).ravel()
-    elif path and os.path.isfile(path) and path.endswith(".h5"):
-        with h5py.File(path, "r") as h5:
-            g = h5["matrix"]
-            input_barcodes = decode(g["barcodes"][:])
-            sums = column_sums(g)
+        input_barcodes = pd.read_csv(bcs[0], sep="\t", header=None, usecols=[0], dtype=str)[0].to_numpy(str)
+        pos = barcode_positions(input_barcodes, barcodes, idx)
+        in_cells = np.zeros(len(input_barcodes), dtype=bool)
+        in_cells[pos[cells & (pos >= 0)]] = True
+        per_barcode, per_feature = mtx_sums(mtx[0], in_cells)
     else:
         return None
-    lookup = dict(zip(input_barcodes, sums))
-    return np.array([lookup.get(bc, np.nan) for bc in barcodes])
+    return np.where(pos >= 0, per_barcode[pos], np.nan), per_feature
+
+
+def parse_h5(path):
+    """Cell probabilities, learning curve, latent encoding, ambient profile and UMI after CellBender, per
+    analysed barcode and per feature over cells, from the output h5."""
+    r = {}
+    with h5py.File(path, "r") as h5:
+        if "droplet_latents" in h5:  # CellBender 0.3
+            r["version"] = "0.3"
+            latents, g, meta = h5["droplet_latents"], h5["matrix"], h5["metadata"]
+            r["cell_probability"] = latents["cell_probability"][:]
+            r["z"] = optional(latents, "gene_expression_encoding")
+            r["soup_fraction"] = optional(latents, "background_fraction")
+            r["ambient"] = optional(h5["global_latents"], "ambient_expression") if "global_latents" in h5 else None
+            idx = latents["barcode_indices_for_latents"][:]
+            r["train"] = dict(zip(meta["learning_curve_train_epoch"][:].astype(int), meta["learning_curve_train_elbo"][:]))
+            r["test"] = dict(zip(meta["learning_curve_test_epoch"][:].astype(int), meta["learning_curve_test_elbo"][:]))
+            r["barcodes"] = decode(meta["barcodes_analyzed"][:] if "barcodes_analyzed" in meta else g["barcodes"][:][idx])
+        else:  # CellBender 0.2: a single top-level group
+            r["version"] = "0.2"
+            g = h5[list(h5.keys())[0]]
+            r["cell_probability"] = g["latent_cell_probability"][:]
+            r["z"] = optional(g, "latent_gene_encoding")
+            r["ambient"] = optional(g, "ambient_expression")
+            idx = g["barcode_indices_for_latents"][:]
+            elbo = g["training_elbo_per_epoch"][:]
+            r["train"] = dict(zip(range(1, len(elbo) + 1), elbo))
+            r["test"] = dict(zip(g["test_epoch"][:].astype(int), g["test_elbo"][:]))
+            r["barcodes"] = decode(g["barcodes"][:][idx])
+        r["idx"] = idx
+        r["feature_names"] = decode(g["features"]["name"][:] if "features" in g else g["gene_names"][:])
+        cells = np.zeros(len(g["indptr"]) - 1, dtype=bool)
+        cells[idx[r["cell_probability"] > CELL_PROB]] = True
+        per_barcode, r["gene_corrected"] = sparse_sums(g, cells)
+        r["corrected_umi"] = per_barcode[idx]
+    return r
 
 
 def process_sample(sample_dir, mode, verbose):
@@ -179,25 +235,37 @@ def process_sample(sample_dir, mode, verbose):
             info["cellbender_cells"] = sum(1 for line in f if line.strip())
 
     if mode > 1:
-        h5 = parse_h5(h5_file, mode)
+        h5 = parse_h5(h5_file)
         info["cellbender_version"] = h5["version"]
         s["train"], s["test"] = h5["train"], h5["test"]
-        s["cell_probability"] = h5["cell_probability"]
-        info["top10umi_min_cell_prob"] = float(np.min(h5["cell_probability"][:10]))
+        p = s["cell_probability"] = h5["cell_probability"]
+        cells = p > CELL_PROB
+        s["z"] = h5["z"]
+        if h5["ambient"] is not None:
+            top = np.argsort(h5["ambient"])[::-1][:TOP_GENES]
+            info["top_ambient_genes"] = ",".join(h5["feature_names"][top])
         if mode > 2:
-            if "soup_fraction" not in h5:
-                raw = raw_umi_from_input(info["input"], h5["barcodes"])
-                if raw is None:
-                    log(f"WARN: input {info['input']} of {sample_dir} is not readable, soup fraction skipped", verbose)
+            raw = read_input(info["input"], h5["idx"], h5["barcodes"], cells)
+            if raw is None:
+                log(f"WARN: input {info['input']} of {sample_dir} is not readable, UMI curve and gene removal skipped", verbose)
+            else:
+                s["umi"], gene_raw = raw
+                if len(gene_raw) == len(h5["gene_corrected"]):
+                    s["gene_raw"], s["gene_corrected"], s["gene_names"] = gene_raw, h5["gene_corrected"], h5["feature_names"]
                 else:
-                    h5["raw_umi"] = raw
-                    with np.errstate(divide="ignore", invalid="ignore"):
-                        h5["soup_fraction"] = (raw - h5["filtered_umi"]) / raw
-            if "soup_fraction" in h5:
-                cells = h5["cell_probability"] > 0.5
-                s["raw_umi"], s["soup_fraction"] = h5["raw_umi"][cells], h5["soup_fraction"][cells]
+                    log(f"WARN: input and output of {sample_dir} have different features, gene removal skipped", verbose)
+            soup, umi = h5.get("soup_fraction"), s.get("umi")
+            with np.errstate(divide="ignore", invalid="ignore"):
+                if soup is None and umi is not None:  # CellBender 0.2 does not store the soup fraction
+                    soup = (umi - h5["corrected_umi"]) / umi
+                if soup is not None and umi is None:  # invert background_fraction = (raw - out) / (raw + 0.001)
+                    umi = (h5["corrected_umi"] + 0.001 * soup) / (1 - soup)
+            if soup is not None:
+                s["raw_umi"], s["soup_fraction"] = umi[cells], soup[cells]
                 info["mean_soup_fraction"] = float(np.nanmean(s["soup_fraction"]))
                 info["median_soup_fraction"] = float(np.nanmedian(s["soup_fraction"]))
+        order = np.argsort(-s["umi"], kind="stable") if "umi" in s else np.arange(len(p))
+        info["top10umi_min_cell_prob"] = float(np.min(p[order][:10]))
     return s
 
 
@@ -246,6 +314,18 @@ def grid_pages(samples, plot, pdf, title):
     return figures
 
 
+def save_pages(figures, outdir, name):
+    """Save each page as a MultiQC image, for plots MultiQC cannot draw itself, and close it."""
+    for page, fig in enumerate(figures, start=1):
+        fig.savefig(os.path.join(outdir, f"cellbender_{name}_{page}_mqc.png"), dpi=80)
+        plt.close(fig)
+
+
+def not_available(ax, text="not available"):
+    ax.axis("off")
+    ax.text(0.5, 0.5, text, ha="center", va="center", transform=ax.transAxes)
+
+
 def plot_training(ax, s):
     epochs = sorted(s["train"])
     ax.plot(epochs, [s["train"][e] for e in epochs], color="tab:blue", lw=2, label="Train")
@@ -256,16 +336,50 @@ def plot_training(ax, s):
     ax.legend(loc="lower right", frameon=False, fontsize=8)
 
 
-def plot_cell_probability(ax, s):
-    ax.plot(s["cell_probability"], color="black", lw=1)
-    ax.set_ylim(0, 1)
-    ax.set_xlabel("Barcode index, sorted by UMI count")
-    ax.set_ylabel("Cell probability")
+def plot_cell_calling(ax, s):
+    """CellBender's own plot: UMI count by barcode rank, with the cell probability on a second axis."""
+    p = s["cell_probability"]
+    if "umi" in s:
+        order = np.argsort(-s["umi"], kind="stable")
+        ax.semilogy(s["umi"][order], color="black", lw=1)
+        ax.axvline(np.sum(p > CELL_PROB), color="grey", ls="--", lw=0.8)
+        ax.set_xlabel("Barcode rank by UMI count")
+        ax.set_ylabel("UMI counts")
+        prob_ax = ax.twinx()
+        prob_ax.spines["right"].set_visible(True)
+    else:  # without the input only CellBender's own barcode order, close to the UMI order, is known
+        order = np.arange(len(p))
+        ax.set_xlabel("Barcode index (CellBender order)")
+        prob_ax = ax
+    prob_ax.plot(p[order], ".", ms=2, color="red", alpha=0.3, rasterized=True)
+    prob_ax.set_ylim(-0.05, 1.05)
+    prob_ax.set_ylabel("Cell probability", color="red")
+    prob_ax.tick_params(axis="y", colors="red")
+
+
+def plot_latent_pca(ax, s):
+    cells = s["cell_probability"] > CELL_PROB
+    if s.get("z") is None or cells.sum() < 3:
+        not_available(ax)
+        return
+    z = s["z"][cells] - s["z"][cells].mean(axis=0)
+    # Top eigenvectors of the small covariance matrix: much faster than an SVD of z with the same result
+    pcs = z @ np.linalg.eigh(z.T @ z)[1][:, ::-1][:, :2]
+    if "soup_fraction" in s:
+        soup = s["soup_fraction"] * 100
+        order = np.argsort(soup)  # most soup on top
+        points = ax.scatter(pcs[order, 0], pcs[order, 1], c=soup[order], s=2, cmap="viridis", vmin=0,
+                            vmax=max(np.nanpercentile(soup, 99), 1), edgecolors="none", rasterized=True)
+        plt.colorbar(points, ax=ax, label="soup %", extend="max")
+    else:
+        ax.scatter(pcs[:, 0], pcs[:, 1], s=2, color="black", alpha=0.3, edgecolors="none", rasterized=True)
+    ax.set_xlabel("PC 1")
+    ax.set_ylabel("PC 2")
 
 
 def plot_soup_fraction(ax, s):
     if "soup_fraction" not in s:
-        ax.text(0.5, 0.5, "not available", ha="center", va="center", transform=ax.transAxes)
+        not_available(ax)
         return
     x = np.log10(s["raw_umi"] + 1)
     y = s["soup_fraction"] * 100
@@ -275,6 +389,43 @@ def plot_soup_fraction(ax, s):
     plt.colorbar(image, ax=ax, label="# cells")
     ax.set_xlabel("log10(UMI + 1)")
     ax.set_ylabel("soup %")
+
+
+def plot_soup_histogram(ax, s):
+    if "soup_fraction" not in s:
+        not_available(ax)
+        return
+    soup = s["soup_fraction"] * 100
+    soup = soup[np.isfinite(soup)]
+    ax.hist(np.clip(soup, 0, 100), bins=SOUP_BINS, range=(0, 100), color="tab:blue", alpha=0.7)
+    ax.axvline(np.median(soup), color="black", ls="--", lw=0.8)
+    ax.set_yscale("log")
+    ax.set_xlabel("soup %")
+    ax.set_ylabel("# cells")
+
+
+def plot_gene_removal(ax, s):
+    if "gene_raw" not in s:
+        not_available(ax)
+        return
+    raw, corrected = s["gene_raw"], s["gene_corrected"]
+    x, y = np.maximum(raw, 0.5), np.maximum(corrected, 0.5)  # show zeros at 0.5 on log axes
+    keep = raw > 0
+    ax.scatter(x[keep], y[keep], s=2, color="black", alpha=0.3, edgecolors="none", rasterized=True)
+    high = x.max() * 2
+    ax.plot([0.5, high], [0.5, high], color="grey", ls="--", lw=0.8)
+    # The features with the most UMI removed, listed in a corner: their labels would overlap at the top right
+    top = np.argsort(raw - corrected)[::-1][:TOP_GENES]
+    ax.scatter(x[top], y[top], s=6, color="red")
+    ax.text(0.98, 0.02, "most UMI removed\n" + "\n".join(
+        f"{s['gene_names'][g]}  -{100 * (raw[g] - corrected[g]) / raw[g]:.2g}%" for g in top),
+        transform=ax.transAxes, ha="right", va="bottom", fontsize=6, color="red")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim(0.4, high)
+    ax.set_ylim(0.4, high)
+    ax.set_xlabel("UMI in cells, raw")
+    ax.set_ylabel("UMI in cells, after CellBender")
 
 
 def summary_page(samples, pdf):
@@ -295,11 +446,6 @@ def summary_page(samples, pdf):
         plt.close(fig)
 
 
-def downsample(values, n=MULTIQC_LINE_POINTS):
-    idx = np.unique(np.linspace(0, len(values) - 1, min(n, len(values))).astype(int))
-    return {int(i) + 1: round(float(values[i]), 4) for i in idx}
-
-
 def write_multiqc(samples, mode, outdir):
     os.makedirs(outdir, exist_ok=True)
     headers = {
@@ -311,6 +457,7 @@ def write_multiqc(samples, mode, outdir):
         "top10umi_min_cell_prob": {"title": "Top-10 min cell prob", "description": "Lowest cell probability among the 10 barcodes with most UMIs; below 0.5 is a red flag", "min": 0, "max": 1},
         "mean_soup_fraction": {"title": "Mean soup", "min": 0, "max": 1, "format": "{:,.3f}"},
         "median_soup_fraction": {"title": "Median soup", "min": 0, "max": 1, "format": "{:,.3f}"},
+        "top_ambient_genes": {"title": "Top ambient genes", "description": f"The {TOP_GENES} features with the highest share of CellBender's ambient profile"},
         "prior_cell_count": {"title": "Cell prior", "hidden": True},
         "prior_empty_count": {"title": "Empty prior", "hidden": True},
         "barcode_low_thr": {"title": "Low-count threshold", "hidden": True},
@@ -352,13 +499,22 @@ def write_multiqc(samples, mode, outdir):
             ],
         },
     }
-    if mode > 1:
-        content["cellbender_cell_probability_mqc.json"] = {
-            "id": "cellbender_cell_probability", "section_name": "CellBender cell probability", "plot_type": "linegraph",
-            "description": "Cell probability per barcode, barcodes sorted by UMI count. Expect a sharp drop from 1 to 0.",
-            "pconfig": {"id": "cellbender_cell_probability_plot", "title": "CellBender: cell probability",
-                        "xlab": "Barcode index, sorted by UMI count", "ylab": "Cell probability", "ymin": 0, "ymax": 1},
-            "data": {sid: downsample(s["cell_probability"]) for sid, s in samples if "cell_probability" in s},
+    if mode > 2:
+        edges = np.linspace(0, 100, SOUP_BINS + 1)
+        centres = (edges[:-1] + edges[1:]) / 2
+        histograms = {}
+        for sid, s in samples:
+            if "soup_fraction" in s:
+                soup = s["soup_fraction"] * 100
+                counts = np.histogram(np.clip(soup[np.isfinite(soup)], 0, 100), bins=edges)[0]
+                histograms[sid] = {round(float(c), 1): round(100 * float(n) / max(counts.sum(), 1), 3) for c, n in zip(centres, counts)}
+        content["cellbender_soup_histogram_mqc.json"] = {
+            "id": "cellbender_soup_histogram", "section_name": "CellBender soup fraction histogram", "plot_type": "linegraph",
+            "description": "Share of cells (cell probability > 0.5) in each soup fraction bin. Most cells should sit at "
+                           "a low soup fraction; a second peak at high soup points at empty droplets called as cells.",
+            "pconfig": {"id": "cellbender_soup_histogram_plot", "title": "CellBender: soup fraction of cells",
+                        "xlab": "soup %", "ylab": "% of cells", "xmin": 0, "xmax": 100, "ymin": 0},
+            "data": histograms,
         }
     for name, data in content.items():
         with open(os.path.join(outdir, name), "w") as f:
@@ -369,14 +525,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("dir", help="folder with one CellBender output folder per sample")
     parser.add_argument("-m", "--mode", type=int, default=1, choices=[1, 2, 3],
-                        help="1: log only (fast); 2: also cell probabilities from the output h5; 3: also soup fraction")
+                        help="1: log only (fast); 2: also cell probabilities and latent PCA from the output h5; "
+                             "3: also the CellBender input: UMI curve, soup fraction and gene removal")
     parser.add_argument("-o", "--out", default=".", help="output folder (default: current folder)")
     parser.add_argument("-v", "--verbose", action="store_true", help="print progress to stderr")
     args = parser.parse_args()
 
     if not os.path.isdir(args.dir):
         sys.exit(f'Folder "{args.dir}" does not exist.')
-    os.makedirs(args.out, exist_ok=True)
+    multiqc_dir = os.path.join(args.out, "multiqc")
+    os.makedirs(multiqc_dir, exist_ok=True)
 
     samples = []
     for sid in sorted(os.listdir(args.dir)):
@@ -398,17 +556,20 @@ def main():
         for fig in grid_pages(samples, plot_training, pdf, "Training history"):
             plt.close(fig)
         if args.mode > 1:
-            for fig in grid_pages(samples, plot_cell_probability, pdf, "Cell probability"):
-                plt.close(fig)
+            save_pages(grid_pages(samples, plot_cell_calling, pdf, "Cell calling: UMI counts and cell probability"),
+                       multiqc_dir, "cell_calling")
+            save_pages(grid_pages(samples, plot_latent_pca, pdf, "PCA of CellBender's latent gene expression of cells"),
+                       multiqc_dir, "latent_pca")
         if args.mode > 2:
-            figures = grid_pages(samples, plot_soup_fraction, pdf, "Soup fraction of cells (cell probability > 0.5)")
-            os.makedirs(os.path.join(args.out, "multiqc"), exist_ok=True)
-            # Density plots have no MultiQC plot type, so each page goes into the report as an image
-            for page, fig in enumerate(figures, start=1):
-                fig.savefig(os.path.join(args.out, "multiqc", f"cellbender_soup_fraction_{page}_mqc.png"), dpi=80)
+            save_pages(grid_pages(samples, plot_soup_fraction, pdf, "Soup fraction of cells (cell probability > 0.5)"),
+                       multiqc_dir, "soup_fraction")
+            # MultiQC gets the histogram as a line graph instead
+            for fig in grid_pages(samples, plot_soup_histogram, pdf, "Soup fraction histogram of cells"):
                 plt.close(fig)
+            save_pages(grid_pages(samples, plot_gene_removal, pdf, "UMI per feature in cells, before and after CellBender"),
+                       multiqc_dir, "gene_removal")
 
-    write_multiqc(samples, args.mode, os.path.join(args.out, "multiqc"))
+    write_multiqc(samples, args.mode, multiqc_dir)
 
 
 if __name__ == "__main__":

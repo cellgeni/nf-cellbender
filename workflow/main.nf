@@ -1,5 +1,5 @@
 // IMPORT MODULES
-include { IRODS_LOADCATALOG } from '../modules/local/irods/loadcatalog'
+include { IRODS_LOADCATALOG } from '../modules/cellgeni/irods/loadcatalog'
 include { CELLBENDER_REMOVEBACKGROUND_V02 } from '../modules/cellgeni/cellbender/removebackground_v02'
 include { CELLBENDER_REMOVEBACKGROUND_V03 } from '../modules/cellgeni/cellbender/removebackground_v03'
 

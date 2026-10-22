@@ -15,6 +15,40 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-295] - 2026-10-22
+
+### Added
+
+- QC report (`cellgeni/cellbender/qc@0.2.0`): a PCA of CellBender's latent gene expression of
+  cells, coloured by soup fraction; a soup fraction histogram, overlaid for all samples in
+  MultiQC; a per-gene raw vs corrected plot that lists the features that lost the most UMIs; and
+  a `top_ambient_genes` summary column.
+
+### Changed
+
+- The iRODS download module is now a registry module, `cellgeni/irods/loadcatalog`. It skips
+  nothing when no extensions are given, matches extensions literally after a dot (`fastq.gz`
+  no longer matches `fastqXgz`), no longer fails when every file in a collection is skipped but
+  does fail on any other `grep` error, and calls `ils2paths.awk` through `awk -f`, so it works
+  even when the executable bit is lost on install.
+- `--ignore_extensions` accepts only letters, digits, `_`, `.` and `-` in each extension.
+- The QC cell probability plot is now CellBender's own: the UMI curve by barcode rank with the
+  cell probability on a second axis. In MultiQC it replaces the cell probability line graph.
+- `--qc_mode 3` now reads every sample's CellBender input, not only the 0.2 ones, for the UMI
+  curve and the gene removal plot. It reads 10x `.h5` and `.mtx` inputs in chunks.
+- CellBender reserves more GPU memory on each retry (8 GB times the attempt), so a sample that ran
+  out of GPU memory moves to a larger card.
+- Temporarily, CellBender jobs avoid the host `farm-gpu0203`, whose GPU 3 fails every job with
+  CUDA errors.
+- The work folder `nf-work/` is kept after a successful run (no more `cleanup = true`), so a
+  finished run can be resumed. Delete it yourself once the results are checked.
+
+### Fixed
+
+- The QC cell probability plot and `Top-10 min cell prob` (mode 3) rank barcodes by their raw UMI
+  count. They used CellBender's stored barcode order, which is not exactly the UMI order, and
+  drew a solid black block for samples with many intermediate probabilities.
+
 ## [26-294] - 2026-10-21
 
 ### Breaking
@@ -138,7 +172,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-294...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-295...dev
+[26-295]: https://github.com/cellgeni/nf-cellbender/compare/26-294...26-295
 [26-294]: https://github.com/cellgeni/nf-cellbender/compare/25-274...26-294
 [25-274]: https://github.com/cellgeni/nf-cellbender/compare/25-056...25-274
 [25-056]: https://github.com/cellgeni/nf-cellbender/compare/23-314...25-056

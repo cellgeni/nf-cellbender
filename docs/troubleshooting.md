@@ -110,6 +110,11 @@ To let the other samples finish while you look into it, rerun with `--ignore_fai
 The sample ran with CellBender 0.2, whose output does not store the soup fraction, and its input
 matrix could not be read at QC time. See [QC report](reference/qc.md#summary-columns).
 
+### The cell calling plot has no UMI curve, or the gene removal plot is `not available`
+
+Both need the CellBender input, which the QC step reads only in `--qc_mode 3` and only while it is
+still readable at the path in the CellBender log. See [QC report](reference/qc.md#qc-modes).
+
 ### A sample is missing from the report
 
 Its CellBender task failed and was ignored (`--ignore_failed`), or its folder holds no

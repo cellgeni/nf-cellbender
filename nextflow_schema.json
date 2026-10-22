@@ -32,7 +32,7 @@
         },
         "ignore_extensions": {
           "type": "string",
-          "pattern": "^[^,\\s]+(,[^,\\s]+)*$",
+          "pattern": "^[\\w.-]+(,[\\w.-]+)*$",
           "description": "Comma-separated file extensions to skip when downloading from iRODS (with `--on_irods` only).",
           "fa_icon": "fas fa-filter",
           "help_text": "Default: `bam,cram,fastq,fq,fastq.gz,fq.gz,fastq.bz2,fq.bz2,fastq.xz,fq.xz,fastq.lz4,fq.lz4,mate1.bz2,mate2.bz2`."
@@ -168,7 +168,7 @@
             3
           ],
           "description": "QC detail level.",
-          "help_text": "1: log-based summary and training curves only; 2: also cell probabilities from the output `.h5`; 3: also soup fraction.",
+          "help_text": "1: log-based summary and training curves only; 2: also cell calling, latent PCA and top ambient genes from the output `.h5`; 3: also reads the CellBender input for the UMI curve, soup fraction and per-gene removal.",
           "fa_icon": "fas fa-chart-line"
         }
       }
