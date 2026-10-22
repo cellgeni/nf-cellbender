@@ -15,6 +15,8 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-295] - 2026-10-22
+
 ### Added
 
 - QC report (`cellgeni/cellbender/qc@0.2.0`): a PCA of CellBender's latent gene expression of
@@ -170,7 +172,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-294...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-295...dev
+[26-295]: https://github.com/cellgeni/nf-cellbender/compare/26-294...26-295
 [26-294]: https://github.com/cellgeni/nf-cellbender/compare/25-274...26-294
 [25-274]: https://github.com/cellgeni/nf-cellbender/compare/25-056...25-274
 [25-056]: https://github.com/cellgeni/nf-cellbender/compare/23-314...25-056
