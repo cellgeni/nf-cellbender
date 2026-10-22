@@ -38,6 +38,8 @@ and the day of the year.
   out of GPU memory moves to a larger card.
 - Temporarily, CellBender jobs avoid the host `farm-gpu0203`, whose GPU 3 fails every job with
   CUDA errors.
+- The work folder `nf-work/` is kept after a successful run (no more `cleanup = true`), so a
+  finished run can be resumed. Delete it yourself once the results are checked.
 
 ### Fixed
 

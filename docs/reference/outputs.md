@@ -77,5 +77,5 @@ Outputs are copied out of `nf-work/` by default. `--publish_mode` (hidden, see `
 also accepts `symlink`, `link`, `rellink`, `copyNoFollow` and `move`.
 
 {: .warning }
-Do not use `symlink` or `rellink` without also turning off cleanup: the pipeline deletes `nf-work/`
-after a successful run, and the links would point at deleted files.
+With `symlink` or `rellink`, the results point into `nf-work/`: deleting it then deletes the
+results too.
