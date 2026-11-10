@@ -72,7 +72,9 @@ Sample `id`s stay unique across the whole table, not only within a group.
 | [`examples/samples_groups.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_groups.csv) | Local folders split into three groups, one QC report each |
 
 [`examples/run_cellbender.sh`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/run_cellbender.sh)
-is a complete run script using one of them.
+is a complete run script using one of them, and
+[`examples/run_cellbender.bsub`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/run_cellbender.bsub)
+the same run as an LSF job (`bsub < examples/run_cellbender.bsub`).
 
 ## Index files
 

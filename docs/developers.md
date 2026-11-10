@@ -21,7 +21,7 @@ nav_order: 6
 | `assets/schema_samples.json` | Format of the `--samples` table |
 | `assets/multiqc_config.yaml` | MultiQC report title, intro and section order |
 | `modules/cellgeni/` | Modules in Nextflow registry layout (see below) |
-| `examples/` | Example samples tables and a run script |
+| `examples/` | Example samples tables, and a run script plus its LSF (`.bsub`) version |
 | `resume/` | A script for resuming a run of the published pipeline |
 | `docker/` | Dockerfiles for the CellBender 0.2 and 0.3 images |
 | `tests/` | nf-test config and the LSF script that runs the test suite |
