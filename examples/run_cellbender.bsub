@@ -32,4 +32,5 @@ nextflow run main.nf \
   --on_irods \
   --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" \
   --ignore_extensions "bam,bz2" \
+  -ansi-log false \
   --outdir "my-cellbender-v3-results"
