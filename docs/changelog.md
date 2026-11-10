@@ -15,6 +15,10 @@ and the day of the year.
 
 ## [Unreleased]
 
+### Added
+
+- Tests for `cellgeni/cellbender/qc`.
+
 ### Changed
 
 - `cellgeni/cellbender/qc@0.3.0` and `cellgeni/multiqc@0.2.0` take and emit `[meta, files]`

@@ -1,0 +1,63 @@
+{
+    "Stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        [
+                            "cellbender_qc_report.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "cellbender_qc_summary.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            [
+                                "cellbender_summary_mqc.json:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ]
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "cellbender_summary_mqc.json:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    "versions.yml:md5,8d2d8e38bce85bc029d9ad706c10f9ce"
+                ],
+                "multiqc_files": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "cellbender_summary_mqc.json:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "report": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        [
+                            "cellbender_qc_report.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "cellbender_qc_summary.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            [
+                                "cellbender_summary_mqc.json:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ]
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,8d2d8e38bce85bc029d9ad706c10f9ce"
+                ]
+            }
+        ],
+        "timestamp": "2026-11-10T16:51:11.733474793",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

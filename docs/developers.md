@@ -87,7 +87,7 @@ The module tests use [nf-test](https://www.nf-test.com/) and run on the farm:
 
 ```bash
 mkdir -p logs
-N=29
+N=31
 bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
 ```
 
