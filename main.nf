@@ -20,6 +20,9 @@ def helpBefore() {
 
     path is a CellRanger/STARsolo output directory, a .h5 file or a .mtx directory;
     with --on_irods it is an iRODS collection instead.
+
+    An optional group column (id,group,path) splits the samples into datasets: each group
+    gets its own QC report, and its outputs go to <outdir>/<group>/.
     """.stripIndent()
 }
 
@@ -76,8 +79,19 @@ workflow {
     validateParameters()
     log.info paramsSummaryLog()
 
-    // Load files: sample table rows become [meta, path], checked against assets/schema_samples.json
-    samples        = channel.fromList(samplesheetToList(params.samples, "${projectDir}/assets/schema_samples.json"))
+    // Load files: sample table rows become [meta, path], checked against assets/schema_samples.json.
+    // nf-schema sets meta.group to [] when the table has no group column or the cell is empty; dropping
+    // it keeps the meta of an ungrouped run [id: ...], as before, so index files and -resume are unchanged
+    def sample_list = samplesheetToList(params.samples, "${projectDir}/assets/schema_samples.json")
+        .collect { meta, path -> [meta.group ? meta : meta.findAll { key, _value -> key != 'group' }, path] }
+
+    // With a group column, every sample needs a group: no silent fallback to the top-level folders
+    def ungrouped = sample_list.findAll { meta, _path -> !meta.group }.collect { meta, _path -> meta.id }
+    if (ungrouped && ungrouped.size() < sample_list.size()) {
+        error("--samples (${params.samples}): no group for ${ungrouped.join(', ')}. Give every sample a group, or leave the group column out.")
+    }
+
+    samples        = channel.fromList(sample_list)
     multiqc_config = channel.value(file("${projectDir}/assets/multiqc_config.yaml", checkIfExists: true))
 
     // Define variables
@@ -91,10 +105,10 @@ workflow {
         version
     )
 
-    // QC across all samples, as one group named 'all': PDF + TSV, and an HTML report through
-    // MultiQC. Sorted, so the QC task is cached on -resume
+    // QC per sample group: PDF + TSV, and an HTML report through MultiQC. Without a group column
+    // all samples are one group, 'all'. Sorted, so the QC task is cached on -resume
     qc_input = CELLBENDER.out.outputdir
-        .map { _meta, outputdir -> [[id: 'all'], outputdir] }
+        .map { meta, outputdir -> [meta.group ? [id: meta.group, group: meta.group] : [id: 'all'], outputdir] }
         .groupTuple(sort: true)
 
     CELLBENDER_QC(
@@ -107,22 +121,24 @@ workflow {
 
     // One versions.yml for the run: the first task of each process is enough
     versions = CELLBENDER.out.versions
-        .mix(CELLBENDER_QC.out.versions, MULTIQC.out.versions)
+        .mix(CELLBENDER_QC.out.versions.first(), MULTIQC.out.versions.first())
         .collectFile(name: 'versions.yml', sort: { versions_file -> versions_file.text })
 
     publish:
-    // Records with a path field, so each output also gets an index CSV (id,path)
+    // Records with a path field (and group, when set), so outputs can be routed to their group's
+    // folder and each sample output also gets an index CSV (id,path or id,group,path)
     raw        = CELLBENDER.out.raw.map { meta, dir -> meta + [path: dir] }
     cellbender = CELLBENDER.out.outputdir.map { meta, dir -> meta + [path: dir] }
-    qc_report  = CELLBENDER_QC.out.report.map { _meta, report -> report }
-    multiqc    = MULTIQC.out.report.mix(MULTIQC.out.data).map { _meta, report -> report }
+    qc_report  = CELLBENDER_QC.out.report.map { meta, report -> meta + [path: report] }
+    multiqc    = MULTIQC.out.report.mix(MULTIQC.out.data).map { meta, report -> meta + [path: report] }
     versions   = versions
 }
 
+// Outputs of a sample group go to <outdir>/<group>/, those of an ungrouped run to <outdir>/
 output {
     raw {
         // index/raw.csv can be passed back as --samples without --on_irods
-        path "raw"
+        path { sample -> sample.group ? "${sample.group}/raw" : "raw" }
         index {
             path "index/raw.csv"
             header true
@@ -130,7 +146,7 @@ output {
         }
     }
     cellbender {
-        path "cellbender"
+        path { sample -> sample.group ? "${sample.group}/cellbender" : "cellbender" }
         index {
             path "index/cellbender.csv"
             header true
@@ -139,10 +155,10 @@ output {
     }
     qc_report {
         // the qc_report/ folder itself: summary TSV, PDF and MultiQC input files
-        path "."
+        path { report -> report.group ?: "." }
     }
     multiqc {
-        path "qc_report"
+        path { report -> report.group ? "${report.group}/qc_report" : "qc_report" }
     }
     versions {
         path "."

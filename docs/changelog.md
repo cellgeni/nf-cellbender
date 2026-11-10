@@ -17,6 +17,11 @@ and the day of the year.
 
 ### Added
 
+- An optional `group` column in the samples table (`id,group,path`). Each group gets its own QC
+  and MultiQC report, with the group in the report title, and its `raw/`, `cellbender/` and
+  `qc_report/` go to `results/<group>/`. The index files keep the column, so they can be passed
+  back as `--samples`. Once the column is there, every sample needs a group. Without it, the
+  pipeline runs and publishes as before. See `examples/samples_groups.csv`.
 - Tests for `cellgeni/cellbender/qc`.
 
 ### Changed

@@ -36,9 +36,10 @@ To choose the list yourself, give comma-separated extensions:
 
 ## Reusing a download
 
-The downloaded folders are published to `results/raw/<id>/`, and `results/index/raw.csv` lists
-them in the samples table format. To rerun CellBender, for example with another version or other
-options, pass that file instead of downloading again:
+The downloaded folders are published to `results/raw/<id>/` (`results/<group>/raw/<id>/` with a
+`group` column), and `results/index/raw.csv` lists them, with their groups, in the samples table
+format. To rerun CellBender, for example with another version or other options, pass that file
+instead of downloading again:
 
 ```bash
 nextflow run cellgeni/nf-cellbender -r main --samples results/index/raw.csv --version 0.2

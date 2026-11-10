@@ -19,6 +19,10 @@ After CellBender has run on every sample, the QC step reads all the outputs toge
 | `cellbender_qc_report.pdf` | A summary table, then one panel per sample for each plot, 24 samples per page |
 | `multiqc_report.html` | The same table and plots in an interactive report |
 
+With a `group` column in the samples table (see [Groups](samples.md#groups)), the QC step runs
+once per group, on that group's samples only, and writes `results/<group>/qc_report/`. Each
+group's MultiQC report has the group in its title.
+
 ## What to look at first
 
 Open `multiqc_report.html`. The samples worth a closer look come first in the summary table:

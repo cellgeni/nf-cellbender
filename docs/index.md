@@ -32,7 +32,9 @@ sample2,/lustre/scratch124/.../sample2/outs/raw_feature_bc_matrix.h5
 ```
 
 Results go to `results/`: one CellBender folder per sample in `results/cellbender/`, and the QC
-report in `results/qc_report/`.
+report in `results/qc_report/`. An optional `group` column (`id,group,path`) gives each group of
+samples its own QC report and its own folder, `results/<group>/`
+(see [Groups](reference/samples.md#groups)).
 
 ## Where next
 

@@ -34,6 +34,9 @@ cellranger-count,/lustre/scratch124/.../cellranger-count
 starsolo,/lustre/scratch124/.../starsolo
 ```
 
+To get one QC report per dataset, add a `group` column (`id,group,path`); see
+[Groups](reference/samples.md#groups).
+
 Give the whole mapper output folder where you can: the pipeline then finds the right raw matrix
 itself and can estimate cell numbers from it. See [Samples table](reference/samples.md) for the
 input layouts it recognises.
@@ -74,9 +77,12 @@ results/
 └── versions.yml              software versions
 ```
 
-Start with `results/qc_report/multiqc_report.html`: samples that need a closer look are listed
-first. [QC report](reference/qc.md) explains each column, and [Outputs](reference/outputs.md)
-each file.
+With a `group` column, each group has its own `cellbender/` and `qc_report/` under
+`results/<group>/`.
+
+Start with `results/qc_report/multiqc_report.html` (or `results/<group>/qc_report/`): samples that
+need a closer look are listed first. [QC report](reference/qc.md) explains each column, and
+[Outputs](reference/outputs.md) each file.
 
 ## Getting help on the command line
 

@@ -13,7 +13,7 @@ nav_order: 6
 
 | Path | Contents |
 |---|---|
-| `main.nf` | Entry point: help text, parameter validation, loading the samples table, QC, MultiQC, and the `output {}` block that decides what is published where |
+| `main.nf` | Entry point: help text, parameter validation, loading the samples table, QC and MultiQC per sample group, and the `output {}` block that decides what is published where |
 | `workflow/main.nf` | The `CELLBENDER` subworkflow: optional iRODS download, then the CellBender module for `--version` |
 | `nextflow.config` | Default parameters, LSF executor, Singularity, nf-schema plugin, output folder |
 | `configs/<process>.config` | Per-process settings: queue, resources, `ext` arguments |
