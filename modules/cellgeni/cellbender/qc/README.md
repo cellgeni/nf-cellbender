@@ -2,8 +2,10 @@
 
 ## Summary
 
-Collects QC statistics from CellBender `remove-background` outputs (version 0.2 or 0.3) for many samples
-at once, and writes a summary table, a PDF report and MultiQC custom content.
+Collects QC statistics from CellBender `remove-background` outputs (version 0.2 or 0.3) for a group of
+samples (a dataset) at once, and writes a summary table, a PDF report and MultiQC custom content.
+The group is named by `meta.id`, which tags the task and is passed through to every output, so a pipeline
+can run one QC per dataset and publish each report next to that dataset.
 It replaces the R script of `cellgeni/cellbender/qc@0.0.1` with `cellbender_qc.py`, which runs in the
 CellBender 0.3 image (`quay.io/cellgeni/cellbender:0.3`, which has h5py, matplotlib, numpy and pandas).
 
@@ -24,11 +26,16 @@ cell probability ≤ 0.5, then by how far the final test ELBO fell below its max
 
 ## Inputs
 
+A tuple of:
+
 | Name | Type | Description |
 |---|---|---|
-| `cellbender_output` | directories | CellBender output directories, one per sample and named after it, staged under `cellbender_output/`. |
+| `meta` | map | Metadata of the group of samples. Must contain `id`, the group (dataset) name, e.g. `[id: 'dataset1']`. |
+| `cellbender_output` | directories | CellBender output directories of the group, one per sample and named after it, staged under `cellbender_output/`. |
 
 ## Outputs
+
+`report` and `multiqc_files` are tuples of `meta` (passed through from the input) and the file(s).
 
 | Name | File(s) | Description |
 |---|---|---|
@@ -69,6 +76,7 @@ cell probability ≤ 0.5, then by how far the final test ELBO fell below its max
 | Variable | Type | Default | Description |
 |---|---|---|---|
 | `ext.qc_mode` | integer | `3` | `1`: log only (fast); `2`: also reads the output h5 (a few seconds per sample); `3`: also reads the CellBender input (10–60 s per sample, depending on its size). |
+| `ext.args` | string | `''` | Extra arguments for `cellbender_qc.py`. |
 
 The script is bundled as a module binary, so the pipeline needs `nextflow.enable.moduleBinaries = true`.
 
@@ -77,7 +85,13 @@ The script is bundled as a module binary, so the pipeline needs `nextflow.enable
 ```nextflow
 include { CELLBENDER_QC } from 'cellgeni/cellbender/qc'
 
-CELLBENDER_QC(CELLBENDER_REMOVEBACKGROUND_V03.out.outputdir.map { meta, dir -> dir }.collect())
+// One QC per dataset: samples with the same meta.group are checked together,
+// samples without a group all go into one QC named 'all'
+qc_input = CELLBENDER_REMOVEBACKGROUND_V03.out.outputdir
+    .map { meta, dir -> [[id: meta.group ?: 'all'], dir] }
+    .groupTuple(sort: true)
+
+CELLBENDER_QC(qc_input)
 MULTIQC(CELLBENDER_QC.out.multiqc_files, file('multiqc_config.yaml'))
 ```
 

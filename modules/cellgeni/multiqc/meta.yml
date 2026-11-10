@@ -1,9 +1,9 @@
 $schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
 name: cellgeni/multiqc
-version: 0.1.0
+version: 0.2.0
 description: >
-  Aggregates tool outputs and MultiQC custom content (*_mqc.* files) into a single HTML report,
-  with a fixed output layout (multiqc_report.html and multiqc_data/) whatever the report title.
+  Aggregates tool outputs and MultiQC custom content (*_mqc.* files) into an HTML report per meta
+  map, with a fixed output layout (multiqc_report.html and multiqc_data/) whatever the report title.
 keywords:
   - multiqc
   - qc
@@ -26,22 +26,31 @@ tools:
       licence:
         - "GPL-3.0-or-later"
 input:
-  - name: multiqc_files
-    type: file
-    description: "Files for MultiQC to search: tool outputs and/or custom content (*_mqc.json, *_mqc.tsv, *_mqc.png, ...). Staged under multiqc_input/."
+  - - name: meta
+      type: map
+      description: "Map with metadata of the report, e.g. the group of samples it covers. Must contain key 'id', e.g. [ id:'dataset1' ]"
+    - name: multiqc_files
+      type: file
+      description: "Files for MultiQC to search: tool outputs and/or custom content (*_mqc.json, *_mqc.tsv, *_mqc.png, ...). Staged under multiqc_input/."
   - name: multiqc_config
     type: file
     description: "Optional MultiQC config YAML (report title, section order, custom content settings). Pass [] to use the defaults."
     pattern: "*.{yml,yaml}"
 output:
-  - name: report
-    type: file
-    description: "The MultiQC HTML report."
-    pattern: "multiqc_report.html"
-  - name: data
-    type: directory
-    description: "Parsed data, plot data and logs behind the report."
-    pattern: "multiqc_data"
+  - - name: meta
+      type: map
+      description: "Map with report metadata, passed through from input."
+    - name: report
+      type: file
+      description: "The MultiQC HTML report."
+      pattern: "multiqc_report.html"
+  - - name: meta
+      type: map
+      description: "Map with report metadata, passed through from input."
+    - name: data
+      type: directory
+      description: "Parsed data, plot data and logs behind the report."
+      pattern: "multiqc_data"
   - name: versions
     type: file
     description: "YAML file recording the MultiQC version."

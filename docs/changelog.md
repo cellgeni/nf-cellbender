@@ -15,6 +15,12 @@ and the day of the year.
 
 ## [Unreleased]
 
+### Changed
+
+- `cellgeni/cellbender/qc@0.3.0` and `cellgeni/multiqc@0.2.0` take and emit `[meta, files]`
+  tuples, with `meta.id` naming the group of samples a report covers, and tag their tasks with it.
+  Pipelines that call these modules directly need to pass a meta map.
+
 ## [26-295] - 2026-10-22
 
 ### Added

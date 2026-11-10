@@ -1,10 +1,10 @@
 $schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
 name: cellgeni/cellbender/qc
-version: 0.2.0
+version: 0.3.0
 description: >
-  Collects QC statistics from CellBender 0.2 and 0.3 remove-background outputs into a summary TSV,
-  a multi-page PDF (training curves, CellBender-style cell calling, latent PCA, soup fractions and
-  per-gene removal) and MultiQC custom content.
+  Collects QC statistics from a group of CellBender 0.2 and 0.3 remove-background outputs into a
+  summary TSV, a multi-page PDF (training curves, CellBender-style cell calling, latent PCA, soup
+  fractions and per-gene removal) and MultiQC custom content.
 keywords:
   - cellbender
   - single-cell
@@ -24,18 +24,27 @@ tools:
       licence:
         - "BSD-3-Clause"
 input:
-  - name: cellbender_output
-    type: directory
-    description: "CellBender output directories, one per sample (named after the sample), staged under cellbender_output/."
+  - - name: meta
+      type: map
+      description: "Map with metadata of the group of samples (dataset) that is checked together. Must contain key 'id' with the group name, e.g. [ id:'dataset1' ]"
+    - name: cellbender_output
+      type: directory
+      description: "CellBender output directories of the group, one per sample (named after the sample), staged under cellbender_output/."
 output:
-  - name: report
-    type: directory
-    description: "qc_report/ with cellbender_qc_summary.tsv, cellbender_qc_report.pdf and multiqc/."
-    pattern: "qc_report"
-  - name: multiqc_files
-    type: file
-    description: "MultiQC custom content: summary table, general stats, ELBO and soup fraction histogram line graphs, and images of the cell calling, latent PCA, soup fraction and gene removal plots."
-    pattern: "qc_report/multiqc/*_mqc.*"
+  - - name: meta
+      type: map
+      description: "Map with group metadata, passed through from input."
+    - name: report
+      type: directory
+      description: "qc_report/ with cellbender_qc_summary.tsv, cellbender_qc_report.pdf and multiqc/."
+      pattern: "qc_report"
+  - - name: meta
+      type: map
+      description: "Map with group metadata, passed through from input."
+    - name: multiqc_files
+      type: file
+      description: "MultiQC custom content: summary table, general stats, ELBO and soup fraction histogram line graphs, and images of the cell calling, latent PCA, soup fraction and gene removal plots."
+      pattern: "qc_report/multiqc/*_mqc.*"
   - name: versions
     type: file
     description: "YAML file recording the python, h5py, matplotlib, numpy and pandas versions."

@@ -1,25 +1,27 @@
-// Collects QC statistics and plots from CellBender outputs (and, in QC mode 3, their inputs) into a PDF, a TSV
-// and MultiQC custom content
+// Collects QC statistics and plots from a group of CellBender outputs (and, in QC mode 3, their inputs)
+// into a PDF, a TSV and MultiQC custom content
 process CELLBENDER_QC {
-    tag "Running quality control"
-
+    tag "${meta.id}"
     container 'quay.io/cellgeni/cellbender:0.3'
 
     input:
-    path cellbender_output, stageAs: 'cellbender_output/*'
+    tuple val(meta), path(cellbender_output, stageAs: 'cellbender_output/*')
 
     output:
-    path "qc_report",                 emit: report
-    path "qc_report/multiqc/*_mqc.*", emit: multiqc_files
-    path "versions.yml",              emit: versions
+    tuple val(meta), path("qc_report"),                 emit: report
+    tuple val(meta), path("qc_report/multiqc/*_mqc.*"), emit: multiqc_files
+    path "versions.yml",                                emit: versions
 
     script:
+    def args    = task.ext.args ?: ''
+    def qc_mode = task.ext.qc_mode ?: 3
     """
     cellbender_qc.py \\
         cellbender_output \\
-        --mode ${task.ext.qc_mode ?: 3} \\
+        --mode ${qc_mode} \\
         --out qc_report \\
-        --verbose
+        --verbose \\
+        ${args}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

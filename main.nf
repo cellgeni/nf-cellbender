@@ -91,9 +91,14 @@ workflow {
         version
     )
 
-    // QC across all samples: PDF + TSV, and an HTML report through MultiQC
+    // QC across all samples, as one group named 'all': PDF + TSV, and an HTML report through
+    // MultiQC. Sorted, so the QC task is cached on -resume
+    qc_input = CELLBENDER.out.outputdir
+        .map { _meta, outputdir -> [[id: 'all'], outputdir] }
+        .groupTuple(sort: true)
+
     CELLBENDER_QC(
-        CELLBENDER.out.outputdir.map { _meta, outputdir -> outputdir }.collect()
+        qc_input
     )
     MULTIQC(
         CELLBENDER_QC.out.multiqc_files,
@@ -109,8 +114,8 @@ workflow {
     // Records with a path field, so each output also gets an index CSV (id,path)
     raw        = CELLBENDER.out.raw.map { meta, dir -> meta + [path: dir] }
     cellbender = CELLBENDER.out.outputdir.map { meta, dir -> meta + [path: dir] }
-    qc_report  = CELLBENDER_QC.out.report
-    multiqc    = MULTIQC.out.report.mix(MULTIQC.out.data)
+    qc_report  = CELLBENDER_QC.out.report.map { _meta, report -> report }
+    multiqc    = MULTIQC.out.report.mix(MULTIQC.out.data).map { _meta, report -> report }
     versions   = versions
 }
 
