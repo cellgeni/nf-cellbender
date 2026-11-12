@@ -1,9 +1,8 @@
 id,group,path
-cellranger-count,gex,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-count
-cellranger-count-nogz,gex,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-count-nogz
-starsolo,gex,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/starsolo
-cellranger-arc,multiome,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-arc
-cellranger-atac,multiome,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/cellranger-atac
-multiplex-flex,multiplexed,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/multiplex-flex
-sample-multiplexing,multiplexed,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/sample-multiplexing
-singleplex-crispr,multiplexed,/lustre/scratch127/cellgen/cellgeni/aljes/nf-cellbender/tests/data/singleplex-crispr
+cellranger-count,gex,/archive/cellgeni/tests/cellranger-count
+cellranger-count-nogz,gex,/archive/cellgeni/tests/cellranger-count-nogz
+starsolo,gex,/archive/cellgeni/tests/starsolo
+cellranger-arc,multiome,/archive/cellgeni/tests/cellranger-arc
+multiplex-flex,multiplexed,/archive/cellgeni/tests/multiplex-flex
+sample-multiplexing,multiplexed,/archive/cellgeni/tests/sample-multiplexing
+singleplex-crispr,multiplexed,/archive/cellgeni/tests/singleplex-crispr
