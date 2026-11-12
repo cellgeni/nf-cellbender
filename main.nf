@@ -88,9 +88,13 @@ workflow {
     def sample_list = samplesheetToList(params.samples, "${projectDir}/assets/schema_samples.json")
         .collect { meta, path -> [meta.group ? meta : meta.findAll { key, _value -> key != 'group' }, path] }
 
-    // With a group column, every sample needs a group: no silent fallback to the top-level folders
-    def ungrouped = sample_list.findAll { meta, _path -> !meta.group }.collect { meta, _path -> meta.id }
-    if (ungrouped && ungrouped.size() < sample_list.size()) {
+    // With a group column, every sample needs a group: no silent fallback to the top-level folders.
+    // A missing column and an empty cell both come out as [], so the header decides whether the column is
+    // there (the index files quote their column names)
+    def header           = file(params.samples).readLines().find { line -> line.trim() } ?: ''
+    def has_group_column = header.split(',').collect { column -> column.trim().replaceAll(/^"|"$/, '') }.contains('group')
+    def ungrouped        = sample_list.findAll { meta, _path -> !meta.group }.collect { meta, _path -> meta.id }
+    if (has_group_column && ungrouped) {
         error("--samples (${params.samples}): no group for ${ungrouped.join(', ')}. Give every sample a group, or leave the group column out.")
     }
 
