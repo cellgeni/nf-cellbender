@@ -31,6 +31,9 @@ and the day of the year.
 - `cellgeni/cellbender/qc@0.3.0` and `cellgeni/multiqc@0.2.0` take and emit `[meta, files]`
   tuples, with `meta.id` naming the group of samples a report covers, and tag their tasks with it.
   Pipelines that call these modules directly need to pass a meta map.
+- CellBender jobs ask for 1 CPU instead of 2, and their memory grows in steps on retry instead
+  of multiplying: 30 GB plus 10 GB per retry (was 30 GB × attempt), and 8,000 MB plus 4,000 MB
+  of GPU memory per retry (was 8,000 MB × attempt).
 
 ## [26-295] - 2026-10-22
 
