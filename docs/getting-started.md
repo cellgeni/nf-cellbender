@@ -60,12 +60,17 @@ nextflow run cellgeni/nf-cellbender -r main --samples samples.csv --version 0.2
 # Sample folders on iRODS
 nextflow run cellgeni/nf-cellbender -r main --samples samples_irods.csv --on_irods
 
+# Samples in groups (id,group,path): one QC report and one output folder per group
+nextflow run cellgeni/nf-cellbender -r main --samples samples_groups.csv
+
 # Results somewhere else
 nextflow run cellgeni/nf-cellbender -r main --samples samples.csv --outdir my-results
 ```
 
 Run it inside `screen`/`tmux` or submit the `nextflow run` itself as an LSF job: the head job has
 to stay alive until every sample has finished.
+[`examples/run_cellbender.bsub`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/run_cellbender.bsub)
+is such a job; adapt it and submit it with `bsub < run_cellbender.bsub`.
 
 ## 3. Check the results
 

@@ -7,8 +7,8 @@
 #BSUB -o nf-cellbender.%J.log
 #BSUB -e nf-cellbender.%J.err
 
-# examples/run_cellbender.sh as an LSF job, so the run does not depend on your login session.
-# Submit it from the repository root:
+# examples/run_cellbender.sh as an LSF job, so the run does not depend on your login session,
+# here on the grouped samples table examples/samples_groups.csv. Submit it from the repository root:
 #
 #   bsub < examples/run_cellbender.bsub
 #

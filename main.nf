@@ -47,6 +47,9 @@ def helpAfter() {
     # Sample folders on iRODS
     nextflow run main.nf --samples examples/samples_irods.csv --on_irods
 
+    # Samples in groups (id,group,path): one QC report and one output folder per group
+    nextflow run main.nf --samples examples/samples_groups.csv --on_irods
+
     # The cub22 GPU queue, billed to a costcode
     nextflow run main.nf --samples examples/samples.csv --gpuqueue cub22-inference --costcode s1234
 

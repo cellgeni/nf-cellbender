@@ -22,6 +22,8 @@ and the day of the year.
   `qc_report/` go to `results/<group>/`. The index files keep the column, so they can be passed
   back as `--samples`. Once the column is there, every sample needs a group. Without it, the
   pipeline runs and publishes as before. See `examples/samples_groups.csv`.
+- `examples/run_cellbender.bsub`: the example run as an LSF job, so the Nextflow head job does
+  not depend on your login session.
 - Tests for `cellgeni/cellbender/qc`.
 
 ### Changed
