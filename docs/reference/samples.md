@@ -69,7 +69,7 @@ Sample `id`s stay unique across the whole table, not only within a group.
 | [`examples/samples_irods.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_irods.csv) | iRODS collections, for `--on_irods` |
 | [`examples/samples_preset.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_preset.csv) | Whole mapper folders only, for the mapper preset |
 | [`examples/samples_exclude_features.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_exclude_features.csv) | A mix of library types (ARC, CRISPR, multiplexed, Flex) on iRODS, for trying `--exclude_features` |
-| [`examples/samples_groups.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_groups.csv) | Local folders split into three groups, one QC report each |
+| [`examples/samples_groups.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_groups.csv) | iRODS collections split into three groups, one QC report each, for `--on_irods` |
 
 [`examples/run_cellbender.sh`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/run_cellbender.sh)
 is a complete run script using one of them, and
