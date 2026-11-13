@@ -81,6 +81,16 @@ def excludeList(value) {
     return value.toString().tokenize(',').collect { feature -> feature.trim() == 'All' ? 'Antibody Capture' : feature.trim() }.unique()
 }
 
+// Whether the samples table has a group column. A missing column and an empty cell both come out of
+// nf-schema as [], so the header decides (the index files quote their column names)
+def samplesHaveGroups() {
+    if (!params.samples || !file(params.samples).exists()) {
+        return false
+    }
+    def header = file(params.samples).readLines().find { line -> line.trim() } ?: ''
+    return header.split(',').collect { column -> column.trim().replaceAll(/^"|"$/, '') }.contains('group')
+}
+
 workflow {
     main:
     if (params.help || params.helpFull) {
@@ -163,13 +173,9 @@ workflow {
         }
     }
 
-    // With a group column, every sample needs a group: no silent fallback to the top-level folders.
-    // A missing column and an empty cell both come out as [], so the header decides whether the column is
-    // there (the index files quote their column names)
-    def header           = file(params.samples).readLines().find { line -> line.trim() } ?: ''
-    def has_group_column = header.split(',').collect { column -> column.trim().replaceAll(/^"|"$/, '') }.contains('group')
-    def ungrouped        = sample_list.findAll { row -> !row[0].group }.collect { row -> row[0].id }
-    if (has_group_column && ungrouped) {
+    // With a group column, every sample needs a group: no silent fallback to the top-level folders
+    def ungrouped = sample_list.findAll { row -> !row[0].group }.collect { row -> row[0].id }
+    if (samplesHaveGroups() && ungrouped) {
         error("--samples (${params.samples}): no group for ${ungrouped.join(', ')}. Give every sample a group, or leave the group column out.")
     }
 
@@ -180,7 +186,8 @@ workflow {
     CELLBENDER(
         samples,
         on_irods,
-        version
+        version,
+        params.h5ad as boolean
     )
 
     // QC per sample group: PDF + TSV, and an HTML report through MultiQC. Without a group column
@@ -208,9 +215,15 @@ workflow {
 
     publish:
     // Records with a path field (and group, when set), so outputs can be routed to their group's
-    // folder and each sample output also gets an index CSV (id,path or id,group,path)
+    // folder and each sample output also gets an index CSV (id,path or id,group,path).
+    // CellBender's files are published one by one, not as a folder: a folder is replaced whole when it
+    // is published again, which would delete the .h5ad published into it. Their record names the
+    // published folder for the index, and lists the files to publish
     raw        = CELLBENDER.out.raw.map { meta, dir -> meta + [path: dir] }
-    cellbender = CELLBENDER.out.outputdir.map { meta, dir -> meta + [path: dir] }
+    cellbender = CELLBENDER.out.files.map { meta, files ->
+        meta + [path: "${workflow.outputDir}/${meta.group ? meta.group + '/' : ''}cellbender/${meta.id}".toString(), files: files]
+    }
+    h5ad       = CELLBENDER.out.h5ad.map { meta, h5ad_file -> meta + [path: h5ad_file] }
     qc_report  = CELLBENDER_QC.out.report.map { meta, report -> meta + [path: report] }
     multiqc    = MULTIQC.out.report.mix(MULTIQC.out.data).map { meta, report -> meta + [path: report] }
     versions   = versions
@@ -228,9 +241,20 @@ output {
         }
     }
     cellbender {
+        // file by file; the files keep their <id>/ folder from the task. The index lists the folder
+        // (id,path or id,group,path)
         path { sample -> sample.group ? "${sample.group}/cellbender" : "cellbender" }
         index {
             path "index/cellbender.csv"
+            header samplesHaveGroups() ? ['id', 'group', 'path'] : ['id', 'path']
+            sep ','
+        }
+    }
+    h5ad {
+        // next to the CellBender files of the sample
+        path { sample -> sample.group ? "${sample.group}/cellbender/${sample.id}" : "cellbender/${sample.id}" }
+        index {
+            path "index/h5ad.csv"
             header true
             sep ','
         }

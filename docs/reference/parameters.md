@@ -40,6 +40,7 @@ details for one parameter.
 | `--force_empty_umi_prior` | integer | – | Force the empty-droplet UMI count prior (version 0.3 only). Range: ≥ 0. |
 | `--estimator` | string | – | Estimator for posterior generation (version 0.3 only; CellBender default: `mckp`). Allowed: `naive`, `map`, `mean`, `cdf`, `mckp`. |
 | `--qc_mode` | integer | `3` | QC detail level. Allowed: `1`, `2`, `3`. 1: log-based summary and training curves only; 2: also cell calling, latent PCA and top ambient genes from the output `.h5`; 3: also reads the CellBender input for the UMI curve, soup fraction and per-gene removal. |
+| `--h5ad` | boolean | `true` | Also write the cells of each sample as `cellbender_filtered.h5ad`, next to CellBender's files. Converted from `cellbender_filtered.h5` with adata-cli, keeping CellBender's latent variables. `--h5ad false` skips it. |
 
 ## Cluster options
 

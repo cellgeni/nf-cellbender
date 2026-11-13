@@ -1,0 +1,60 @@
+$schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
+name: cellgeni/adata/convert
+version: 0.1.0
+description: >
+  Converts a single-cell matrix (Cell Ranger .h5, CellBender output, .mtx folder, loom, MuData and
+  more) to an AnnData .h5ad store, or to another format adata-cli writes, streaming it from disk.
+keywords:
+  - anndata
+  - h5ad
+  - conversion
+  - single-cell
+  - cellbender
+license: MIT
+authors:
+  - "@claptar"
+maintainers:
+  - "@claptar"
+requires:
+  nextflow: ">=25.04.0"
+tools:
+  - adata-cli:
+      description: "A CLI for operations with AnnData objects in .h5ad and .zarr files, without loading them into memory."
+      homepage: "https://cellgeni.github.io/adata-cli/"
+      tool_dev_url: "https://github.com/cellgeni/adata-cli"
+      licence:
+        - "MIT"
+input:
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata. Must contain key 'id', the default output name, e.g. [ id:'sample1' ]"
+    - name: input
+      type: file
+      description: "The matrix to convert, staged under input/: a Cell Ranger .h5, a CellBender output .h5, an .mtx folder, an .h5ad, a loom, ... (any format adata convert reads)."
+output:
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata, passed through from input."
+    - name: converted
+      type: file
+      description: "The converted store, named ext.prefix (default meta.id) with the extension ext.extension (default h5ad)."
+      pattern: "*.{h5ad,zarr,loom,h5,h5mu}"
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, adata."
+    - name: version
+      type: string
+      description: "The adata-cli version."
+topics:
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name."
+    - name: version
+      type: string
+      description: "versions topic: the tool version."

@@ -156,6 +156,13 @@
           "description": "QC detail level.",
           "help_text": "1: log-based summary and training curves only; 2: also cell calling, latent PCA and top ambient genes from the output `.h5`; 3: also reads the CellBender input for the UMI curve, soup fraction and per-gene removal.",
           "fa_icon": "fas fa-chart-line"
+        },
+        "h5ad": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also write the cells of each sample as `cellbender_filtered.h5ad`, next to CellBender's files.",
+          "help_text": "Converted from `cellbender_filtered.h5` with adata-cli, keeping CellBender's latent variables. `--h5ad false` skips it.",
+          "fa_icon": "fas fa-file-export"
         }
       }
     },
