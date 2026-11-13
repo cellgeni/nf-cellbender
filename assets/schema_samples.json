@@ -33,6 +33,26 @@
         "type": "string",
         "pattern": "^\\S+$",
         "errorMessage": "Path must be provided and cannot contain spaces"
+      },
+      "cells": {
+        "type": "integer",
+        "minimum": 1,
+        "errorMessage": "cells must be a whole number of at least 1, or empty"
+      },
+      "droplets": {
+        "type": "integer",
+        "minimum": 1,
+        "errorMessage": "droplets must be a whole number of at least 1, or empty"
+      },
+      "min_umi": {
+        "type": "integer",
+        "minimum": 0,
+        "errorMessage": "min_umi must be a whole number of at least 0, or empty"
+      },
+      "exclude_features": {
+        "type": "string",
+        "pattern": "^\\s*(All|Antibody Capture|CRISPR Guide Capture|Custom|Peaks|Multiplexing Capture|VDJ|VDJ\\-T|VDJ\\-T\\-GD|VDJ\\-B|Antigen Capture)\\s*(,\\s*(Antibody Capture|CRISPR Guide Capture|Custom|Peaks|Multiplexing Capture|VDJ|VDJ\\-T|VDJ\\-T\\-GD|VDJ\\-B|Antigen Capture)\\s*)*$",
+        "errorMessage": "exclude_features takes a comma-separated list of: Antibody Capture, CRISPR Guide Capture, Custom, Peaks, Multiplexing Capture, VDJ, VDJ-T, VDJ-T-GD, VDJ-B, Antigen Capture (CellBender 0.3), or All (CellBender 0.2)"
       }
     },
     "required": [

@@ -1,0 +1,5 @@
+id,path,cells,droplets,min_umi,exclude_features
+cellranger-count,/archive/cellgeni/tests/cellranger-count,,,,
+cellranger-arc,/archive/cellgeni/tests/cellranger-arc,3000,8000,,Peaks
+singleplex-crispr,/archive/cellgeni/tests/singleplex-crispr,,,,CRISPR Guide Capture
+sample-multiplexing,/archive/cellgeni/tests/sample-multiplexing,,,,"Multiplexing Capture,Antibody Capture"
