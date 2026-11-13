@@ -15,6 +15,8 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-317] - 2026-11-13
+
 ### Added
 
 - An optional `group` column in the samples table (`id,group,path`). Each group gets its own QC
@@ -192,7 +194,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-295...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-317...dev
+[26-317]: https://github.com/cellgeni/nf-cellbender/compare/26-295...26-317
 [26-295]: https://github.com/cellgeni/nf-cellbender/compare/26-294...26-295
 [26-294]: https://github.com/cellgeni/nf-cellbender/compare/25-274...26-294
 [25-274]: https://github.com/cellgeni/nf-cellbender/compare/25-056...25-274
