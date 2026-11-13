@@ -18,8 +18,8 @@ def helpBefore() {
     sample1,/path/to/cellranger/output
     sample2,/path/to/raw_feature_bc_matrix.h5
 
-    path is a CellRanger/STARsolo output directory, a .h5 file or a .mtx directory;
-    with --on_irods it is an iRODS collection instead.
+    path is a CellRanger/STARsolo output directory (or one sample of a CellRanger multi
+    Flex run), a .h5 file or a .mtx directory; with --on_irods it is an iRODS collection instead.
 
     An optional group column (id,group,path) splits the samples into datasets: each group
     gets its own QC report, and its outputs go to <outdir>/<group>/.
@@ -50,11 +50,23 @@ def helpAfter() {
     # Samples in groups (id,group,path): one QC report and one output folder per group
     nextflow run main.nf --samples examples/samples_groups.csv --on_irods
 
+    # The samples of a Flex run one by one, with cells and droplets from CellRanger's cell calls
+    nextflow run main.nf --samples examples/samples_flex_per_sample.csv --on_irods --preset mapper
+
     # The cub22 GPU queue, billed to a costcode
     nextflow run main.nf --samples examples/samples.csv --gpuqueue cub22-inference --costcode s1234
 
     Documentation, more examples and the output layout: https://cellgeni.github.io/nf-cellbender/
     """.stripIndent()
+}
+
+// Feature types to exclude, from --exclude_features: comma-separated.
+// All (the CellBender 0.2 value) means Antibody Capture
+def excludeList(value) {
+    if (!value) {
+        return []
+    }
+    return value.toString().tokenize(',').collect { feature -> feature.trim() == 'All' ? 'Antibody Capture' : feature.trim() }.unique()
 }
 
 workflow {
@@ -76,24 +88,43 @@ workflow {
         System.exit(1)
     }
 
+    // nf-schema only warns about an unknown parameter, so a removed one would be dropped quietly
+    // and the run would estimate instead
+    def removed = [
+        mapper_preset   : "use --preset mapper (or --preset auto, the default, or --preset off)",
+    ].findAll { name, _hint -> params.containsKey(name) }
+    if (removed) {
+        error(removed.collect { name, hint -> "--${name} was removed: ${hint}." }.join(' '))
+    }
+
     // Types, enums and cross-parameter rules (costcode only for cub/tiger queues, version-specific
     // options, --ignore_extensions only with --on_irods) are checked against nextflow_schema.json
     // before anything is downloaded or submitted
     validateParameters()
     log.info paramsSummaryLog()
 
+    // --preset off passes only the values given, so cells and droplets are needed
+    if (params.preset == 'off' && !(params.cells && params.droplets)) {
+        error("--preset off uses only the values given: give --cells and --droplets, or use --preset auto (CellBender's estimate) or --preset mapper (the mapper's cell calls).")
+    }
+
     // Load files: sample table rows become [meta, path], checked against assets/schema_samples.json.
     // nf-schema sets meta.group to [] when the table has no group column or the cell is empty; dropping
-    // it keeps the meta of an ungrouped run [id: ...], as before, so index files and -resume are unchanged
+    // it keeps the meta of an ungrouped run [id: ...], as before, so index files and -resume are unchanged.
+    // Each sample gets the run's cells, droplets, min UMI and feature types to exclude; null leaves a
+    // number to --preset
+    def exclude     = excludeList(params.exclude_features)
     def sample_list = samplesheetToList(params.samples, "${projectDir}/assets/schema_samples.json")
-        .collect { meta, path -> [meta.group ? meta : meta.findAll { key, _value -> key != 'group' }, path] }
+        .collect { meta, path ->
+            [meta.group ? meta : meta.findAll { key, _value -> key != 'group' }, path, params.cells, params.droplets, params.min_umi, exclude]
+        }
 
     // With a group column, every sample needs a group: no silent fallback to the top-level folders.
     // A missing column and an empty cell both come out as [], so the header decides whether the column is
     // there (the index files quote their column names)
     def header           = file(params.samples).readLines().find { line -> line.trim() } ?: ''
     def has_group_column = header.split(',').collect { column -> column.trim().replaceAll(/^"|"$/, '') }.contains('group')
-    def ungrouped        = sample_list.findAll { meta, _path -> !meta.group }.collect { meta, _path -> meta.id }
+    def ungrouped        = sample_list.findAll { row -> !row[0].group }.collect { row -> row[0].id }
     if (has_group_column && ungrouped) {
         error("--samples (${params.samples}): no group for ${ungrouped.join(', ')}. Give every sample a group, or leave the group column out.")
     }

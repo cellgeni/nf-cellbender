@@ -85,23 +85,35 @@
         "cells": {
           "type": "integer",
           "minimum": 1,
-          "description": "Expected number of cells (`--expected-cells`).",
-          "help_text": "Required together with `--droplets` for version 0.2 when the sample table points to `.h5` files or `.mtx` directories. Otherwise version 0.2 estimates it with the mapper preset and version 0.3 with CellBender's own estimation.",
+          "description": "Expected number of cells (`--expected-cells`), for every sample.",
+          "help_text": "A value given is always used as it is. Unset, `--preset` decides: CellBender's own estimate (`auto`), the mapper's cell calls (`mapper`), or an error before the run starts (`off`). See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
           "fa_icon": "fas fa-hashtag"
         },
         "droplets": {
           "type": "integer",
           "minimum": 1,
-          "description": "Total number of droplets to include (`--total-droplets-included`).",
-          "help_text": "Required together with `--cells` for version 0.2 when the sample table points to `.h5` files or `.mtx` directories.",
+          "description": "Total number of droplets to include (`--total-droplets-included`), for every sample.",
+          "help_text": "Unset, `--preset` decides, as for `--cells`: `--preset off` needs it.",
           "fa_icon": "fas fa-hashtag"
         },
-        "mapper_preset": {
-          "type": "boolean",
-          "default": false,
-          "description": "Estimate `--cells`, `--droplets` and `--min_umi` from the CellRanger/STARsolo output.",
-          "help_text": "Needs the whole mapper output directory as `path`. Always on for version 0.2 unless both `--cells` and `--droplets` are given. See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
+        "preset": {
+          "type": "string",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "mapper",
+            "off"
+          ],
+          "description": "Where the cell, droplet and min UMI numbers not given for a sample come from: auto, mapper or off.",
+          "help_text": "Values given with `--cells`, `--droplets` and `--min_umi` are always used as they are. `auto`: CellBender's own estimate (CellBender 0.3 makes it itself; for 0.2 the pipeline runs a copy of 0.3's estimate). `mapper`: the mapper preset, from the cell calls of CellRanger or STARsolo; needs the whole mapper output folder as `path`. `off`: only the values given; `--cells` and `--droplets` are needed, and a missing `--min_umi` is left to CellBender's default (5 for 0.3, 15 for 0.2). See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
           "fa_icon": "fas fa-magic"
+        },
+        "filter_features": {
+          "type": "boolean",
+          "default": true,
+          "description": "Leave the features missing from the mapper's filtered matrix out of the CellBender model.",
+          "help_text": "For Flex runs: the genes outside the probe set, which the raw matrix still counts. CellBender 0.3 copies their counts unchanged to its output, 0.2 sets them to zero. `--filter_features false` keeps them in the model. See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/",
+          "fa_icon": "fas fa-filter"
         },
         "starsolo_mapper": {
           "type": "string",
@@ -138,7 +150,8 @@
         "min_umi": {
           "type": "integer",
           "minimum": 0,
-          "description": "Lower bound for empty-droplet UMI count (`--low-count-threshold`).",
+          "description": "Lower bound for empty-droplet UMI count (`--low-count-threshold`), for every sample.",
+          "help_text": "Unset, `--preset` decides, as for `--cells`; with `--preset off`, CellBender's default is used (5 for 0.3, 15 for 0.2).",
           "fa_icon": "fas fa-arrow-down"
         },
         "force_empty_umi_prior": {
@@ -308,21 +321,8 @@
           "estimator": {
             "const": null,
             "errorMessage": "`--estimator` is only available for CellBender 0.3"
-          },
-          "mapper_preset": {
-            "const": false,
-            "errorMessage": "CellBender 0.2 uses the mapper preset automatically unless both `--cells` and `--droplets` are given"
           }
-        },
-        "dependentRequired": {
-          "cells": [
-            "droplets"
-          ],
-          "droplets": [
-            "cells"
-          ]
-        },
-        "errorMessage": "CellBender 0.2 needs `--cells` and `--droplets` together, or neither to use the mapper preset"
+        }
       }
     },
     {
