@@ -13,7 +13,7 @@ nav_order: 5
 ## Retries
 
 Every task is retried up to 5 times after a failure. Memory grows with each attempt (for
-CellBender 30 GB, 60 GB, 90 GB, …); CPUs stay the same.
+CellBender 30 GB, 40 GB, 50 GB, … and 8, 12, 16 GB, … of GPU memory); CPUs stay the same.
 
 By default the run stops if a CellBender task still fails after its last retry. With
 `--ignore_failed`, that sample is dropped instead and the others carry on to the QC report:

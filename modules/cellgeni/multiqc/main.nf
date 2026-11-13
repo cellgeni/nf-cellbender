@@ -1,16 +1,17 @@
-// Aggregates MultiQC input files (tool outputs or *_mqc custom content) into an HTML report
+// Aggregates MultiQC input files (tool outputs or *_mqc custom content) of one report, named by meta.id,
+// into an HTML report
 process MULTIQC {
-    tag "Building MultiQC report"
+    tag "${meta.id}"
     container 'quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2'
 
     input:
-    path multiqc_files, stageAs: 'multiqc_input/*'
+    tuple val(meta), path(multiqc_files, stageAs: 'multiqc_input/*')
     path multiqc_config  // optional: pass [] to use MultiQC's defaults
 
     output:
-    path "multiqc_report.html", emit: report
-    path "multiqc_data",        emit: data
-    path "versions.yml",        emit: versions
+    tuple val(meta), path("multiqc_report.html"), emit: report
+    tuple val(meta), path("multiqc_data"),        emit: data
+    path "versions.yml",                          emit: versions
 
     script:
     def args   = task.ext.args ?: ''

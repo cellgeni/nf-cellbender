@@ -30,12 +30,28 @@ results/
 └── versions.yml                    software versions
 ```
 
+With a `group` column in the samples table (see [Groups](samples.md#groups)), each group gets
+its own folder with the same layout; the index files and `versions.yml` stay at the top:
+
+```
+results/
+├── <group>/
+│   ├── raw/<id>/                   data downloaded from iRODS (with --on_irods)
+│   ├── cellbender/<id>/            CellBender output for each sample of the group
+│   └── qc_report/                  QC of the group's samples, as above
+├── index/
+│   ├── cellbender.csv              id,group,path of every CellBender output folder
+│   └── raw.csv                     id,group,path of every iRODS download
+└── versions.yml
+```
+
 Run reports from Nextflow (timeline, resource report, trace) go to `execution-reports/` in the
 launch folder, not to `--outdir`.
 
 ## CellBender output
 
-Each `cellbender/<id>/` folder holds what `cellbender remove-background` wrote for that sample:
+Each `cellbender/<id>/` (or `<group>/cellbender/<id>/`) folder holds what
+`cellbender remove-background` wrote for that sample:
 
 | File | 0.2 | 0.3 | Contents |
 |---|---|---|---|
@@ -54,7 +70,8 @@ detail.
 
 ## QC report
 
-`qc_report/` is described column by column in [QC report](qc.md).
+`qc_report/` (one per group with a `group` column) is described column by column in
+[QC report](qc.md).
 
 ## Versions
 

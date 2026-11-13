@@ -2,7 +2,8 @@
 
 ## Summary
 
-Runs [MultiQC](https://docs.seqera.io/multiqc) over a set of files and writes one HTML report.
+Runs [MultiQC](https://docs.seqera.io/multiqc) over a set of files and writes one HTML report per
+`meta` map, so a pipeline can build one report per sample group and publish it by `meta`.
 The files can be outputs of tools MultiQC supports, or custom content: `*_mqc.json`, `*_mqc.yaml`,
 `*_mqc.tsv` tables and plots, `*_mqc.png` images.
 
@@ -16,10 +17,13 @@ Container: `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2`.
 
 | Name | Type | Description |
 |---|---|---|
-| `multiqc_files` | files | Files for MultiQC to search, staged under `multiqc_input/`. Usually a collected channel. |
-| `multiqc_config` | file | Optional MultiQC config YAML. Pass `[]` to use MultiQC's defaults. |
+| `meta` | map | Metadata of the report, passed through to the outputs. Must contain `id`, which tags the task, e.g. `[id: 'dataset1']`. |
+| `multiqc_files` | files | Files for MultiQC to search, staged under `multiqc_input/`. A tuple with `meta`: `[meta, [files]]`. |
+| `multiqc_config` | file | Optional MultiQC config YAML, shared by every report. Pass `[]` to use MultiQC's defaults. |
 
 ## Outputs
+
+`report` and `data` are tuples of `meta` and the file.
 
 | Name | File(s) | Description |
 |---|---|---|
@@ -31,7 +35,7 @@ Container: `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2`.
 
 | Variable | Type | Default | Description |
 |---|---|---|---|
-| `ext.args` | string | `""` | Extra MultiQC arguments, e.g. `"--title 'My run' --comment 'Batch 3'"`. `--force`, `--filename` and `--config` are set by the module. |
+| `ext.args` | string | `""` | Extra MultiQC arguments, e.g. `"--title 'My run' --comment 'Batch 3'"`. `--force`, `--filename` and `--config` are set by the module. A closure can use `meta`, e.g. `{ "--title '${meta.id}'" }`. |
 
 ## Usage
 
@@ -39,7 +43,7 @@ Container: `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2`.
 include { MULTIQC } from 'cellgeni/multiqc'
 
 MULTIQC(
-    channel.fromPath('qc/*_mqc.*').collect(),
+    channel.fromPath('qc/*_mqc.*').collect().map { files -> [[id: 'all'], files] },
     file('assets/multiqc_config.yaml')   // or [] for defaults
 )
 ```

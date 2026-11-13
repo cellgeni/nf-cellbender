@@ -13,7 +13,7 @@ nav_order: 6
 
 | Path | Contents |
 |---|---|
-| `main.nf` | Entry point: help text, parameter validation, loading the samples table, QC, MultiQC, and the `output {}` block that decides what is published where |
+| `main.nf` | Entry point: help text, parameter validation, loading the samples table, QC and MultiQC per sample group, and the `output {}` block that decides what is published where |
 | `workflow/main.nf` | The `CELLBENDER` subworkflow: optional iRODS download, then the CellBender module for `--version` |
 | `nextflow.config` | Default parameters, LSF executor, Singularity, nf-schema plugin, output folder |
 | `configs/<process>.config` | Per-process settings: queue, resources, `ext` arguments |
@@ -21,7 +21,7 @@ nav_order: 6
 | `assets/schema_samples.json` | Format of the `--samples` table |
 | `assets/multiqc_config.yaml` | MultiQC report title, intro and section order |
 | `modules/cellgeni/` | Modules in Nextflow registry layout (see below) |
-| `examples/` | Example samples tables and a run script |
+| `examples/` | Example samples tables, and a run script plus its LSF (`.bsub`) version |
 | `resume/` | A script for resuming a run of the published pipeline |
 | `docker/` | Dockerfiles for the CellBender 0.2 and 0.3 images |
 | `tests/` | nf-test config and the LSF script that runs the test suite |
@@ -87,7 +87,7 @@ The module tests use [nf-test](https://www.nf-test.com/) and run on the farm:
 
 ```bash
 mkdir -p logs
-N=29
+N=31
 bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
 ```
 

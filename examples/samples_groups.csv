@@ -1,0 +1,8 @@
+id,group,path
+cellranger-count,gex,/archive/cellgeni/tests/cellranger-count
+cellranger-count-nogz,gex,/archive/cellgeni/tests/cellranger-count-nogz
+starsolo,gex,/archive/cellgeni/tests/starsolo
+cellranger-arc,multiome,/archive/cellgeni/tests/cellranger-arc
+multiplex-flex,multiplexed,/archive/cellgeni/tests/multiplex-flex
+sample-multiplexing,multiplexed,/archive/cellgeni/tests/sample-multiplexing
+singleplex-crispr,multiplexed,/archive/cellgeni/tests/singleplex-crispr

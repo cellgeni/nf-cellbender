@@ -15,6 +15,28 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-317] - 2026-11-13
+
+### Added
+
+- An optional `group` column in the samples table (`id,group,path`). Each group gets its own QC
+  and MultiQC report, with the group in the report title, and its `raw/`, `cellbender/` and
+  `qc_report/` go to `results/<group>/`. The index files keep the column, so they can be passed
+  back as `--samples`. Once the column is there, every sample needs a group. Without it, the
+  pipeline runs and publishes as before. See `examples/samples_groups.csv`.
+- `examples/run_cellbender.bsub`: the example run as an LSF job, so the Nextflow head job does
+  not depend on your login session.
+- Tests for `cellgeni/cellbender/qc`.
+
+### Changed
+
+- `cellgeni/cellbender/qc@0.3.0` and `cellgeni/multiqc@0.2.0` take and emit `[meta, files]`
+  tuples, with `meta.id` naming the group of samples a report covers, and tag their tasks with it.
+  Pipelines that call these modules directly need to pass a meta map.
+- CellBender jobs ask for 1 CPU instead of 2, and their memory grows in steps on retry instead
+  of multiplying: 30 GB plus 10 GB per retry (was 30 GB × attempt), and 8,000 MB plus 4,000 MB
+  of GPU memory per retry (was 8,000 MB × attempt).
+
 ## [26-295] - 2026-10-22
 
 ### Added
@@ -172,7 +194,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-295...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-317...dev
+[26-317]: https://github.com/cellgeni/nf-cellbender/compare/26-295...26-317
 [26-295]: https://github.com/cellgeni/nf-cellbender/compare/26-294...26-295
 [26-294]: https://github.com/cellgeni/nf-cellbender/compare/25-274...26-294
 [25-274]: https://github.com/cellgeni/nf-cellbender/compare/25-056...25-274

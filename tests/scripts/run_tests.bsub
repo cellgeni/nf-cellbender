@@ -29,4 +29,4 @@ done
 cp -r "$repo/modules" "$shard_dir"/
 cd "$shard_dir"
 
-nf-test test modules/cellgeni/irods/loadcatalog/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v02/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v03/tests/main.nf.test modules/cellgeni/multiqc/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug
+nf-test test modules/cellgeni/irods/loadcatalog/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v02/tests/main.nf.test modules/cellgeni/cellbender/removebackground_v03/tests/main.nf.test modules/cellgeni/cellbender/qc/tests/main.nf.test modules/cellgeni/multiqc/tests/main.nf.test --profile singularity,gpu --shard "${i}/${n}" --debug

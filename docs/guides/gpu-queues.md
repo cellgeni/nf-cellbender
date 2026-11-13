@@ -36,9 +36,9 @@ Each CellBender job asks for:
 
 | Resource | Value | On retry |
 |---|---|---|
-| CPUs | 2 | Unchanged |
-| Memory | 30 GB | 30 GB × attempt |
-| GPU | 1, shared mode, 8,000 MB GPU memory | Unchanged |
+| CPUs | 1 | Unchanged |
+| Memory | 30 GB | +10 GB per retry (30, 40, 50 GB, …) |
+| GPU | 1, shared mode, 8,000 MB GPU memory | +4,000 MB per retry (8,000, 12,000, 16,000 MB, …) |
 
 These are set in
 [`configs/cellbender_removebackground.config`](https://github.com/cellgeni/nf-cellbender/blob/main/configs/cellbender_removebackground.config).

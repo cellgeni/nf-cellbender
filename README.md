@@ -24,7 +24,8 @@ sample2,/lustre/scratch124/.../sample2/outs/raw_feature_bc_matrix.h5
 ```
 
 Results are written to `results/`: CellBender output per sample in `results/cellbender/`, the QC
-report in `results/qc_report/`. Run `nextflow run cellgeni/nf-cellbender -r main --help` for the
+report in `results/qc_report/`. An optional `group` column (`id,group,path`) gives each group of
+samples its own QC report and its own folder, `results/<group>/`. Run `nextflow run cellgeni/nf-cellbender -r main --help` for the
 parameters.
 
 ## Documentation

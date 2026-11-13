@@ -13,7 +13,7 @@ nextflow_process {
         when {
             process {
                 """
-                input[0] = [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ]
+                input[0] = [ [id:'test'], [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ] ]
                 input[1] = file("${moduleDir}/tests/data/multiqc_config.yaml", checkIfExists: true)
                 """
             }
@@ -22,9 +22,9 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert path(process.out.report[0]).text.contains("MultiQC module test") },
-                { assert path(process.out.report[0]).text.contains("Example table") },
-                { assert file("${process.out.data[0]}/multiqc_data.json").exists() },
+                { assert path(process.out.report[0][1]).text.contains("MultiQC module test") },
+                { assert path(process.out.report[0][1]).text.contains("Example table") },
+                { assert file("${process.out.data[0][1]}/multiqc_data.json").exists() },
                 { assert snapshot(process.out.versions).match("versions") }
             )
         }
@@ -36,7 +36,7 @@ nextflow_process {
         when {
             process {
                 """
-                input[0] = [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ]
+                input[0] = [ [id:'test'], [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ] ]
                 input[1] = []
                 """
             }
@@ -45,8 +45,8 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert path(process.out.report[0]).text.contains("Example table") },
-                { assert file("${process.out.data[0]}/multiqc_data.json").exists() }
+                { assert path(process.out.report[0][1]).text.contains("Example table") },
+                { assert file("${process.out.data[0][1]}/multiqc_data.json").exists() }
             )
         }
     }
@@ -58,7 +58,7 @@ nextflow_process {
         when {
             process {
                 """
-                input[0] = [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ]
+                input[0] = [ [id:'test'], [ file("${moduleDir}/tests/data/example_mqc.json", checkIfExists: true) ] ]
                 input[1] = []
                 """
             }
@@ -67,8 +67,10 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert process.out.report },
-                { assert process.out.data }
+                { assert process.out.report[0][0] == [id:'test'] },
+                { assert process.out.data[0][0] == [id:'test'] },
+                { assert path(process.out.report[0][1]).fileName.toString() == 'multiqc_report.html' },
+                { assert path(process.out.data[0][1]).fileName.toString() == 'multiqc_data' }
             )
         }
     }

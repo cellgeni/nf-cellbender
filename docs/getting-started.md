@@ -34,6 +34,9 @@ cellranger-count,/lustre/scratch124/.../cellranger-count
 starsolo,/lustre/scratch124/.../starsolo
 ```
 
+To get one QC report per dataset, add a `group` column (`id,group,path`); see
+[Groups](reference/samples.md#groups).
+
 Give the whole mapper output folder where you can: the pipeline then finds the right raw matrix
 itself and can estimate cell numbers from it. See [Samples table](reference/samples.md) for the
 input layouts it recognises.
@@ -57,12 +60,17 @@ nextflow run cellgeni/nf-cellbender -r main --samples samples.csv --version 0.2
 # Sample folders on iRODS
 nextflow run cellgeni/nf-cellbender -r main --samples samples_irods.csv --on_irods
 
+# Samples in groups (id,group,path): one QC report and one output folder per group
+nextflow run cellgeni/nf-cellbender -r main --samples samples_groups.csv
+
 # Results somewhere else
 nextflow run cellgeni/nf-cellbender -r main --samples samples.csv --outdir my-results
 ```
 
 Run it inside `screen`/`tmux` or submit the `nextflow run` itself as an LSF job: the head job has
 to stay alive until every sample has finished.
+[`examples/run_cellbender.bsub`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/run_cellbender.bsub)
+is such a job; adapt it and submit it with `bsub < run_cellbender.bsub`.
 
 ## 3. Check the results
 
@@ -74,9 +82,12 @@ results/
 └── versions.yml              software versions
 ```
 
-Start with `results/qc_report/multiqc_report.html`: samples that need a closer look are listed
-first. [QC report](reference/qc.md) explains each column, and [Outputs](reference/outputs.md)
-each file.
+With a `group` column, each group has its own `cellbender/` and `qc_report/` under
+`results/<group>/`.
+
+Start with `results/qc_report/multiqc_report.html` (or `results/<group>/qc_report/`): samples that
+need a closer look are listed first. [QC report](reference/qc.md) explains each column, and
+[Outputs](reference/outputs.md) each file.
 
 ## Getting help on the command line
 

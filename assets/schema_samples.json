@@ -15,6 +15,20 @@
         ],
         "errorMessage": "Sample id must be provided and cannot contain spaces"
       },
+      "group": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        "not": {
+          "enum": [
+            "index",
+            "versions.yml"
+          ]
+        },
+        "meta": [
+          "group"
+        ],
+        "errorMessage": "Group must start with a letter or digit, contain only letters, digits, '.', '_' and '-', and not be 'index' or 'versions.yml'"
+      },
       "path": {
         "type": "string",
         "pattern": "^\\S+$",
