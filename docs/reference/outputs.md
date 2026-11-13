@@ -17,9 +17,10 @@ Everything is written to `--outdir` (default `results/`):
 ```
 results/
 ├── raw/<id>/                       data downloaded from iRODS (with --on_irods)
-├── cellbender/<id>/                CellBender output for each sample
+├── cellbender/<id>/                CellBender output for each sample, and its cells as .h5ad
 ├── index/
 │   ├── cellbender.csv              id,path of every CellBender output folder
+│   ├── h5ad.csv                    id,path of every cellbender_filtered.h5ad (empty with --h5ad false)
 │   └── raw.csv                     id,path of every iRODS download (empty without --on_irods)
 ├── qc_report/
 │   ├── cellbender_qc_summary.tsv   one row per sample, most problematic samples first
@@ -41,6 +42,7 @@ results/
 │   └── qc_report/                  QC of the group's samples, as above
 ├── index/
 │   ├── cellbender.csv              id,group,path of every CellBender output folder
+│   ├── h5ad.csv                    id,group,path of every cellbender_filtered.h5ad
 │   └── raw.csv                     id,group,path of every iRODS download
 └── versions.yml
 ```
@@ -63,10 +65,36 @@ Each `cellbender/<id>/` (or `<group>/cellbender/<id>/`) folder holds what
 | `cellbender_metrics.csv` | | ✓ | Run metrics |
 | `cellbender_report.html` | | ✓ | CellBender's own HTML report, with warnings |
 | `cellbender_posterior.h5` | | ✓ | Posterior of noise counts |
+| `cellbender_filtered.h5ad` | ✓ | ✓ | `cellbender_filtered.h5` as AnnData (not with `--h5ad false`) |
 
-For downstream analysis use `cellbender_filtered.h5`. The
+For downstream analysis use `cellbender_filtered.h5ad`, or `cellbender_filtered.h5`. The
 [CellBender documentation](https://cellbender.readthedocs.io/en/latest/) describes each file in
 detail.
+
+### The .h5ad file
+
+`cellbender_filtered.h5ad` is written by [adata-cli](https://cellgeni.github.io/adata-cli/)
+(`adata convert`) from `cellbender_filtered.h5`:
+
+- `X`: CellBender's corrected counts, as integers.
+- `obs`: CellBender's latent variables per cell, such as `cell_probability` and `background_fraction`.
+- `obsm["gene_expression_encoding"]`: the latent gene expression embedding.
+- `var["ambient_expression"]`: the ambient profile.
+- `uns["cellbender"]`: the run's settings and learning curve.
+
+Features are named by gene id, with the symbols in `var["gene_symbols"]`. In scanpy, use
+`adata.var_names = adata.var["gene_symbols"]` and `adata.var_names_make_unique()` for symbols.
+
+The features [left out of the model](../guides/cell-calls.md#feature-filtering) are still in the
+file: CellBender 0.3 keeps their raw counts, and 0.2 sets them to zero. For an analysis of the
+probe set alone, keep the features of CellRanger's filtered matrix, for example
+`adata = adata[:, adata.var_names.isin(filtered.var_names)]`. `var["cellbender_analyzed"]` is not
+the same: it is also `False` for the features CellBender 0.3 found too sparse to model, which keep
+their counts.
+
+The files are published one by one into `cellbender/<id>/`, so the `.h5ad` sits in the same
+folder without being removed when the CellBender files are published again (with `-resume`, for
+example).
 
 ## QC report
 
@@ -86,7 +114,12 @@ detail.
     matplotlib: 3.10.3
 "MULTIQC":
     multiqc: 1.35
+"CELLBENDER:ADATA_CONVERT":
+    adata: 0.17.5
 ```
+
+Each module sends the version of every tool it uses to the `versions` topic, and the pipeline
+collects them into this one file.
 
 ## How files are published
 
