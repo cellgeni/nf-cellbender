@@ -50,7 +50,7 @@ nextflow_process {
                 { assert summary[1].startsWith('cellranger-count\t') },
                 { assert new File("${report}/cellbender_qc_report.pdf").length() > 0 },
                 { assert new File("${report}/multiqc/cellbender_summary_mqc.json").length() > 0 },
-                { assert path(process.out.versions[0]).yaml['CELLBENDER_QC'].keySet() == ['python', 'h5py', 'matplotlib', 'numpy', 'pandas'] as Set }
+                { assert process.out.findAll { key, _value -> key.startsWith('versions') }.collect { _key, value -> value[0][1] } as Set == ['python', 'h5py', 'matplotlib', 'numpy', 'pandas'] as Set }
             )
         }
     }

@@ -109,7 +109,11 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,33e22aab5fefa8eb55a616ed6890faa7"
+                    [
+                        "IRODS_LOADCATALOG",
+                        "irods",
+                        "4.2.11"
+                    ]
                 ],
                 "catalog": [
                     [
@@ -217,8 +221,12 @@
                         ]
                     ]
                 ],
-                "versions": [
-                    "versions.yml:md5,33e22aab5fefa8eb55a616ed6890faa7"
+                "versions_irods": [
+                    [
+                        "IRODS_LOADCATALOG",
+                        "irods",
+                        "4.2.11"
+                    ]
                 ]
             }
         ],

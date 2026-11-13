@@ -1,6 +1,6 @@
 $schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
 name: cellgeni/multiqc
-version: 0.2.0
+version: 0.3.0
 description: >
   Aggregates tool outputs and MultiQC custom content (*_mqc.* files) into an HTML report per meta
   map, with a fixed output layout (multiqc_report.html and multiqc_data/) whatever the report title.
@@ -51,7 +51,22 @@ output:
       type: directory
       description: "Parsed data, plot data and logs behind the report."
       pattern: "multiqc_data"
-  - name: versions
-    type: file
-    description: "YAML file recording the MultiQC version."
-    pattern: "versions.yml"
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, multiqc."
+    - name: version
+      type: string
+      description: "The MultiQC version."
+topics:
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name."
+    - name: version
+      type: string
+      description: "versions topic: the tool version."

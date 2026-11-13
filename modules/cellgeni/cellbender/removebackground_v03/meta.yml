@@ -42,7 +42,22 @@ output:
       type: directory
       description: "CellBender output directory for the sample (named after meta.id), containing cellbender.h5, filtered matrices and summary files."
       pattern: "${meta.id}"
-  - name: versions
-    type: file
-    description: "YAML file recording the CellBender version used by this process."
-    pattern: "versions.yml"
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, cellbender."
+    - name: version
+      type: string
+      description: "The CellBender version."
+topics:
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name."
+    - name: version
+      type: string
+      description: "versions topic: the tool version."

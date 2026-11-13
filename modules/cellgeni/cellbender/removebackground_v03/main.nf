@@ -8,7 +8,7 @@ process CELLBENDER_REMOVEBACKGROUND_V03 {
 
     output:
     tuple val(meta), path("${meta.id}"),            emit: outputdir
-    path "versions.yml",                            emit: versions
+    tuple val("${task.process}"), val('cellbender'), eval('cellbender --version'), emit: versions_cellbender, topic: versions
 
     script:
     template 'remove_background.sh'
@@ -16,10 +16,5 @@ process CELLBENDER_REMOVEBACKGROUND_V03 {
     stub:
     """
     mkdir -p ${meta.id}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        cellbender: \$(cellbender --version)
-    END_VERSIONS
     """
 }

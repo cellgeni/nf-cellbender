@@ -8,7 +8,7 @@ process CELLBENDER_REMOVEBACKGROUND_V02 {
 
     output:
     tuple val(meta), path("${meta.id}"),            emit: outputdir
-    path "versions.yml",                            emit: versions
+    tuple val("${task.process}"), val('cellbender'), eval('pip show cellbender 2>/dev/null | sed -n "s/^Version: //p"'), emit: versions_cellbender, topic: versions
 
     script:
     template 'remove_background.sh'
@@ -16,10 +16,5 @@ process CELLBENDER_REMOVEBACKGROUND_V02 {
     stub:
     """
     mkdir -p ${meta.id}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        cellbender: \$(grep "version" /opt/cellbender/setup.py | cut -d"'" -f 2)
-    END_VERSIONS
     """
 }

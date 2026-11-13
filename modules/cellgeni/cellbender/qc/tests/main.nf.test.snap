@@ -25,7 +25,39 @@
                     ]
                 ],
                 "2": [
-                    "versions.yml:md5,8d2d8e38bce85bc029d9ad706c10f9ce"
+                    [
+                        "CELLBENDER_QC",
+                        "python",
+                        "3.10.12"
+                    ]
+                ],
+                "3": [
+                    [
+                        "CELLBENDER_QC",
+                        "h5py",
+                        "3.14.0"
+                    ]
+                ],
+                "4": [
+                    [
+                        "CELLBENDER_QC",
+                        "matplotlib",
+                        "3.10.3"
+                    ]
+                ],
+                "5": [
+                    [
+                        "CELLBENDER_QC",
+                        "numpy",
+                        "2.2.6"
+                    ]
+                ],
+                "6": [
+                    [
+                        "CELLBENDER_QC",
+                        "pandas",
+                        "2.3.1"
+                    ]
                 ],
                 "multiqc_files": [
                     [
@@ -49,12 +81,44 @@
                         ]
                     ]
                 ],
-                "versions": [
-                    "versions.yml:md5,8d2d8e38bce85bc029d9ad706c10f9ce"
+                "versions_h5py": [
+                    [
+                        "CELLBENDER_QC",
+                        "h5py",
+                        "3.14.0"
+                    ]
+                ],
+                "versions_matplotlib": [
+                    [
+                        "CELLBENDER_QC",
+                        "matplotlib",
+                        "3.10.3"
+                    ]
+                ],
+                "versions_numpy": [
+                    [
+                        "CELLBENDER_QC",
+                        "numpy",
+                        "2.2.6"
+                    ]
+                ],
+                "versions_pandas": [
+                    [
+                        "CELLBENDER_QC",
+                        "pandas",
+                        "2.3.1"
+                    ]
+                ],
+                "versions_python": [
+                    [
+                        "CELLBENDER_QC",
+                        "python",
+                        "3.10.12"
+                    ]
                 ]
             }
         ],
-        "timestamp": "2026-11-10T16:51:11.733474793",
+        "timestamp": "2026-11-13T16:54:30.811451955",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

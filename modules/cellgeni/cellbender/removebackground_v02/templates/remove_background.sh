@@ -130,13 +130,6 @@ fi
 ### Create output directory
 mkdir -p "${meta.id}"
 
-### Save file version information
-version=\$(grep "version" /opt/cellbender/setup.py | cut -d"'" -f 2)
-cat <<-END_VERSIONS > versions.yml
-"${task.process}":
-    cellbender: \$version
-END_VERSIONS
-
 ### Run CellBender
 
 echo "INFO: Running CellBender remove-background with input: \$cellbender_input"

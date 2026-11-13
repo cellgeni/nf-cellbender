@@ -126,10 +126,14 @@ workflow {
         multiqc_config
     )
 
-    // One versions.yml for the run: the first task of each process is enough
-    versions = CELLBENDER.out.versions
-        .mix(CELLBENDER_QC.out.versions.first(), MULTIQC.out.versions.first())
-        .collectFile(name: 'versions.yml', sort: { versions_file -> versions_file.text })
+    // One versions.yml for the run, from the [process, tool, version] tuples every module sends to the
+    // 'versions' topic: one entry per process, its tools sorted
+    versions = channel.topic('versions')
+        .unique()
+        .map { process, tool, version_number -> [process, "    ${tool}: ${version_number}"] }
+        .groupTuple(sort: true)
+        .map { process, tools -> "\"${process}\":\n" + tools.unique().sort().join('\n') }
+        .collectFile(name: 'versions.yml', sort: true, newLine: true)
 
     publish:
     // Records with a path field (and group, when set), so outputs can be routed to their group's

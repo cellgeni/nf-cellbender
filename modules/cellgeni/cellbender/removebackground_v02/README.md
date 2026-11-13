@@ -41,7 +41,7 @@ The module:
 | Name | File(s) | Description |
 |---|---|---|
 | `outputdir` | `${meta.id}/` | CellBender output directory containing `cellbender.h5` and summary files. |
-| `versions` | `versions.yml` | CellBender version record. |
+| `versions_cellbender` | | Tuple of the process name, `cellbender` and its version, also sent to the `versions` topic. |
 
 ## Configuration via `ext` variables
 

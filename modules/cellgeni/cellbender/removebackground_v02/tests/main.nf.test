@@ -39,7 +39,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -69,7 +69,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -99,7 +99,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -132,7 +132,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -166,7 +166,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -197,7 +197,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -231,7 +231,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -261,7 +261,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -296,7 +296,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -331,7 +331,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -360,7 +360,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
@@ -394,7 +394,7 @@ nextflow_process {
             assert process.success
             def outdir = new File(process.out.outputdir[0][1])
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
