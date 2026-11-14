@@ -41,11 +41,29 @@ version of the pipeline for running from Nextflow Tower.
 | `cellgeni/cellbender/qc` | `CELLBENDER_QC` | `quay.io/cellgeni/cellbender:0.3` |
 | `cellgeni/multiqc` | `MULTIQC` | `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2` |
 | `cellgeni/irods/loadcatalog` | `IRODS_LOADCATALOG` | none: the host's icommands |
+| `cellgeni/adata/convert` | `ADATA_CONVERT` | `quay.io/cellgeni/adata-cli:0.17.5` |
 
 The `cellgeni/` module folders have `main.nf`, `meta.yml` (module schema v1), a `README.md` with its inputs,
 outputs and `ext` variables, and `tests/`. They are published to the
 [Nextflow module registry](https://registry.nextflow.io/); `.module-info` records the published
 checksum. `main.nf` includes them by relative path.
+
+Every module sends the version of each tool it uses to the `versions` topic, as
+`[process, tool, version]` tuples (`emit: versions_<tool>, topic: versions`); `main.nf` collects
+them into `versions.yml`.
+
+Both CellBender modules run `resources/usr/bin/prepare_cellbender.py` before CellBender. The script
+finds the raw matrix, the features to ignore and the cell and droplet numbers. Next to it,
+`cellbender_priors.py` is a copy of CellBender 0.3.2's estimate, which the 0.2 module uses. The two
+modules hold identical copies of both files: change them together (`diff -r` the `resources/`
+folders). Refresh `cellbender_priors.py` from `cellbender/remove_background/data/priors.py` when the
+CellBender 0.3 image is upgraded. The script runs without a GPU, for example:
+
+```bash
+singularity exec -B /lustre,/nfs /nfs/cellgeni/singularity/images/quay.io-cellgeni-cellbender-0.3.img \
+    python modules/cellgeni/cellbender/removebackground_v03/resources/usr/bin/prepare_cellbender.py \
+    --input <mapper output> --cellbender-version 0.3 --preset mapper
+```
 
 To publish a new module version, bump `version` in its `meta.yml`, then:
 
@@ -87,7 +105,7 @@ The module tests use [nf-test](https://www.nf-test.com/) and run on the farm:
 
 ```bash
 mkdir -p logs
-N=31
+N=42
 bsub -J "test-cellbender[1-$N]" -env "all, N=$N" < tests/scripts/run_tests.bsub
 ```
 
@@ -97,8 +115,9 @@ that shared a folder would delete each other's scripts.
 
 CellBender output is not byte-identical between runs, so the CellBender tests have no snapshots.
 They check that the run succeeded, that the output folder holds exactly the expected files and none
-of them is empty, that `versions.yml` reports the pinned CellBender version, and that the log ends
-with `Completed remove-background.`
+of them is empty, that the `versions_cellbender` output reports the pinned CellBender version, and
+that the log ends with `Completed remove-background.` Several also check what `prepare_cellbender.py`
+printed (the task's `.command.out`): the input structure, the ignored features and the numbers used.
 
 The CellBender tests read their inputs from `tests/data/`, one folder per dataset. These are the
 iRODS collections under `/archive/cellgeni/tests/`; a run with
@@ -121,6 +140,14 @@ To run one module's tests directly:
 ```bash
 module load cellgen/nextflow/26.04.6 cellgen/nf-test/0.9.5
 nf-test test modules/cellgeni/multiqc/tests/main.nf.test --profile singularity
+```
+
+Tests that need no GPU (`adata/convert`, `multiqc`, and inputs the CellBender modules reject) also run
+on the machine you are on, with the `local` profile:
+
+```bash
+nf-test test modules/cellgeni/adata/convert/tests/main.nf.test --profile singularity,local
+nf-test test modules/cellgeni/cellbender/removebackground_v03/tests/main.nf.test --tag input-error --profile singularity,local
 ```
 
 For a quick check of the whole pipeline without GPUs, run it with `-stub` and the local executor.

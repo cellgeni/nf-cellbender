@@ -11,7 +11,7 @@ process MULTIQC {
     output:
     tuple val(meta), path("multiqc_report.html"), emit: report
     tuple val(meta), path("multiqc_data"),        emit: data
-    path "versions.yml",                          emit: versions
+    tuple val("${task.process}"), val('multiqc'), eval("multiqc --version | sed 's/.*version //'"), emit: versions_multiqc, topic: versions
 
     script:
     def args   = task.ext.args ?: ''
@@ -33,21 +33,11 @@ process MULTIQC {
     # The data folder is named after the report file; keep a fixed name for the output
     if [[ -d multiqc_report_data ]]; then mv multiqc_report_data multiqc_data; fi
     rm -rf \$TMPDIR
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        multiqc: \$(multiqc --version | sed 's/.*version //')
-    END_VERSIONS
     """
 
     stub:
     """
     mkdir multiqc_data
     touch multiqc_report.html
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        multiqc: \$(multiqc --version | sed 's/.*version //')
-    END_VERSIONS
     """
 }

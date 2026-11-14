@@ -76,7 +76,7 @@ is such a job; adapt it and submit it with `bsub < run_cellbender.bsub`.
 
 ```
 results/
-├── cellbender/<id>/          CellBender output for each sample
+├── cellbender/<id>/          CellBender output for each sample, and its cells as .h5ad
 ├── index/cellbender.csv      id,path of every CellBender output
 ├── qc_report/                QC summary, PDF and MultiQC report
 └── versions.yml              software versions
@@ -93,7 +93,7 @@ need a closer look are listed first. [QC report](reference/qc.md) explains each 
 
 ```bash
 nextflow run cellgeni/nf-cellbender -r main --help                   # main parameters and examples
-nextflow run cellgeni/nf-cellbender -r main --help exclude_features  # one parameter in detail
+nextflow run cellgeni/nf-cellbender -r main --help preset            # one parameter in detail
 nextflow run cellgeni/nf-cellbender -r main --helpFull               # every parameter
 ```
 

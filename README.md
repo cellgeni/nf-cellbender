@@ -2,8 +2,9 @@
 
 Runs [CellBender](https://cellbender.readthedocs.io/en/latest/) `remove-background` on Sanger's
 farm22 for a table of samples, and builds one QC report across all of them. Inputs can be
-CellRanger or STARsolo output folders, `.h5` files or `.mtx` folders, on Lustre or on iRODS.
-CellBender 0.2 and 0.3 are both supported and run on the GPU queues.
+CellRanger or STARsolo output folders (including single samples of a CellRanger multi Flex run),
+`.h5` files or `.mtx` folders, on Lustre or on iRODS. CellBender 0.2 and 0.3 are both supported and
+run on the GPU queues.
 
 **Documentation: <https://cellgeni.github.io/nf-cellbender/>**
 
@@ -23,8 +24,8 @@ sample1,/lustre/scratch124/.../sample1/cellranger
 sample2,/lustre/scratch124/.../sample2/outs/raw_feature_bc_matrix.h5
 ```
 
-Results are written to `results/`: CellBender output per sample in `results/cellbender/`, the QC
-report in `results/qc_report/`. An optional `group` column (`id,group,path`) gives each group of
+Results are written to `results/`: CellBender output per sample in `results/cellbender/`, with the
+cells also as an `.h5ad` file, and the QC report in `results/qc_report/`. An optional `group` column (`id,group,path`) gives each group of
 samples its own QC report and its own folder, `results/<group>/`. Run `nextflow run cellgeni/nf-cellbender -r main --help` for the
 parameters.
 

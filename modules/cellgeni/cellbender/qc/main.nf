@@ -10,7 +10,11 @@ process CELLBENDER_QC {
     output:
     tuple val(meta), path("qc_report"),                 emit: report
     tuple val(meta), path("qc_report/multiqc/*_mqc.*"), emit: multiqc_files
-    path "versions.yml",                                emit: versions
+    tuple val("${task.process}"), val('python'),     eval("python --version | cut -d' ' -f 2"),                        emit: versions_python,     topic: versions
+    tuple val("${task.process}"), val('h5py'),       eval('python -c "import h5py; print(h5py.__version__)"'),             emit: versions_h5py,       topic: versions
+    tuple val("${task.process}"), val('matplotlib'), eval('python -c "import matplotlib; print(matplotlib.__version__)"'), emit: versions_matplotlib, topic: versions
+    tuple val("${task.process}"), val('numpy'),      eval('python -c "import numpy; print(numpy.__version__)"'),           emit: versions_numpy,      topic: versions
+    tuple val("${task.process}"), val('pandas'),     eval('python -c "import pandas; print(pandas.__version__)"'),         emit: versions_pandas,     topic: versions
 
     script:
     def args    = task.ext.args ?: ''
@@ -22,15 +26,6 @@ process CELLBENDER_QC {
         --out qc_report \\
         --verbose \\
         ${args}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python --version | cut -d' ' -f 2)
-        h5py: \$(python -c "import h5py; print(h5py.__version__)")
-        matplotlib: \$(python -c "import matplotlib; print(matplotlib.__version__)")
-        numpy: \$(python -c "import numpy; print(numpy.__version__)")
-        pandas: \$(python -c "import pandas; print(pandas.__version__)")
-    END_VERSIONS
     """
 
     stub:
@@ -38,14 +33,5 @@ process CELLBENDER_QC {
     mkdir -p qc_report/multiqc
     touch qc_report/cellbender_qc_summary.tsv qc_report/cellbender_qc_report.pdf
     touch qc_report/multiqc/cellbender_summary_mqc.json
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python --version | cut -d' ' -f 2)
-        h5py: \$(python -c "import h5py; print(h5py.__version__)")
-        matplotlib: \$(python -c "import matplotlib; print(matplotlib.__version__)")
-        numpy: \$(python -c "import numpy; print(numpy.__version__)")
-        pandas: \$(python -c "import pandas; print(pandas.__version__)")
-    END_VERSIONS
     """
 }

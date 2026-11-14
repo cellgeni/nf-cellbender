@@ -43,7 +43,7 @@ A tuple of:
 | | `qc_report/cellbender_qc_summary.tsv` | One row per sample. |
 | | `qc_report/cellbender_qc_report.pdf` | Summary table, then one grid per plot, 24 samples per page (see [Plots](#plots)). |
 | `multiqc_files` | `qc_report/multiqc/*_mqc.*` | MultiQC custom content: summary table, general statistics, ELBO and soup fraction histogram line graphs, and the other plots as images (one per PDF page). |
-| `versions` | `versions.yml` | python, h5py, matplotlib, numpy and pandas versions. |
+| `versions_python`, `versions_h5py`, `versions_matplotlib`, `versions_numpy`, `versions_pandas` | | Tuples of the process name, the tool and its version, also sent to the `versions` topic. |
 
 ### Plots
 

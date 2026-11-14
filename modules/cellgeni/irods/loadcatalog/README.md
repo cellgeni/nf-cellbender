@@ -28,7 +28,7 @@ Run `iinit` before starting the pipeline.
 | Name | File(s) | Description |
 |---|---|---|
 | `catalog` | `${meta.id}/` | The downloaded collection. |
-| `versions` | `versions.yml` | iRODS version record. |
+| `versions_irods` | | Tuple of the process name, `irods` and its version, also sent to the `versions` topic. |
 
 ## Configuration via `ext` variables
 

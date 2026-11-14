@@ -11,6 +11,5 @@ samples=examples/samples_exclude_features.csv
 nextflow run main.nf \
   --samples $samples \
   --on_irods \
-  --exclude_features "Peaks,Multiplexing Capture,CRISPR Guide Capture" \
   --ignore_extensions "bam,bz2" \
   --outdir "my-cellbender-v3-results"

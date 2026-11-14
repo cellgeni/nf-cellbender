@@ -29,7 +29,7 @@ Container: `quay.io/biocontainers/multiqc:1.35--pyhdfd78af_2`.
 |---|---|---|
 | `report` | `multiqc_report.html` | The report. |
 | `data` | `multiqc_data/` | Parsed data, plot data and logs behind the report. |
-| `versions` | `versions.yml` | MultiQC version. |
+| `versions_multiqc` | | Tuple of the process name, `multiqc` and its version, also sent to the `versions` topic. |
 
 ## Configuration via `ext` variables
 

@@ -26,9 +26,11 @@ Each version has its own module and container, so a run uses exactly one of them
 
 ## Which one to use
 
-Use **0.3** unless you have a reason not to. It estimates the expected cells and total droplets
-itself, supports more feature types for `--exclude_features`, writes an HTML report and a metrics
-file per sample, and stores the soup fraction of each cell in its output.
+Use **0.3** unless you have a reason not to. It supports more feature types in the samples
+table's `exclude_features` column, writes an HTML report and a metrics file per sample, and stores the soup
+fraction of each cell in its output. With the default `--preset auto`, both versions get the same
+expected cells and total droplets: 0.3 estimates them itself, and for 0.2 the pipeline runs a copy
+of 0.3's estimate (see [Cell and droplet counts](cell-calls.md#where-the-numbers-come-from)).
 
 Use **0.2** to reproduce or extend an analysis that was done with 0.2.
 
@@ -39,12 +41,11 @@ something you asked for.
 
 | Option | 0.2 | 0.3 |
 |---|---|---|
-| `--cells` / `--droplets` | Both or neither (neither means the mapper preset) | Either, both or neither |
-| `--mapper_preset` | Rejected: 0.2 always uses the preset unless both `--cells` and `--droplets` are given | Off by default; turn it on to estimate from the mapper output |
-| `--exclude_features` | Only `All` (excludes antibody capture) | A comma-separated list of feature types |
+| `--preset` | `auto` (default), `mapper` or `off` | `auto` (default), `mapper` or `off` |
+| `exclude_features` column | Only `All` (excludes antibody capture) | A comma-separated list of feature types |
 | `--estimator` | Rejected | `naive`, `map`, `mean`, `cdf` or `mckp` (CellBender's default is `mckp`) |
 | `--force_empty_umi_prior` | Rejected | Accepted |
-| `--epochs`, `--fpr`, `--lr`, `--min_umi` | Accepted | Accepted |
+| `--epochs`, `--fpr`, `--lr` | Accepted | Accepted |
 
 For example, `--version 0.2 --estimator mean` stops with:
 
@@ -59,7 +60,8 @@ number, and the pipeline accepts either form.
 ## What changes in the outputs
 
 Both versions write `cellbender.h5`, `cellbender_filtered.h5`, `cellbender_cell_barcodes.csv`,
-`cellbender.pdf` and `cellbender.log` into `cellbender/<id>/`. Only 0.3 adds
+`cellbender.pdf` and `cellbender.log` into `cellbender/<id>/`, and the pipeline adds
+`excluded_features.csv` for both. Only 0.3 adds
 `cellbender_metrics.csv`, `cellbender_report.html` and `cellbender_posterior.h5`.
 
 In the QC report, the soup fraction comes straight from the 0.3 output. For 0.2 it is computed from

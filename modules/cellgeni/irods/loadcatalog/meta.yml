@@ -1,6 +1,6 @@
 $schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
 name: cellgeni/irods/loadcatalog
-version: 0.1.1
+version: 0.2.0
 description: >
   Downloads a whole iRODS collection with iget, keeping its folder layout and skipping files
   with unwanted extensions (e.g. BAM/CRAM/FASTQ).
@@ -39,7 +39,22 @@ output:
       type: directory
       description: "The downloaded collection (named after meta.id), with the same folder layout as on iRODS."
       pattern: "${meta.id}"
-  - name: versions
-    type: file
-    description: "YAML file recording the iRODS version."
-    pattern: "versions.yml"
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, irods."
+    - name: version
+      type: string
+      description: "The iRODS version."
+topics:
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name."
+    - name: version
+      type: string
+      description: "versions topic: the tool version."

@@ -1,0 +1,59 @@
+nextflow_process {
+
+    name "Test Process ADATA_CONVERT"
+    script "../main.nf"
+    process "ADATA_CONVERT"
+
+    tag "modules"
+    tag "adata/convert"
+
+    test("Cell Ranger .h5 to .h5ad") {
+        tag "adata-convert"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [id:'cellranger-count'], // meta map
+                    file(params.test_data_base + 'cellranger-count/outs/filtered_feature_bc_matrix.h5', checkIfExists: true),
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def h5ad = path(process.out.converted[0][1])
+            assertAll(
+                { assert process.out.converted[0][0] == [id:'cellranger-count'] },
+                // named by ext.prefix, which the pipeline config sets
+                { assert h5ad.fileName.toString().endsWith('.h5ad') },
+                { assert h5ad.toFile().length() > 0 },
+                { assert process.out.versions_adata == [['ADATA_CONVERT', 'adata', '0.17.5']] }
+            )
+        }
+    }
+
+    test("Stub") {
+        tag "adata-convert-stub"
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [id:'cellranger-count'], // meta map
+                    file(params.test_data_base + 'cellranger-count/outs/filtered_feature_bc_matrix.h5', checkIfExists: true),
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert path(process.out.converted[0][1]).fileName.toString().endsWith('.h5ad') }
+            )
+        }
+    }
+}

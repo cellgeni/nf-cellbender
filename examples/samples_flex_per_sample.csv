@@ -1,0 +1,6 @@
+id,path
+multiplex-flex,/archive/cellgeni/tests/multiplex-flex
+Colorectal_BC3,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Colorectal_BC3
+Liver_BC1,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Liver_BC1
+Ovarian_BC2,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Ovarian_BC2
+Pancreas_BC4,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Pancreas_BC4

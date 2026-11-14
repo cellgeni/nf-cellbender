@@ -31,18 +31,16 @@ details for one parameter.
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `--version` | string or number | `0.3` | CellBender version. Allowed: `0.2`, `0.3`. Passing `--version 0.2` on the command line gives a number, so both `0.2` and `"0.2"` are accepted. |
-| `--cells` | integer | – | Expected number of cells (`--expected-cells`). Range: ≥ 1. Required together with `--droplets` for version 0.2 when the sample table points to `.h5` files or `.mtx` directories. Otherwise version 0.2 estimates it with the mapper preset and version 0.3 with CellBender's own estimation. |
-| `--droplets` | integer | – | Total number of droplets to include (`--total-droplets-included`). Range: ≥ 1. Required together with `--cells` for version 0.2 when the sample table points to `.h5` files or `.mtx` directories. |
-| `--mapper_preset` | boolean | `false` | Estimate `--cells`, `--droplets` and `--min_umi` from the CellRanger/STARsolo output. Needs the whole mapper output directory as `path`. Always on for version 0.2 unless both `--cells` and `--droplets` are given. See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/ |
+| `--preset` | string | `auto` | Where the cell, droplet and min UMI numbers not given for a sample come from: auto, mapper or off. Allowed: `auto`, `mapper`, `off`. Values given in the samples table's `cells`, `droplets` and `min_umi` columns are always used as they are. `auto`: CellBender's own estimate (CellBender 0.3 makes it itself; for 0.2 the pipeline runs a copy of 0.3's estimate). `mapper`: the mapper preset, from the cell calls of CellRanger or STARsolo; needs the whole mapper output folder as `path`. `off`: only the values given; every sample needs `cells` and `droplets`, and a missing min UMI is left to CellBender's default (5 for 0.3, 15 for 0.2). See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/ |
+| `--filter_features` | boolean | `true` | Leave the features missing from the mapper's filtered matrix out of the CellBender model. For Flex runs: the genes outside the probe set, which the raw matrix still counts. CellBender 0.3 copies their counts unchanged to its output, 0.2 sets them to zero. `--filter_features false` keeps them in the model. See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/ |
 | `--starsolo_mapper` | string | `GeneFull` | STARsolo output type to use as CellBender input (e.g. `Gene`, `GeneFull`, `GeneFull_Ex50pAS`). |
-| `--exclude_features` | string | – | Feature types to exclude from the analysis. Version 0.3: comma-separated list of `Antibody Capture`, `CRISPR Guide Capture`, `Custom`, `Peaks`, `Multiplexing Capture`, `VDJ`, `VDJ-T`, `VDJ-T-GD`, `VDJ-B`, `Antigen Capture`. Version 0.2: only `All` (excludes antibody capture). See https://cellgeni.github.io/nf-cellbender/guides/cell-calls/ |
 | `--epochs` | integer | – | Number of training epochs. Range: ≥ 1. |
 | `--fpr` | number | – | Target false positive rate. Range: ≥ 0, ≤ 1. |
 | `--lr` | number | – | Learning rate. Range: > 0. |
-| `--min_umi` | integer | – | Lower bound for empty-droplet UMI count (`--low-count-threshold`). Range: ≥ 0. |
 | `--force_empty_umi_prior` | integer | – | Force the empty-droplet UMI count prior (version 0.3 only). Range: ≥ 0. |
 | `--estimator` | string | – | Estimator for posterior generation (version 0.3 only; CellBender default: `mckp`). Allowed: `naive`, `map`, `mean`, `cdf`, `mckp`. |
 | `--qc_mode` | integer | `3` | QC detail level. Allowed: `1`, `2`, `3`. 1: log-based summary and training curves only; 2: also cell calling, latent PCA and top ambient genes from the output `.h5`; 3: also reads the CellBender input for the UMI curve, soup fraction and per-gene removal. |
+| `--h5ad` | boolean | `true` | Also write the cells of each sample as `cellbender_filtered.h5ad`, next to CellBender's files. Converted from `cellbender_filtered.h5` with adata-cli, keeping CellBender's latent variables. `--h5ad false` skips it. |
 
 ## Cluster options
 
@@ -58,12 +56,8 @@ Combinations that fail validation, with the message you get:
 
 - `--costcode` is required for `cub` and `tiger` queues
 - `--costcode` is only used with `cub` and `tiger` queues
-- CellBender 0.2 needs `--cells` and `--droplets` together, or neither to use the mapper preset
-- CellBender 0.2 only supports `--exclude_features All`
 - `--force_empty_umi_prior` is only available for CellBender 0.3
 - `--estimator` is only available for CellBender 0.3
-- CellBender 0.2 uses the mapper preset automatically unless both `--cells` and `--droplets` are given
-- CellBender 0.3 takes a comma-separated list of: Antibody Capture, CRISPR Guide Capture, Custom, Peaks, Multiplexing Capture, VDJ, VDJ-T, VDJ-T-GD, VDJ-B, Antigen Capture
 - `--ignore_extensions` only applies with `--on_irods`
 
 ## Hidden parameters
