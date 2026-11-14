@@ -172,7 +172,7 @@ def mtx_sums(folder, analysed, per_feature):
         n_features, n_barcodes = (int(n) for n in line.split()[:2])
         sums = Sums(np.zeros(n_barcodes), np.zeros(n_features) if per_feature else None,
                     np.zeros(n_barcodes) if analysed is not None else None)
-        for chunk in pd.read_csv(f, sep=" ", header=None, usecols=[0, 1, 2], chunksize=CHUNK // 2):
+        for chunk in pd.read_csv(f, sep=r"\s+", header=None, usecols=[0, 1, 2], chunksize=CHUNK // 2):
             feature, barcode = chunk[0].to_numpy() - 1, chunk[1].to_numpy() - 1
             add_chunk(sums, barcode, feature, chunk[2].to_numpy(np.float64), analysed)
     return sums
