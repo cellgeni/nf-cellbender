@@ -95,9 +95,9 @@ import pandas as pd
 excluded = pd.read_csv("cellbender/<id>/excluded_features.csv")
 adata = adata[:, ~adata.var_names.isin(excluded["id"])]
 ```
- `var["cellbender_analyzed"]` is not
-the same: it is also `False` for the features CellBender 0.3 found too sparse to model, which keep
-their counts.
+
+`var["cellbender_analyzed"]` is not the same: it is also `False` for the features CellBender 0.3
+found too sparse to model, which keep their counts.
 
 The files are published one by one into `cellbender/<id>/`, so the `.h5ad` sits in the same
 folder without being removed when the CellBender files are published again (with `-resume`, for
