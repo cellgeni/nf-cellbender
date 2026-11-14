@@ -15,6 +15,8 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-318] - 2026-11-14
+
 ### Added
 
 - One sample of a CellRanger multi Flex run as input: its `per_sample_outs/<sample>` folder (or its
@@ -256,7 +258,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-317...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-318...dev
+[26-318]: https://github.com/cellgeni/nf-cellbender/compare/26-317...26-318
 [26-317]: https://github.com/cellgeni/nf-cellbender/compare/26-295...26-317
 [26-295]: https://github.com/cellgeni/nf-cellbender/compare/26-294...26-295
 [26-294]: https://github.com/cellgeni/nf-cellbender/compare/25-274...26-294
