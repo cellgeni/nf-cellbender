@@ -18,9 +18,12 @@ nextflow_process {
         'cellbender_metrics.csv',
         'cellbender_posterior.h5',
         'cellbender_report.html',
+        'excluded_features.csv',
     ]
     // Outputs emitted by extension, each a tuple with the sample's meta
     def emitted = ['outputdir', 'h5', 'csv', 'pdf', 'html', 'log']
+    // Header of excluded_features.csv, which lists every feature left out of the model, one per line
+    def excluded_header = 'index,id,name,type,umis,reason,decision'
 
     test("CellRanger count v3.0.0 - CellBender v0.3") {
         tag "cellranger-count"
@@ -47,6 +50,7 @@ nextflow_process {
             def log      = new File(outdir, 'cellbender.log').text
             // What prepare_cellbender.py printed: the input structure, the features and the numbers used
             def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
             assertAll(
                 { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V03', 'cellbender', '0.3.2']] },
                 { assert outdir.list().sort() == outputs },
@@ -54,6 +58,7 @@ nextflow_process {
                 { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
                 { assert prepared.contains("holds Cell Ranger count output") },
                 { assert prepared.contains("none ignored") },
+                { assert excluded == [excluded_header] },
                 { assert log.contains('Completed remove-background.') }
             )
         }
@@ -158,11 +163,14 @@ nextflow_process {
             def log      = new File(outdir, 'cellbender.log').text
             // What prepare_cellbender.py printed: the input structure, the features and the numbers used
             def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
             assertAll(
                 { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V03', 'cellbender', '0.3.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
                 { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-arc'] } },
+                { assert excluded.size() == 77243 },
+                { assert excluded.tail().every { line -> line.contains(',Peaks,') && line.endsWith(',excluded feature type,explicit') } },
                 { assert log.contains('Completed remove-background.') }
             )
         }
@@ -242,6 +250,7 @@ nextflow_process {
             def log      = new File(outdir, 'cellbender.log').text
             // What prepare_cellbender.py printed: the input structure, the features and the numbers used
             def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
             assertAll(
                 { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V03', 'cellbender', '0.3.2']] },
                 { assert outdir.list().sort() == outputs },
@@ -250,6 +259,8 @@ nextflow_process {
                 { assert prepared.contains("expected cells: 20804 (mapper preset)") },
                 { assert prepared.contains("total droplets: 40804 (mapper preset)") },
                 { assert prepared.contains("ignored 933 features") },
+                { assert excluded.size() == 19062 },
+                { assert excluded.count { line -> line.endsWith(',explicit') } == 933 },
                 { assert log.contains('Completed remove-background.') }
             )
         }
@@ -323,6 +334,7 @@ nextflow_process {
             def log      = new File(outdir, 'cellbender.log').text
             // What prepare_cellbender.py printed: the input structure, the features and the numbers used
             def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
             assertAll(
                 { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V03', 'cellbender', '0.3.2']] },
                 { assert outdir.list().sort() == outputs },
@@ -332,6 +344,8 @@ nextflow_process {
                 { assert prepared.contains("ignored 743 features") },
                 { assert prepared.contains("expected cells: 4999 (mapper preset)") },
                 { assert log.contains("Ignoring 743 specified features") },
+                { assert excluded.size() == 19062 },
+                { assert excluded.count { line -> line.endsWith(',explicit') } == 743 },
                 { assert log.contains('Completed remove-background.') }
             )
         }
@@ -367,6 +381,7 @@ nextflow_process {
             def log      = new File(outdir, 'cellbender.log').text
             // What prepare_cellbender.py printed: the input structure, the features and the numbers used
             def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
             assertAll(
                 { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V03', 'cellbender', '0.3.2']] },
                 { assert outdir.list().sort() == outputs },
@@ -374,6 +389,7 @@ nextflow_process {
                 { assert emitted.every { emit -> process.out[emit][0][0] == [id:'Liver_BC1'] } },
                 { assert prepared.contains("none ignored") },
                 { assert !log.contains("specified features") },
+                { assert excluded == [excluded_header] },
                 { assert log.contains('Completed remove-background.') }
             )
         }

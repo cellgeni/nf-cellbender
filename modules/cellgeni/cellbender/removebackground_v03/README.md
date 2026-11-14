@@ -59,7 +59,7 @@ All outputs except the version are tuples of `meta` and the file(s).
 |---|---|---|
 | `outputdir` | `${meta.id}/` | The whole output directory, for tools that read it as one (the QC module). |
 | `h5` | `${meta.id}/*.h5` | `cellbender.h5` (all analysed droplets), `cellbender_filtered.h5` (cells) and `cellbender_posterior.h5`. |
-| `csv` | `${meta.id}/*.csv` | `cellbender_cell_barcodes.csv` and `cellbender_metrics.csv`. |
+| `csv` | `${meta.id}/*.csv` | `cellbender_cell_barcodes.csv`, `cellbender_metrics.csv` and `excluded_features.csv` (see [Excluded features](#excluded-features)). |
 | `pdf` | `${meta.id}/*.pdf` | `cellbender.pdf`, CellBender's summary plots. |
 | `html` | `${meta.id}/*.html` | `cellbender_report.html`, CellBender's report. |
 | `log` | `${meta.id}/*.log` | `cellbender.log`. |
@@ -77,9 +77,26 @@ probe set excludes, and the raw matrix counts them. On the Flex test sample thes
 With `ext.filter_features` (default `true`), the features missing from the mapper's filtered matrix
 (for a bare `.h5`: outside the probe set in `features/target_sets`) are passed to CellBender as
 `--ignore-features`. CellBender leaves them out of the model and copies their counts unchanged to
-the output. Only the features with counts are listed, since CellBender drops all-zero features
+the output. Only the features with counts are passed, since CellBender drops all-zero features
 anyway. For Cell Ranger count, ARC, ATAC and STARsolo the filtered matrix has the same features as the raw one, and
 nothing is ignored.
+
+### Excluded features
+
+`${meta.id}/excluded_features.csv` lists every feature the module leaves out of the model, one row
+per feature in raw matrix order: those missing from the filtered matrix (or the probe set) and those
+of a type in `exclude_features`. It has only its header when nothing is left out.
+
+| Column | Contents |
+|---|---|
+| `index` | 0-based position in the raw matrix, as passed to `--ignore-features` |
+| `id`, `name`, `type` | The feature's ID, name and type. A peak's name is its ID. |
+| `umis` | Total UMIs of the feature in the raw matrix |
+| `reason` | `not in the filtered matrix`, `not in the probe set` or `excluded feature type` (the type wins when both apply) |
+| `decision` | `explicit`: CellBender is told to leave it out (`--ignore-features`, or its type in `--exclude-feature-types`). `implicit`: it has no counts, so it is not passed; CellBender drops all-zero features by itself. |
+
+On the combined Flex test run, the 19,061 genes outside the probe set are listed: 933 explicit, with
+3.4M UMIs (3.5% of all), and 18,128 implicit.
 
 ## Cells, droplets and the low-count threshold
 

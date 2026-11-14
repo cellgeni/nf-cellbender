@@ -11,7 +11,7 @@ process CELLBENDER_REMOVEBACKGROUND_V02 {
     output:
     tuple val(meta), path("${meta.id}"),       emit: outputdir  // the whole folder, for the QC
     tuple val(meta), path("${meta.id}/*.h5"),  emit: h5         // cellbender and _filtered
-    tuple val(meta), path("${meta.id}/*.csv"), emit: csv        // cell barcodes
+    tuple val(meta), path("${meta.id}/*.csv"), emit: csv        // cell barcodes and excluded features
     tuple val(meta), path("${meta.id}/*.pdf"), emit: pdf
     tuple val(meta), path("${meta.id}/*.log"), emit: log
     tuple val("${task.process}"), val('cellbender'), eval('pip show cellbender 2>/dev/null | sed -n "s/^Version: //p"'), emit: versions_cellbender, topic: versions
@@ -40,13 +40,14 @@ process CELLBENDER_REMOVEBACKGROUND_V02 {
         exit 3
     fi
 
-    # Find the raw matrix, the features to ignore and the cell and droplet numbers (see the module README)
-    prepare_cellbender.py --input ${input} ${prepare}
+    # Find the raw matrix, the features to ignore and the cell and droplet numbers (see the module
+    # README). Every feature left out of the model is listed in excluded_features.csv
+    mkdir -p "${meta.id}"
+    prepare_cellbender.py --input ${input} ${prepare} --excluded-file "${meta.id}/excluded_features.csv"
 
     # One argument per line, so file names with spaces stay whole
     mapfile -t prepared_args < cellbender.args
 
-    mkdir -p "${meta.id}"
     cellbender remove-background \\
         ${args} \\
         ${exclude_args} \\
@@ -59,6 +60,6 @@ process CELLBENDER_REMOVEBACKGROUND_V02 {
     """
     mkdir -p "${meta.id}"
     touch "${meta.id}/cellbender.h5" "${meta.id}/cellbender_filtered.h5" "${meta.id}/cellbender_cell_barcodes.csv" \\
-        "${meta.id}/cellbender.pdf" "${meta.id}/cellbender.log"
+        "${meta.id}/excluded_features.csv" "${meta.id}/cellbender.pdf" "${meta.id}/cellbender.log"
     """
 }

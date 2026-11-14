@@ -11,7 +11,7 @@ process CELLBENDER_REMOVEBACKGROUND_V03 {
     output:
     tuple val(meta), path("${meta.id}"),        emit: outputdir  // the whole folder, for the QC
     tuple val(meta), path("${meta.id}/*.h5"),   emit: h5         // cellbender, _filtered and _posterior
-    tuple val(meta), path("${meta.id}/*.csv"),  emit: csv        // cell barcodes and metrics
+    tuple val(meta), path("${meta.id}/*.csv"),  emit: csv        // cell barcodes, metrics and excluded features
     tuple val(meta), path("${meta.id}/*.pdf"),  emit: pdf
     tuple val(meta), path("${meta.id}/*.html"), emit: html
     tuple val(meta), path("${meta.id}/*.log"),  emit: log
@@ -35,13 +35,14 @@ process CELLBENDER_REMOVEBACKGROUND_V03 {
     ].findAll { flag -> flag }.plus(given.collect { flag, value -> "${flag} ${value}" }).join(' ')
     def exclude_args = exclude ? "--exclude-feature-types " + exclude.collect { feature -> "\"${feature}\"" }.join(' ') : ''
     """
-    # Find the raw matrix, the features to ignore and the cell and droplet numbers (see the module README)
-    prepare_cellbender.py --input ${input} ${prepare}
+    # Find the raw matrix, the features to ignore and the cell and droplet numbers (see the module
+    # README). Every feature left out of the model is listed in excluded_features.csv
+    mkdir -p "${meta.id}"
+    prepare_cellbender.py --input ${input} ${prepare} --excluded-file "${meta.id}/excluded_features.csv"
 
     # One argument per line, so file names and feature types with spaces stay whole
     mapfile -t prepared_args < cellbender.args
 
-    mkdir -p "${meta.id}"
     cellbender remove-background \\
         ${args} \\
         ${exclude_args} \\
@@ -54,7 +55,7 @@ process CELLBENDER_REMOVEBACKGROUND_V03 {
     """
     mkdir -p "${meta.id}"
     touch "${meta.id}/cellbender.h5" "${meta.id}/cellbender_filtered.h5" "${meta.id}/cellbender_posterior.h5" \\
-        "${meta.id}/cellbender_cell_barcodes.csv" "${meta.id}/cellbender_metrics.csv" "${meta.id}/cellbender.pdf" \\
-        "${meta.id}/cellbender_report.html" "${meta.id}/cellbender.log"
+        "${meta.id}/cellbender_cell_barcodes.csv" "${meta.id}/cellbender_metrics.csv" "${meta.id}/excluded_features.csv" \\
+        "${meta.id}/cellbender.pdf" "${meta.id}/cellbender_report.html" "${meta.id}/cellbender.log"
     """
 }

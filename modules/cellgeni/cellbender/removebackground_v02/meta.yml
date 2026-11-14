@@ -70,7 +70,7 @@ output:
       description: "Map with sample-level metadata, passed through from input."
     - name: csv
       type: file
-      description: "cellbender_cell_barcodes.csv."
+      description: "cellbender_cell_barcodes.csv and excluded_features.csv (every feature left out of the model, with its UMIs, why and whether CellBender is told: explicit or implicit)."
       pattern: "${meta.id}/*.csv"
   - - name: meta
       type: map

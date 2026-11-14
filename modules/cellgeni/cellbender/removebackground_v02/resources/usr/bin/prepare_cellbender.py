@@ -4,7 +4,8 @@
 Finds the raw matrix in a Cell Ranger or STARsolo output folder (or takes a bare .h5 file or .mtx
 folder), lists the features CellBender should leave out of its model, and works out
 --expected-cells, --total-droplets-included and --low-count-threshold. Writes the CellBender
-arguments to --args-file, one per line, and a summary to stdout.
+arguments to --args-file, one per line, every feature left out of the model to --excluded-file
+(index, id, name, type, umis, reason, decision), and a summary to stdout.
 
 A value given for the sample (--expected-cells, --total-droplets, --low-count-threshold) is always
 passed as given. --preset decides what fills the ones not given:
@@ -80,6 +81,7 @@ def matrix_group(h5):
 class MatrixIndex:
     barcodes: np.ndarray = None
     feature_ids: np.ndarray = None
+    feature_names: np.ndarray = None  # the IDs when the matrix has no names (peaks)
     feature_types: np.ndarray = None  # None when the matrix does not record them
     target_sets: np.ndarray = None    # indices of features in a probe set (Flex), or None
 
@@ -96,6 +98,7 @@ def read_index(path, barcodes=True, features=True):
                 if "features" in group:
                     feats = group["features"]
                     index.feature_ids = decode(feats["id"][:])
+                    index.feature_names = decode(feats["name"][:]) if "name" in feats else index.feature_ids
                     if "feature_type" in feats:
                         index.feature_types = decode(feats["feature_type"][:])
                     if "target_sets" in feats and len(feats["target_sets"]):
@@ -104,6 +107,8 @@ def read_index(path, barcodes=True, features=True):
                             [decode(feats["target_sets"][name][:]).astype(np.int64) for name in feats["target_sets"]]))
                 else:
                     index.feature_ids = decode(group["genes"][:])
+                    index.feature_names = (decode(group["gene_names"][:]) if "gene_names" in group
+                                           else index.feature_ids)
         return index
 
     if barcodes:
@@ -117,6 +122,7 @@ def read_index(path, barcodes=True, features=True):
             table = pd.read_csv(feature_file, sep="\t", header=None, dtype=str,
                                 compression="gzip" if feature_file.suffix == ".gz" else None)
             index.feature_ids = table[0].to_numpy(str)
+            index.feature_names = table[1].to_numpy(str) if table.shape[1] >= 2 else index.feature_ids
             if table.shape[1] >= 3:
                 index.feature_types = table[2].to_numpy(str)
         else:
@@ -125,6 +131,7 @@ def read_index(path, barcodes=True, features=True):
                 raise PrepareError(f"no features.tsv[.gz], genes.tsv[.gz] or peaks.bed in {path}")
             table = read_tsv(peaks, [0, 1, 2])
             index.feature_ids = (table[0] + ":" + table[1] + "-" + table[2]).to_numpy(str)
+            index.feature_names = index.feature_ids
     return index
 
 
@@ -385,6 +392,39 @@ def cellbender_estimate(umi_counts, expected_cells, total_droplets, low_count_th
 # ------------------------------------------------------------------------------------------------
 
 
+EXCLUDED_COLUMNS = ["index", "id", "name", "type", "umis", "reason", "decision"]
+
+
+def write_excluded(path, raw_index, listed, outside, excluded, per_feature, source):
+    """Write every feature left out of the CellBender model to path, one row each in raw matrix order.
+
+    reason: an excluded feature type, or missing from the mapper's filtered matrix (source); the
+    type wins when both apply. decision: explicit when CellBender is told to leave the feature out
+    (its type is excluded, or it is outside source and has counts), implicit when it is not (outside
+    source with no counts: CellBender drops all-zero features by itself).
+    """
+    rows = np.flatnonzero(listed)
+    umis = per_feature[rows].astype(np.int64) if len(rows) else np.zeros(0, dtype=np.int64)
+    explicit = excluded[rows] | (umis > 0)
+    table = pd.DataFrame({
+        "index": rows,
+        "id": raw_index.feature_ids[rows],
+        "name": raw_index.feature_names[rows],
+        "type": raw_index.feature_types[rows] if raw_index.feature_types is not None else "",
+        "umis": umis,
+        "reason": np.where(excluded[rows], "excluded feature type", f"not in {source}"),
+        "decision": np.where(explicit, "explicit", "implicit"),
+    }, columns=EXCLUDED_COLUMNS)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    table.to_csv(path, index=False)
+    if len(rows):
+        reasons = ", ".join(f"{count} {reason}" for reason, count in table["reason"].value_counts().items())
+        print(f"INFO: left out of the model: {len(rows)} features ({reasons}), {int(explicit.sum())} explicit "
+              f"and {len(rows) - int(explicit.sum())} implicit; listed in {path}")
+    else:
+        print(f"INFO: left out of the model: no features; {path} has only its header")
+
+
 def gzip_mtx(folder, workdir):
     """CellBender reads only gzipped .mtx folders: write a gzipped copy when any file is not."""
     files = [with_gz(folder, "matrix.mtx"), with_gz(folder, "barcodes.tsv"), with_gz(folder, "features.tsv", "genes.tsv")]
@@ -419,6 +459,8 @@ def parse_args(argv=None):
                         help="do not ignore the features missing from the mapper's filtered matrix")
     parser.add_argument("--workdir", type=Path, default=Path("prepared"), help="folder for prepared files")
     parser.add_argument("--args-file", type=Path, default=Path("cellbender.args"))
+    parser.add_argument("--excluded-file", type=Path, default=Path("excluded_features.csv"),
+                        help="CSV of every feature left out of the model, with its UMIs and why")
     return parser.parse_args(argv)
 
 
@@ -448,7 +490,7 @@ def main(argv=None):
     flex_units = mapper and any(unit.suffixes is not None for unit in layout.units)
     raw_index = read_index(layout.raw, barcodes=flex_units)
     n_features = len(raw_index.feature_ids)
-    outside = np.zeros(n_features, dtype=bool)
+    outside, source = np.zeros(n_features, dtype=bool), None
     if not args.keep_all_features:
         if layout.filtered:
             keep = set()
@@ -470,23 +512,28 @@ def main(argv=None):
     excluded = np.zeros(n_features, dtype=bool)
     if args.exclude_features and raw_index.feature_types is not None:
         excluded = np.isin(raw_index.feature_types, args.exclude_features)
+    listed = outside | excluded  # every feature left out of the model, for --excluded-file
 
     # CellBender 0.3 estimates what it is not given; for 0.2 the copy of its code does it here
     estimate = args.preset == "auto" and args.cellbender_version == "0.2" and None in values.values()
     sums = None
-    if mapper or estimate or outside.any():
+    if mapper or estimate or listed.any():
         analysed = (~outside & ~excluded).astype(np.float64) if estimate else None
         sums_of = h5_sums if layout.raw.is_file() else mtx_sums
-        sums = sums_of(layout.raw, analysed, per_feature=outside.any())
+        sums = sums_of(layout.raw, analysed, per_feature=listed.any())
 
-    # Features CellBender leaves out of its model. All-zero ones it drops by itself
+    # Features outside the filtered matrix are passed only when they have counts: CellBender drops
+    # all-zero features by itself
     ignored = np.flatnonzero(outside & (sums.per_feature > 0)) if outside.any() else np.array([], dtype=int)
     if outside.any():
         print(f"INFO: features: {n_features} in the raw matrix, {n_features - outside.sum()} in {source}; "
               f"ignored {len(ignored)} features outside it that have counts "
-              f"({int(sums.per_feature[ignored].sum())} UMIs)")
+              f"({int(sums.per_feature[ignored].sum())} UMIs); {outside.sum() - len(ignored)} more have no "
+              f"counts, which CellBender drops itself")
     else:
         print(f"INFO: features: {n_features} in the raw matrix, none ignored")
+    write_excluded(args.excluded_file, raw_index, listed, outside, excluded,
+                   sums.per_feature if listed.any() else None, source)
 
     # Cells, droplets, threshold: a given value always; the preset fills only the ones not given
     sources = {key: "given" for key, value in values.items() if value is not None}
