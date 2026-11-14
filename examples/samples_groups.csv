@@ -5,5 +5,9 @@ starsolo,gex,/archive/cellgeni/tests/starsolo,
 cellranger-arc,multiome,/archive/cellgeni/tests/cellranger-arc,Peaks
 cellranger-atac,multiome,/archive/cellgeni/tests/cellranger-atac,
 multiplex-flex,multiplexed,/archive/cellgeni/tests/multiplex-flex,
+multiplex-flex-sample1,multiplexed,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Colorectal_BC3,
+multiplex-flex-sample2,multiplexed,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Liver_BC1,
+multiplex-flex-sample3,multiplexed,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Ovarian_BC2,
+multiplex-flex-sample4,multiplexed,/archive/cellgeni/tests/multiplex-flex/outs/multi/per_sample_outs/Pancreas_BC4,
 sample-multiplexing,multiplexed,/archive/cellgeni/tests/sample-multiplexing,Multiplexing Capture
 singleplex-crispr,multiplexed,/archive/cellgeni/tests/singleplex-crispr,CRISPR Guide Capture
