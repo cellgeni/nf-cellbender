@@ -60,7 +60,8 @@ number, and the pipeline accepts either form.
 ## What changes in the outputs
 
 Both versions write `cellbender.h5`, `cellbender_filtered.h5`, `cellbender_cell_barcodes.csv`,
-`cellbender.pdf` and `cellbender.log` into `cellbender/<id>/`. Only 0.3 adds
+`cellbender.pdf` and `cellbender.log` into `cellbender/<id>/`, and the pipeline adds
+`excluded_features.csv` for both. Only 0.3 adds
 `cellbender_metrics.csv`, `cellbender_report.html` and `cellbender_posterior.h5`.
 
 In the QC report, the soup fraction comes straight from the 0.3 output. For 0.2 it is computed from

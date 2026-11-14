@@ -27,6 +27,11 @@ and the day of the year.
   are the genes outside the probe set, which still carry counts; on the test sample, 743 genes with
   2.7% of the UMIs. For a bare Flex `.h5`, the probe set in the file is used.
   `--filter_features false` keeps every feature.
+- `cellbender/<id>/excluded_features.csv`: every feature left out of the CellBender model, with its
+  total UMIs and why: missing from the filtered matrix or probe set, or of an excluded feature type.
+  `decision` says whether CellBender is told (`explicit`), or the feature has no counts and
+  CellBender drops it by itself (`implicit`). On the combined Flex test run, 19,061 genes are
+  listed, 933 of them explicit.
 - Optional `cells`, `droplets`, `min_umi` and `exclude_features` columns in the samples table, which set
   those values for one sample. An empty cell leaves the number to `--preset`. See
   `examples/samples_per_sample_params.csv`.

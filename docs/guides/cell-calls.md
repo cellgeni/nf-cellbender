@@ -126,6 +126,12 @@ their counts unchanged to its output. CellBender 0.2 takes them as `--blacklist-
 their counts to zero. For CellRanger count, ARC, ATAC and STARsolo the filtered matrix has the same
 features as the raw one, and nothing changes.
 
+Only the features with counts are passed to CellBender, since it drops features without counts by
+itself. On the combined Flex test run that is 933 of the 19,061 genes outside the probe set, so
+CellBender's log says `Ignoring 933 specified features`. Every feature left out, with its UMIs and
+whether it was passed (`explicit`) or has no counts (`implicit`), is listed in
+`cellbender/<id>/excluded_features.csv` (see [Outputs](../reference/outputs.md#excluded-features)).
+
 `--filter_features false` keeps every feature in the model.
 
 ## Inputs the pipeline recognises
@@ -160,6 +166,9 @@ CellBender 0.3 takes any of `Antibody Capture`, `CRISPR Guide Capture`, `Custom`
 `Multiplexing Capture`, `VDJ`, `VDJ-T`, `VDJ-T-GD`, `VDJ-B` and `Antigen Capture`. CellBender 0.2
 takes only `All`, which excludes antibody capture. A name that is not in the list, or `All` with
 0.3, is rejected before the run starts.
+
+The features of an excluded type are listed in `excluded_features.csv` too, with the reason
+`excluded feature type`.
 
 ## Training options
 
