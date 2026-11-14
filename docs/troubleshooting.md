@@ -24,9 +24,13 @@ brackets after each line says what to change. For example:
 | `Missing required parameter(s): costcode (...required for cub and tiger queues)` | Add `--costcode` |
 | `--costcode (s1): Expected null (...only used with cub and tiger queues)` | Remove `--costcode`, or add `--gpuqueue cub22-inference` |
 | `--estimator (mean): Expected null (...only available for CellBender 0.3)` | Remove it, or use `--version 0.3` |
-| `--exclude_features (Peaks): Expected All (...)` | CellBender 0.2 only takes `All` |
-| `Object does not have some of the required properties [droplets] (...)` | With CellBender 0.2, give `--cells` and `--droplets` together |
 | `--samples (samples.csv): Validation of file failed: ... duplicate entries` | Make every `id` in the table unique |
+| `--samples (samples.csv): exclude_features of s1 must be All` | CellBender 0.2 only takes `All` in the `exclude_features` column |
+| `--samples (samples.csv): exclude_features of s1 uses All` | With CellBender 0.3, name the feature types instead |
+| `--preset off uses only the values given: cells missing for s1` | Fill the `cells` and `droplets` columns for every sample, or use `--preset auto` or `--preset mapper` |
+| `--cells was removed: set it per sample in the samples table's cells column` | The same for `--droplets`, `--min_umi` and `--exclude_features`: move the value into that column of the [samples table](reference/samples.md#per-sample-values) |
+| `--mapper_preset was removed: use --preset mapper` | Use `--preset mapper` |
+| `--preset (on): Expected any of [auto, mapper, off]` | Use one of the three |
 
 The extra line `Value matches against schema from 'if' but does not match against schema from
 'then'` is printed under every failed rule; ignore it. [Parameters](reference/parameters.md) lists
@@ -94,14 +98,20 @@ one.
 
 Look at the task's `.command.log` in `nf-work/` (the run log prints the folder). Common causes:
 
-- **`Error: Input directory does not contain expected structure`**: `path` is not one of the layouts
+- **`ERROR: ... does not have a structure the pipeline recognises`**: `path` is not one of the layouts
   in [Cell and droplet counts](guides/cell-calls.md#inputs-the-pipeline-recognises).
-- **`ERROR: Mapper preset is not available for ... input type`**: CellBender 0.2, or 0.3 with
-  `--mapper_preset`, on a bare `.h5` or `.mtx` input. Give `--cells` and `--droplets`.
+- **`ERROR: the mapper preset needs the mapper's cell calls`**: `--preset mapper` on a bare `.h5` or
+  `.mtx` input. Give the whole CellRanger/STARsolo folder, give cells and droplets, or use
+  `--preset auto`.
+- **`ERROR: ... holds one sample of a Cell Ranger multi run with only its called cells`**: a CellPlex
+  sample's `per_sample_outs` folder. Give the multi run's `outs/` folder (see
+  [Flex samples one by one](guides/cell-calls.md#flex-samples-one-by-one)).
 - **Out of GPU or host memory**: memory grows with each retry. If it fails on every attempt, raise
   it with your own config (see [GPU queues](guides/gpu-queues.md#resources)).
 
-To let the other samples finish while you look into it, rerun with `--ignore_failed -resume`.
+Input errors like these stop the sample at once, without retries; the samples already running
+finish first. To let the other samples run to the end while you look into it, rerun with
+`--ignore_failed -resume`.
 
 ## In the QC report
 

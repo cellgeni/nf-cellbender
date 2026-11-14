@@ -1,6 +1,6 @@
 $schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
 name: cellgeni/cellbender/qc
-version: 0.3.0
+version: 0.4.0
 description: >
   Collects QC statistics from a group of CellBender 0.2 and 0.3 remove-background outputs into a
   summary TSV, a multi-page PDF (training curves, CellBender-style cell calling, latent PCA, soup
@@ -45,7 +45,94 @@ output:
       type: file
       description: "MultiQC custom content: summary table, general stats, ELBO and soup fraction histogram line graphs, and images of the cell calling, latent PCA, soup fraction and gene removal plots."
       pattern: "qc_report/multiqc/*_mqc.*"
-  - name: versions
-    type: file
-    description: "YAML file recording the python, h5py, matplotlib, numpy and pandas versions."
-    pattern: "versions.yml"
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, python."
+    - name: version
+      type: string
+      description: "The python version."
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, h5py."
+    - name: version
+      type: string
+      description: "The h5py version."
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, matplotlib."
+    - name: version
+      type: string
+      description: "The matplotlib version."
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, numpy."
+    - name: version
+      type: string
+      description: "The numpy version."
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, pandas."
+    - name: version
+      type: string
+      description: "The pandas version."
+topics:
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name, python."
+    - name: version
+      type: string
+      description: "versions topic: the python version."
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name, h5py."
+    - name: version
+      type: string
+      description: "versions topic: the h5py version."
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name, matplotlib."
+    - name: version
+      type: string
+      description: "versions topic: the matplotlib version."
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name, numpy."
+    - name: version
+      type: string
+      description: "versions topic: the numpy version."
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name, pandas."
+    - name: version
+      type: string
+      description: "versions topic: the pandas version."

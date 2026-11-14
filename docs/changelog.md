@@ -15,6 +15,68 @@ and the day of the year.
 
 ## [Unreleased]
 
+### Added
+
+- One sample of a CellRanger multi Flex run as input: its `per_sample_outs/<sample>` folder (or its
+  `count/` folder). CellBender reads that sample's raw matrix, and the mapper preset uses that
+  sample's cell calls, so the samples of a Flex run can go through CellBender one by one (see
+  `examples/samples_flex_per_sample.csv`). A CellPlex sample's folder, which holds only the cells
+  assigned to it, is rejected with a message pointing to the multi run's `outs/` folder.
+- Feature filtering: the features missing from the mapper's filtered matrix are left out of the
+  CellBender model (`--ignore-features` in 0.3, `--blacklist-genes` in 0.2). For a Flex run, these
+  are the genes outside the probe set, which still carry counts; on the test sample, 743 genes with
+  2.7% of the UMIs. For a bare Flex `.h5`, the probe set in the file is used.
+  `--filter_features false` keeps every feature.
+- `cellbender/<id>/excluded_features.csv`: every feature left out of the CellBender model, with its
+  total UMIs and why: missing from the filtered matrix or probe set, or of an excluded feature type.
+  `decision` says whether CellBender is told (`explicit`), or the feature has no counts and
+  CellBender drops it by itself (`implicit`). On the combined Flex test run, 19,061 genes are
+  listed, 933 of them explicit.
+- Optional `cells`, `droplets`, `min_umi` and `exclude_features` columns in the samples table, which set
+  those values for one sample. An empty cell leaves the number to `--preset`. See
+  `examples/samples_per_sample_params.csv`.
+- `cellbender_filtered.h5ad` next to the CellBender files of each sample, converted with adata-cli
+  (new module `cellgeni/adata/convert`), and `index/h5ad.csv`. `--h5ad false` skips it.
+- A `local` nf-test profile, for the tests that need no GPU.
+
+### Changed
+
+- `--mapper_preset` is replaced by `--preset auto|mapper|off`, which decides what fills the cell,
+  droplet and min UMI numbers not given for a sample. `auto` (the default) uses CellBender's own
+  estimate, `mapper` the mapper preset, and `off` nothing: with `off`, every sample needs cells and
+  droplets, and the run stops before it starts otherwise. A value given is always passed as it is.
+  `--mapper_preset` stops the run with a message naming `--preset mapper`.
+- CellBender 0.2 now takes the cell and droplet numbers it is not given from CellBender 0.3's own
+  estimate, which the pipeline runs for it (a copy of CellBender 0.3.2's code), instead of the mapper
+  preset. Without a given threshold, the one passed is the cut-off 0.3 would apply. The mapper preset
+  now works with 0.2 too, and 0.2 no longer needs cells and droplets together for `.h5` and `.mtx`
+  inputs.
+- The mapper preset works out the droplets from the final number of cells, so a given `cells` value
+  feeds into them.
+- The CellBender modules (0.2.0) take the cells, droplets, low-count threshold and excluded feature
+  types of each sample as inputs instead of `ext` variables, and emit their files by extension. The
+  pipeline publishes them file by file; `results/cellbender/<id>/` and `index/cellbender.csv` look as
+  before.
+- The input detection, feature filtering and mapper preset of the CellBender modules moved from a
+  bash template and awk scripts to `prepare_cellbender.py`. It prints the input structure, the
+  ignored features, and each number with where it came from, in the task's `.command.log`.
+- An input the CellBender module cannot use stops that sample at once, without retries.
+- Every module sends its tool versions to the `versions` topic; `versions.yml` is built from it.
+
+### Removed
+
+- `--cells`, `--droplets`, `--min_umi` and `--exclude_features`. Set these values per sample in the
+  samples table's `cells`, `droplets`, `min_umi` and `exclude_features` columns. Passing one of the
+  parameters stops the run with a message naming the column. `examples/samples_exclude_features.csv`
+  now has an `exclude_features` column.
+
+### Fixed
+
+- The mapper preset on a CellRanger multi folder counted only the first sample's cells. A combined
+  CellPlex run now counts every cell CellRanger called, including those assigned to no sample or to
+  several. A combined Flex run gets the preset per sample, added up, since each sample has its own
+  droplets.
+
 ## [26-317] - 2026-11-13
 
 ### Added

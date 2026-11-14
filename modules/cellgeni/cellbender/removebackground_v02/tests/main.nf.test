@@ -15,13 +15,17 @@ nextflow_process {
         'cellbender.pdf',
         'cellbender_cell_barcodes.csv',
         'cellbender_filtered.h5',
+        'excluded_features.csv',
     ]
+    // Outputs emitted by extension, each a tuple with the sample's meta
+    def emitted = ['outputdir', 'h5', 'csv', 'pdf', 'log']
+    // Header of excluded_features.csv, which lists every feature left out of the model, one per line
+    def excluded_header = 'index,id,name,type,umis,reason,decision'
 
     test("CellRanger count v3.0.0 - CellBender v0.2") {
         tag "cellranger-count"
         tag "gex"
         tag "mapper-output"
-        tag "mapper-preset"
         tag "v0.2"
 
         when {
@@ -30,6 +34,8 @@ nextflow_process {
                 input[0] = [
                     [id:'cellranger-count'], // meta map
                     file(params.test_data_base + 'cellranger-count', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -37,21 +43,29 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
+                { assert prepared.contains("holds Cell Ranger count output") },
+                { assert prepared.contains("none ignored") },
+                { assert excluded == [excluded_header] },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
+
     test("STARsolo - CellBender v0.2") {
         tag "starsolo"
         tag "gex"
         tag "mapper-output"
-        tag "mapper-preset"
         tag "v0.2"
 
         when {
@@ -60,6 +74,8 @@ nextflow_process {
                 input[0] = [
                     [id:'starsolo'], // meta map
                     file(params.test_data_base + 'starsolo', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -67,21 +83,26 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'starsolo'] } },
+                { assert prepared.contains("holds STARsolo output (GeneFull)") },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
+
     test("CellRanger atac v1.2.0 - CellBender v0.2") {
         tag "cellranger-atac"
         tag "atac"
         tag "mapper-output"
-        tag "mapper-preset"
         tag "v0.2"
 
         when {
@@ -90,6 +111,8 @@ nextflow_process {
                 input[0] = [
                     [id:'cellranger-atac'], // meta map
                     file(params.test_data_base + 'cellranger-atac', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -97,32 +120,35 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-atac'] } },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
+
     test("CellRanger arc v1.0.0 - CellBender v0.2") {
         tag "cellranger-arc"
         tag "exclude-features"
         tag "mapper-output"
-        tag "mapper-preset"
         tag "v0.2"
 
         when {
-            params {
-                exclude_features = "All"
-            }
             process {
                 """
                 input[0] = [
                     [id:'cellranger-arc'], // meta map
                     file(params.test_data_base + 'cellranger-arc', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    ['Antibody Capture'], // feature types to exclude
                 ]
                 """
             }
@@ -130,17 +156,22 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-arc'] } },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
-    test("CellRanger multi v6.0.0 - sample multiplexing - CellBender v0.2") {
+
+    test("CellRanger multi v6.0.0 - sample multiplexing with the mapper preset - CellBender v0.2") {
         tag "cellranger-multi"
         tag "multi"
         tag "exclude-features"
@@ -150,13 +181,15 @@ nextflow_process {
 
         when {
             params {
-                exclude_features = "All"
+                preset          = "mapper"
             }
             process {
                 """
                 input[0] = [
                     [id:'sample-multiplexing'], // meta map
                     file(params.test_data_base + 'sample-multiplexing', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    ['Antibody Capture'], // feature types to exclude
                 ]
                 """
             }
@@ -164,64 +197,42 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'sample-multiplexing'] } },
+                { assert prepared.contains("mapper preset, all samples: 13446 called") },
+                { assert prepared.contains("expected cells: 13446 (mapper preset)") },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
-    test("CellRanger multi v7.1.0 - multiplex flex - CellBender v0.2") {
+
+    test("CellRanger multi v7.1.0 - multiplex flex with the mapper preset - CellBender v0.2") {
         tag "cellranger-multi"
         tag "multi"
-        tag "exclude-features"
-        tag "mapper-output"
-        tag "mapper-preset"
-        tag "v0.2"
-
-        when {
-            process {
-                """
-                input[0] = [
-                    [id:'multiplex-flex'], // meta map
-                    file(params.test_data_base + 'multiplex-flex', checkIfExists: true),
-                ]
-                """
-            }
-        }
-
-        then {
-            assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
-            assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
-                { assert outdir.list().sort() == outputs },
-                { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
-            )
-        }
-
-    }
-    test("CellRanger multi v6.0.0 - singleplex crispr - CellBender v0.2") {
-        tag "cellranger-multi"
-        tag "multi"
-        tag "exclude-features"
+        tag "flex"
         tag "mapper-output"
         tag "mapper-preset"
         tag "v0.2"
 
         when {
             params {
-                exclude_features = "All"
+                preset          = "mapper"
             }
             process {
                 """
                 input[0] = [
-                    [id:'singleplex-crispr'], // meta map
-                    file(params.test_data_base + 'singleplex-crispr', checkIfExists: true),
+                    [id:'multiplex-flex'], // meta map
+                    file(params.test_data_base + 'multiplex-flex', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -229,21 +240,158 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'multiplex-flex'] } },
+                { assert prepared.contains("expected cells: 20804 (mapper preset)") },
+                { assert prepared.contains("total droplets: 40804 (mapper preset)") },
+                { assert prepared.contains("ignored 933 features") },
+                { assert excluded.size() == 19062 },
+                { assert excluded.count { line -> line.endsWith(',explicit') } == 933 },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
+
+    test("CellRanger multi v6.0.0 - singleplex crispr - CellBender v0.2") {
+        tag "cellranger-multi"
+        tag "multi"
+        tag "exclude-features"
+        tag "mapper-output"
+        tag "v0.2"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [id:'singleplex-crispr'], // meta map
+                    file(params.test_data_base + 'singleplex-crispr', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    ['Antibody Capture'], // feature types to exclude
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            assertAll(
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
+                { assert outdir.list().sort() == outputs },
+                { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'singleplex-crispr'] } },
+                { assert log.contains('Completed remove-background.') }
+            )
+        }
+
+    }
+
+    test("CellRanger multi v7.1.0 - one flex sample with the mapper preset - CellBender v0.2") {
+        tag "cellranger-multi"
+        tag "flex"
+        tag "flex-sample"
+        tag "mapper-output"
+        tag "mapper-preset"
+        tag "v0.2"
+
+        when {
+            params {
+                preset          = "mapper"
+            }
+            process {
+                """
+                input[0] = [
+                    [id:'Liver_BC1'], // meta map
+                    file(params.test_data_base + 'multiplex-flex/outs/multi/per_sample_outs/Liver_BC1', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
+            assertAll(
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
+                { assert outdir.list().sort() == outputs },
+                { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'Liver_BC1'] } },
+                { assert prepared.contains("holds one sample of a Cell Ranger multi (Flex) run") },
+                { assert prepared.contains("ignored 743 features") },
+                { assert prepared.contains("expected cells: 4999 (mapper preset)") },
+                { assert excluded.size() == 19062 },
+                { assert excluded.count { line -> line.endsWith(',explicit') } == 743 },
+                { assert log.contains('Completed remove-background.') }
+            )
+        }
+
+    }
+
+    test("CellRanger multi v7.1.0 - one flex sample, all features - CellBender v0.2") {
+        tag "cellranger-multi"
+        tag "flex"
+        tag "flex-sample"
+        tag "filter-features"
+        tag "v0.2"
+
+        when {
+            params {
+                filter_features = false
+            }
+            process {
+                """
+                input[0] = [
+                    [id:'Liver_BC1'], // meta map
+                    file(params.test_data_base + 'multiplex-flex/outs/multi/per_sample_outs/Liver_BC1', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            def excluded = new File(outdir, 'excluded_features.csv').readLines()
+            assertAll(
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
+                { assert outdir.list().sort() == outputs },
+                { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'Liver_BC1'] } },
+                { assert prepared.contains("none ignored") },
+                { assert excluded == [excluded_header] },
+                { assert log.contains('Completed remove-background.') }
+            )
+        }
+
+    }
+
     test("CellRanger count v3.0.0 - output files in ungzipped format - CellBender v0.2") {
         tag "cellranger-count"
         tag "gex"
         tag "mapper-output"
-        tag "mapper-preset"
         tag "v0.2"
 
         when {
@@ -252,6 +400,8 @@ nextflow_process {
                 input[0] = [
                     [id:'cellranger-count-nogz'], // meta map
                     file(params.test_data_base + 'cellranger-count-nogz', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -259,34 +409,35 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count-nogz'] } },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
+
     test("CellRanger count v3.0.0 - .h5 file input - CellBender v0.2") {
         tag "cellranger-count"
         tag "gex"
         tag "h5"
-        tag "manual-preset"
         tag "v0.2"
 
         when {
-            params {
-                cells         = 1200
-                droplets      = 3200
-                min_umi       = 10
-            }
             process {
                 """
                 input[0] = [
                     [id:'cellranger-count'], // meta map
                     file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix.h5', checkIfExists: true),
+                    1200, 3200, 10, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -294,34 +445,39 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
+                { assert prepared.contains("expected cells: 1200 (given)") },
+                { assert prepared.contains("total droplets: 3200 (given)") },
+                // A given threshold is passed as it is, not raised to CellBender 0.3's cut-off
+                { assert prepared.contains("low count threshold: 10 (given)") },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
+
     test("CellRanger count v3.0.0 - .mtx directory input - CellBender v0.2") {
         tag "cellranger-count"
         tag "gex"
         tag "mtx"
-        tag "manual-preset"
         tag "v0.2"
 
         when {
-            params {
-                cells         = 1200
-                droplets      = 3200
-                min_umi       = 10
-            }
             process {
                 """
                 input[0] = [
                     [id:'cellranger-count'], // meta map
                     file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix', checkIfExists: true),
+                    1200, 3200, 10, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -329,20 +485,25 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
-        test("CellRanger count v3.0.0 - not outs directory - CellBender v0.2") {
+
+    test("CellRanger count v3.0.0 - not outs directory - CellBender v0.2") {
         tag "cellranger-count"
         tag "gex"
-        tag "no-outs"
+        tag "mapper-output"
         tag "v0.2"
 
         when {
@@ -351,6 +512,8 @@ nextflow_process {
                 input[0] = [
                     [id:'cellranger-count'], // meta map
                     file(params.test_data_base + 'cellranger-count/outs', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -358,17 +521,64 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
+                { assert log.contains('Completed remove-background.') }
             )
         }
 
     }
-    test("CellRanger count v3.0.0 - CellRanger's preset + mannual preset - CellBender v0.2") {
+
+    test("CellRanger count v3.0.0 - mapper preset - CellBender v0.2") {
+        tag "cellranger-count"
+        tag "gex"
+        tag "mapper-output"
+        tag "mapper-preset"
+        tag "v0.2"
+
+        when {
+            params {
+                preset          = "mapper"
+            }
+            process {
+                """
+                input[0] = [
+                    [id:'cellranger-count'], // meta map
+                    file(params.test_data_base + 'cellranger-count', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            assertAll(
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
+                { assert outdir.list().sort() == outputs },
+                { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
+                { assert prepared.contains("expected cells: 1222 (mapper preset)") },
+                { assert prepared.contains("total droplets: 3222 (mapper preset)") },
+                { assert log.contains('Completed remove-background.') }
+            )
+        }
+
+    }
+
+    test("CellRanger count v3.0.0 - mapper preset + given droplets - CellBender v0.2") {
         tag "cellranger-count"
         tag "gex"
         tag "mapper-output"
@@ -378,13 +588,15 @@ nextflow_process {
 
         when {
             params {
-                droplets = 5000
+                preset          = "mapper"
             }
             process {
                 """
                 input[0] = [
                     [id:'cellranger-count'], // meta map
                     file(params.test_data_base + 'cellranger-count', checkIfExists: true),
+                    null, 5000, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
                 ]
                 """
             }
@@ -392,13 +604,102 @@ nextflow_process {
 
         then {
             assert process.success
-            def outdir = new File(process.out.outputdir[0][1])
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
             assertAll(
-                { assert path(process.out.versions[0]).yaml == ['CELLBENDER_REMOVEBACKGROUND_V02': [cellbender: '0.2.2']] },
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
                 { assert outdir.list().sort() == outputs },
                 { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
-                { assert new File(outdir, 'cellbender.log').text.contains('Completed remove-background.') }
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
+                { assert prepared.contains("expected cells: 1222 (mapper preset)") },
+                { assert prepared.contains("total droplets: 5000 (given)") },
+                { assert log.contains('Completed remove-background.') }
             )
         }
+
+    }
+
+    test("CellRanger count v3.0.0 - .h5 file input, CellBender 0.3's estimate - CellBender v0.2") {
+        tag "cellranger-count"
+        tag "gex"
+        tag "h5"
+        tag "estimate"
+        tag "v0.2"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [id:'cellranger-count'], // meta map
+                    file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix.h5', checkIfExists: true),
+                    null, null, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            assertAll(
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
+                { assert outdir.list().sort() == outputs },
+                { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
+                { assert emitted.every { emit -> process.out[emit][0][0] == [id:'cellranger-count'] } },
+                { assert prepared.contains("expected cells: 641 (CellBender 0.3 estimate)") },
+                { assert prepared.contains("total droplets: 5273 (CellBender 0.3 estimate)") },
+                { assert log.contains('Completed remove-background.') }
+            )
+        }
+
+    }
+
+    test("CellRanger count v3.0.0 - .h5 file input, preset off - CellBender v0.2") {
+        tag "cellranger-count"
+        tag "gex"
+        tag "h5"
+        tag "preset-off"
+        tag "v0.2"
+
+        when {
+            params {
+                preset          = "off"
+            }
+            process {
+                """
+                input[0] = [
+                    [id:'cellranger-count'], // meta map
+                    file(params.test_data_base + 'cellranger-count/outs/raw_feature_bc_matrix.h5', checkIfExists: true),
+                    1200, 3200, null, // expected cells, total droplets, low-count threshold
+                    [], // feature types to exclude
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def outdir   = new File(process.out.outputdir[0][1])
+            def log      = new File(outdir, 'cellbender.log').text
+            // What prepare_cellbender.py printed: the input structure, the features and the numbers used
+            def prepared = new File(outdir.parentFile, '.command.out').text
+            assertAll(
+                { assert process.out.versions_cellbender == [['CELLBENDER_REMOVEBACKGROUND_V02', 'cellbender', '0.2.2']] },
+                { assert outdir.list().sort() == outputs },
+                { assert outputs.findAll { name -> new File(outdir, name).length() == 0 } == [] },
+                { assert prepared.contains("expected cells: 1200 (given)") },
+                { assert prepared.contains("total droplets: 3200 (given)") },
+                { assert prepared.contains("low count threshold: CellBender default (15)") },
+                { assert !prepared.contains("CellBender 0.3 estimate") },
+                { assert log.contains('Completed remove-background.') }
+            )
+        }
+
     }
 }

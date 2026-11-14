@@ -18,7 +18,11 @@ A comma-separated `.csv` file passed with `--samples`, with a header row and the
 |---|---|---|
 | `id` | Yes | Sample name, used for the output folder. Unique across the table, no spaces. |
 | `group` | No | Dataset the sample belongs to. Letters, digits, `.`, `_` and `-`, starting with a letter or digit; not `index` or `versions.yml`. See [Groups](#groups). |
-| `path` | Yes | No spaces. A CellRanger or STARsolo output folder, a `.h5` file or a `.mtx` folder; with `--on_irods`, an iRODS collection. |
+| `path` | Yes | No spaces. A CellRanger or STARsolo output folder (or one sample's `per_sample_outs/<sample>` folder of a CellRanger multi Flex run), a `.h5` file or a `.mtx` folder; with `--on_irods`, an iRODS collection. |
+| `cells` | No | Expected number of cells for this sample: a whole number of at least 1. See [Per-sample values](#per-sample-values). |
+| `droplets` | No | Total number of droplets to include: a whole number of at least 1. |
+| `min_umi` | No | Low-count threshold: a whole number, 0 or more. |
+| `exclude_features` | No | Feature types to exclude, comma-separated (quote the cell when it has commas). CellBender 0.3: `Antibody Capture`, `CRISPR Guide Capture`, `Custom`, `Peaks`, `Multiplexing Capture`, `VDJ`, `VDJ-T`, `VDJ-T-GD`, `VDJ-B`, `Antigen Capture`. CellBender 0.2: only `All` (antibody capture). |
 
 ```
 id,path
@@ -37,6 +41,23 @@ before the run starts. A duplicate `id` or a missing column stops it with, for e
 
 The folder layouts the pipeline recognises are listed in
 [Cell and droplet counts](../guides/cell-calls.md#inputs-the-pipeline-recognises).
+
+## Per-sample values
+
+The `cells`, `droplets`, `min_umi` and `exclude_features` columns set those values for one sample;
+there are no pipeline parameters for them. An empty cell, or a missing column, excludes no features
+and leaves the number to `--preset`: CellBender's own estimate (`auto`, the default), the mapper
+preset (`mapper`), or, for cells and droplets, an error before the run starts (`off`). See
+[Cell and droplet counts](../guides/cell-calls.md#where-the-numbers-come-from).
+
+```
+id,path,cells,droplets,min_umi,exclude_features
+pbmc,/lustre/scratch124/.../pbmc,,,,
+multiome,/lustre/scratch124/.../multiome,5000,15000,,Peaks
+citeseq,/lustre/scratch124/.../citeseq,,,,"Antibody Capture,Custom"
+```
+
+With CellBender 0.2, `exclude_features` is either empty or `All`.
 
 ## Groups
 
@@ -67,9 +88,11 @@ Sample `id`s stay unique across the whole table, not only within a group.
 |---|---|
 | [`examples/samples.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples.csv) | Local CellRanger and STARsolo folders, `.h5` files and `.mtx` folders |
 | [`examples/samples_irods.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_irods.csv) | iRODS collections, for `--on_irods` |
-| [`examples/samples_preset.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_preset.csv) | Whole mapper folders only, for the mapper preset |
-| [`examples/samples_exclude_features.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_exclude_features.csv) | A mix of library types (ARC, CRISPR, multiplexed, Flex) on iRODS, for trying `--exclude_features` |
-| [`examples/samples_groups.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_groups.csv) | iRODS collections split into three groups, one QC report each, for `--on_irods` |
+| [`examples/samples_preset.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_preset.csv) | Whole mapper folders only, for `--preset mapper` |
+| [`examples/samples_exclude_features.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_exclude_features.csv) | A mix of library types (ARC, CRISPR, multiplexed, Flex) on iRODS, with the feature types to exclude per sample, for `--on_irods` |
+| [`examples/samples_groups.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_groups.csv) | iRODS collections split into three groups, one QC report each, with the feature types to exclude per sample, for `--on_irods` |
+| [`examples/samples_flex_per_sample.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_flex_per_sample.csv) | The four samples of a Flex run, each from its `per_sample_outs` folder on iRODS, for `--on_irods` |
+| [`examples/samples_per_sample_params.csv`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/samples_per_sample_params.csv) | Cells, droplets and excluded feature types set per sample, on iRODS, for `--on_irods` |
 
 [`examples/run_cellbender.sh`](https://github.com/cellgeni/nf-cellbender/blob/main/examples/run_cellbender.sh)
 is a complete run script using one of them, and
@@ -83,6 +106,7 @@ Each run writes the same format back out, so its outputs can be the input of the
 | File | Lists |
 |---|---|
 | `results/index/cellbender.csv` | The CellBender output folder of each sample |
+| `results/index/h5ad.csv` | The `cellbender_filtered.h5ad` of each sample (empty with `--h5ad false`) |
 | `results/index/raw.csv` | The folders downloaded from iRODS (empty without `--on_irods`) |
 
 ```
@@ -93,4 +117,6 @@ Each run writes the same format back out, so its outputs can be the input of the
 Values are quoted; the pipeline reads quoted and unquoted tables alike. With a `group` column in
 the samples table, the index files have it too (`"id","group","path"`), so the groups carry over to
 the next run. `index/raw.csv` is the useful one to feed back: it reruns CellBender without
-downloading again (see [Data on iRODS](../guides/irods.md#reusing-a-download)).
+downloading again (see [Data on iRODS](../guides/irods.md#reusing-a-download)). The
+[per-sample values](#per-sample-values) are not in the index files; add those columns again when
+the rerun needs them.

@@ -1,9 +1,13 @@
 $schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
 name: cellgeni/cellbender/removebackground_v02
-version: 0.1.0
+version: 0.2.0
 description: >
   Removes ambient RNA and empty droplet artifacts from single-cell RNA-seq data
-  using CellBender 0.2 (0.2.2), producing a per-sample output directory with filtered count matrices.
+  using CellBender 0.2 (0.2.2). Finds the raw matrix in Cell Ranger (including one sample of a
+  multi Flex run) or STARsolo output, leaves features missing from the mapper's filtered matrix out
+  of the model, and takes the cell and droplet numbers from the sample; ext.preset fills the
+  missing ones from CellBender 0.3's estimate run by the module (auto), the mapper preset (mapper)
+  or not at all (off). Emits the output files by extension.
 keywords:
   - cellbender
   - cellbender-0.2
@@ -32,17 +36,72 @@ input:
       description: "Map with sample-level metadata. Must contain key 'id' with the sample name, e.g. [ id:'sample1' ]"
     - name: input
       type: file
-      description: "Cell Ranger or STARsolo output directory, .h5 file, or .mtx directory containing raw single-cell RNA-seq counts."
+      description: "Cell Ranger or STARsolo output directory (or one sample's per_sample_outs folder of a Cell Ranger multi Flex run), .h5 file, or .mtx directory with raw counts."
       pattern: "*.{h5,mtx}|*/"
+    - name: expected_cells
+      type: integer
+      description: "--expected-cells for the sample, or null/[] to leave it to ext.preset (needed with ext.preset 'off')."
+    - name: total_droplets
+      type: integer
+      description: "--total-droplets-included for the sample, or null/[] to leave it to ext.preset (needed with ext.preset 'off')."
+    - name: low_count_threshold
+      type: integer
+      description: "--low-count-threshold for the sample, or null/[] to leave it to ext.preset."
+    - name: exclude_features
+      type: list
+      description: "['Antibody Capture'] to exclude antibody capture features (--exclude-antibody-capture), or []. CellBender 0.2 cannot exclude other types."
 output:
   - - name: meta
       type: map
       description: "Map with sample-level metadata, passed through from input."
     - name: outputdir
       type: directory
-      description: "CellBender output directory for the sample (named after meta.id), containing cellbender.h5, filtered matrices and summary files."
+      description: "The whole CellBender output directory for the sample (named after meta.id), for tools that read it as one."
       pattern: "${meta.id}"
-  - name: versions
-    type: file
-    description: "YAML file recording the CellBender version used by this process."
-    pattern: "versions.yml"
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata, passed through from input."
+    - name: h5
+      type: file
+      description: "cellbender.h5 (all analysed droplets) and cellbender_filtered.h5 (cells)."
+      pattern: "${meta.id}/*.h5"
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata, passed through from input."
+    - name: csv
+      type: file
+      description: "cellbender_cell_barcodes.csv and excluded_features.csv (every feature left out of the model, with its UMIs, why and whether CellBender is told: explicit or implicit)."
+      pattern: "${meta.id}/*.csv"
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata, passed through from input."
+    - name: pdf
+      type: file
+      description: "cellbender.pdf, CellBender's summary plots."
+      pattern: "${meta.id}/*.pdf"
+  - - name: meta
+      type: map
+      description: "Map with sample-level metadata, passed through from input."
+    - name: log
+      type: file
+      description: "cellbender.log."
+      pattern: "${meta.id}/*.log"
+  - - name: process
+      type: string
+      description: "The process the version was collected from (the versions topic)."
+    - name: tool
+      type: string
+      description: "The tool name, cellbender."
+    - name: version
+      type: string
+      description: "The CellBender version."
+topics:
+  - - name: process
+      type: string
+      description: "versions topic: the process the version was collected from."
+    - name: tool
+      type: string
+      description: "versions topic: the tool name."
+    - name: version
+      type: string
+      description: "versions topic: the tool version."
