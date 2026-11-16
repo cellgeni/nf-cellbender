@@ -15,6 +15,8 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-320] - 2026-11-16
+
 ### Added
 
 - `--qc_sort name` lists the samples of the QC report (TSV, PDF and MultiQC table) by name, in
@@ -270,7 +272,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-318...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-320...dev
+[26-320]: https://github.com/cellgeni/nf-cellbender/compare/26-318...26-320
 [26-318]: https://github.com/cellgeni/nf-cellbender/compare/26-317...26-318
 [26-317]: https://github.com/cellgeni/nf-cellbender/compare/26-295...26-317
 [26-295]: https://github.com/cellgeni/nf-cellbender/compare/26-294...26-295
