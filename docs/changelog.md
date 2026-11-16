@@ -15,6 +15,20 @@ and the day of the year.
 
 ## [Unreleased]
 
+## [26-320] - 2026-11-16
+
+### Added
+
+- `--qc_sort name` lists the samples of the QC report (TSV, PDF and MultiQC table) by name, in
+  natural order, instead of most problematic first. The problematic-first order depends on how
+  training went, so two runs on the same samples, for example with different `--preset`s, could
+  list them in different orders; with `--qc_sort name` their reports line up.
+
+### Fixed
+
+- The MultiQC summary table now keeps the QC order (most problematic first by default). MultiQC
+  sorted its rows by sample name, so it did not match the PDF and TSV.
+
 ## [26-318] - 2026-11-14
 
 ### Added
@@ -258,7 +272,8 @@ and the day of the year.
 - First release: CellBender on farm22 through Nextflow for a table of samples, with the R QC
   script, a Dockerfile, a resume script and example tables.
 
-[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-318...dev
+[Unreleased]: https://github.com/cellgeni/nf-cellbender/compare/26-320...dev
+[26-320]: https://github.com/cellgeni/nf-cellbender/compare/26-318...26-320
 [26-318]: https://github.com/cellgeni/nf-cellbender/compare/26-317...26-318
 [26-317]: https://github.com/cellgeni/nf-cellbender/compare/26-295...26-317
 [26-295]: https://github.com/cellgeni/nf-cellbender/compare/26-294...26-295

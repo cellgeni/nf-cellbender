@@ -21,8 +21,10 @@ For every sample folder the script reads:
   raw UMI per barcode and raw UMI per feature over the called cells. A 10x `.h5` or an `.mtx` folder is
   read once, in chunks.
 
-Samples are ordered with the most problematic first: those whose 10 highest-UMI barcodes include one with
-cell probability ≤ 0.5, then by how far the final test ELBO fell below its maximum.
+By default (`ext.qc_sort = 'problem'`), samples are ordered with the most problematic first: those whose
+10 highest-UMI barcodes include one with cell probability ≤ 0.5, then by how far the final test ELBO fell
+below its maximum. With `ext.qc_sort = 'name'` they are ordered by sample name, so reports from different
+runs on the same samples line up.
 
 ## Inputs
 
@@ -76,6 +78,7 @@ A tuple of:
 | Variable | Type | Default | Description |
 |---|---|---|---|
 | `ext.qc_mode` | integer | `3` | `1`: log only (fast); `2`: also reads the output h5 (a few seconds per sample); `3`: also reads the CellBender input (10–60 s per sample, depending on its size). |
+| `ext.qc_sort` | string | `'problem'` | Sample order in the TSV, PDF and MultiQC files. `'problem'`: most problematic first; `'name'`: by sample name, in natural order. |
 | `ext.args` | string | `''` | Extra arguments for `cellbender_qc.py`. |
 
 The script is bundled as a module binary, so the pipeline needs `nextflow.enable.moduleBinaries = true`.

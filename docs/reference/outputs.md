@@ -23,7 +23,7 @@ results/
 │   ├── h5ad.csv                    id,path of every cellbender_filtered.h5ad (empty with --h5ad false)
 │   └── raw.csv                     id,path of every iRODS download (empty without --on_irods)
 ├── qc_report/
-│   ├── cellbender_qc_summary.tsv   one row per sample, most problematic samples first
+│   ├── cellbender_qc_summary.tsv   one row per sample, most problematic first (see --qc_sort)
 │   ├── cellbender_qc_report.pdf    summary table, training curves, cell calling, latent PCA, soup, gene removal
 │   ├── multiqc_report.html         the same QC as an interactive HTML report
 │   ├── multiqc_data/               data behind the MultiQC report

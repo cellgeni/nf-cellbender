@@ -3,7 +3,8 @@ subtitle: "CellBender remove-background quality control"
 intro_text: >
   Per-sample QC of CellBender outputs. Samples whose top-UMI barcodes get a cell probability
   below 0.5, or whose final test ELBO dropped well below its maximum, deserve a closer look;
-  the summary table lists them first. The same plots are in qc_report/cellbender_qc_report.pdf.
+  the summary table lists them first (with --qc_sort name, it lists samples by name). The same
+  plots are in qc_report/cellbender_qc_report.pdf.
 
 report_section_order:
   cellbender_summary:
