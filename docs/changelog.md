@@ -15,6 +15,18 @@ and the day of the year.
 
 ## [Unreleased]
 
+### Added
+
+- `--qc_sort name` lists the samples of the QC report (TSV, PDF and MultiQC table) by name, in
+  natural order, instead of most problematic first. The problematic-first order depends on how
+  training went, so two runs on the same samples, for example with different `--preset`s, could
+  list them in different orders; with `--qc_sort name` their reports line up.
+
+### Fixed
+
+- The MultiQC summary table now keeps the QC order (most problematic first by default). MultiQC
+  sorted its rows by sample name, so it did not match the PDF and TSV.
+
 ## [26-318] - 2026-11-14
 
 ### Added

@@ -1,6 +1,6 @@
 $schema: https://raw.githubusercontent.com/nextflow-io/schemas/refs/heads/main/module/v1/schema.json
 name: cellgeni/cellbender/qc
-version: 0.4.0
+version: 0.5.0
 description: >
   Collects QC statistics from a group of CellBender 0.2 and 0.3 remove-background outputs into a
   summary TSV, a multi-page PDF (training curves, CellBender-style cell calling, latent PCA, soup

@@ -19,10 +19,12 @@ process CELLBENDER_QC {
     script:
     def args    = task.ext.args ?: ''
     def qc_mode = task.ext.qc_mode ?: 3
+    def qc_sort = task.ext.qc_sort ?: 'problem'
     """
     cellbender_qc.py \\
         cellbender_output \\
         --mode ${qc_mode} \\
+        --sort ${qc_sort} \\
         --out qc_report \\
         --verbose \\
         ${args}

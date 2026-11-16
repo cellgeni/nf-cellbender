@@ -2,7 +2,7 @@
 """Collect QC statistics and plots from CellBender remove-background outputs.
 
 Reads every per-sample folder in DIR (CellBender 0.2 or 0.3 output), and writes:
-  cellbender_qc_summary.tsv    one row per sample, most problematic samples first
+  cellbender_qc_summary.tsv    one row per sample, in the --sort order (default: most problematic first)
   cellbender_qc_report.pdf     summary table, training curves, cell calling, latent PCA, soup fractions, gene removal
   multiqc/                     the same data as MultiQC custom content
 """
@@ -269,6 +269,11 @@ def process_sample(sample_dir, mode, verbose):
     return s
 
 
+def name_key(item):
+    """Natural order of sample names, as MultiQC sorts them: DM5 before DM12."""
+    return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", item[0])]
+
+
 def sort_key(item):
     """Most problematic samples first: low cell probability among top barcodes, then the largest ELBO drop."""
     info = item[1]["info"]
@@ -428,7 +433,7 @@ def plot_gene_removal(ax, s):
     ax.set_ylabel("UMI in cells, after CellBender")
 
 
-def summary_page(samples, pdf):
+def summary_page(samples, pdf, order):
     shown = ["sample_id", "epochs", "final_test_elbo_minus_max", "test_minus_train_elbo", "cellbender_cells",
              "top10umi_min_cell_prob", "median_soup_fraction", "prior_cell_count", "prior_empty_count"]
     rows_per_page = 35
@@ -441,7 +446,7 @@ def summary_page(samples, pdf):
         table.auto_set_font_size(False)
         table.set_fontsize(8)
         table.scale(1, 1.4)
-        fig.suptitle("CellBender QC summary (most problematic samples first)")
+        fig.suptitle(f"CellBender QC summary ({order})")
         pdf.savefig(fig)
         plt.close(fig)
 
@@ -477,7 +482,8 @@ def write_multiqc(samples, mode, outdir):
         "cellbender_summary_mqc.json": {
             "id": "cellbender_summary", "section_name": "CellBender summary", "plot_type": "table",
             "description": "One row per sample, from the CellBender log and output h5.",
-            "pconfig": {"id": "cellbender_summary_table", "title": "CellBender summary"},
+            # Rows in the --sort order; MultiQC would sort them by name
+            "pconfig": {"id": "cellbender_summary_table", "title": "CellBender summary", "sort_rows": False},
             "headers": headers, "data": table,
         },
         "cellbender_generalstats_mqc.json": {
@@ -527,6 +533,9 @@ def main():
     parser.add_argument("-m", "--mode", type=int, default=1, choices=[1, 2, 3],
                         help="1: log only (fast); 2: also cell probabilities and latent PCA from the output h5; "
                              "3: also the CellBender input: UMI curve, soup fraction and gene removal")
+    parser.add_argument("-s", "--sort", default="problem", choices=["problem", "name"],
+                        help="sample order: problem (default): most problematic first, low top-10 cell probability "
+                             "then the largest ELBO drop; name: by sample name, the same in every run")
     parser.add_argument("-o", "--out", default=".", help="output folder (default: current folder)")
     parser.add_argument("-v", "--verbose", action="store_true", help="print progress to stderr")
     args = parser.parse_args()
@@ -547,12 +556,15 @@ def main():
             samples.append((sid, s))
     if not samples:
         sys.exit("No CellBender output was found.")
-    samples.sort(key=sort_key)
+    samples.sort(key=name_key)
+    if args.sort == "problem":
+        samples.sort(key=sort_key)  # stable: ties stay in name order
+    order = "most problematic samples first" if args.sort == "problem" else "by sample name"
 
     write_summary(samples, os.path.join(args.out, "cellbender_qc_summary.tsv"))
 
     with PdfPages(os.path.join(args.out, "cellbender_qc_report.pdf")) as pdf:
-        summary_page(samples, pdf)
+        summary_page(samples, pdf, order)
         for fig in grid_pages(samples, plot_training, pdf, "Training history"):
             plt.close(fig)
         if args.mode > 1:

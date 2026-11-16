@@ -15,7 +15,7 @@ After CellBender has run on every sample, the QC step reads all the outputs toge
 
 | File | Contents |
 |---|---|
-| `cellbender_qc_summary.tsv` | One row per sample, most problematic samples first |
+| `cellbender_qc_summary.tsv` | One row per sample, most problematic samples first (see [Sample order](#sample-order)) |
 | `cellbender_qc_report.pdf` | A summary table, then one panel per sample for each plot, 24 samples per page |
 | `multiqc_report.html` | The same table and plots in an interactive report |
 
@@ -25,7 +25,8 @@ group's MultiQC report has the group in its title.
 
 ## What to look at first
 
-Open `multiqc_report.html`. The samples worth a closer look come first in the summary table:
+Open `multiqc_report.html`. The samples worth a closer look come first in the summary table
+(unless `--qc_sort name` is set):
 
 1. **A low `Top-10 min cell prob`** (below 0.5): one of the ten barcodes with the most UMIs was not
    called a cell. This usually means training failed for that sample.
@@ -95,15 +96,25 @@ the UMI order; the gene removal panel says `not available`.
 | `probable_cells`, `additional_cells`, `probable_empty` | Barcodes CellBender used as probable cells, additional barcodes and empty droplets |
 | `input` | The input CellBender read |
 
-Samples are sorted by `top10umi_min_cell_prob > 0.5` (failures first), then by
-`final_test_elbo_minus_max` (most negative first).
-
 {: .note }
 Mode 3 reads the input matrix recorded in each CellBender log. CellBender 0.3 also stores each
 cell's soup fraction in its output; CellBender 0.2 does not, so the QC step recomputes it from the
 input. If that input is no longer readable, for example after the work folder was cleaned up, the
 soup fraction of a 0.2 sample is `NA`, and for every sample the UMI curve and gene removal plot are
 left out.
+
+## Sample order
+
+`--qc_sort` sets the order of the samples in the TSV, the PDF and the MultiQC report:
+
+| Value | Order |
+|---|---|
+| `problem` (default) | By `top10umi_min_cell_prob > 0.5` (failures first), then by `final_test_elbo_minus_max` (most negative first) |
+| `name` | By sample name, in natural order (`DM5` before `DM12`) |
+
+The `problem` order depends on how training went, so two runs on the same samples, for example
+with different `--preset`s, can list them in different orders. Use `--qc_sort name` to compare
+their reports side by side.
 
 ## Running the QC on its own
 
